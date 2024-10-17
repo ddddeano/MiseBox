@@ -5,38 +5,33 @@ import { getFirestore } from 'firebase/firestore';
 
 export default defineNuxtPlugin(() => {
   const firebaseConfig = {
-    apiKey: "AIzaSyCI0hBgq7dEvCNmIiUVjh7bGd8Vi79dJUk",
-    authDomain: 'misebox.app',
-    projectId: 'misebox-78f9c',
-    storageBucket: 'misebox-78f9c.appspot.com',
-    messagingSenderId: '102749723716',
-    appId: '1:102749723716:web:8ecc4b081c505e11017011'
+    apiKey: process.env.FIREBASE_API_KEY,
+    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.FIREBASE_APP_ID,
   };
 
-  // Initialize Firebase app and services
   const firebaseApp = initializeApp(firebaseConfig);
   const auth = getAuth(firebaseApp);
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    // No user signed in, proceed with anonymous sign-in
-    signInAnonymously(auth)
-      .then(({ user }) => {
-      })
-      .catch((error) => {
+
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      signInAnonymously(auth).catch((error) => {
+        console.error(error);
       });
-  } else {
-  }
-});
+    }
+  });
 
-const firestore = getFirestore(firebaseApp); // Initialize Firestore
+  const firestore = getFirestore(firebaseApp);
 
-  // Provide firebase auth and firestore to Nuxt context
   return {
     provide: {
       firebase: {
         auth,
-        firestore
-      }
-    }
+        firestore,
+      },
+    },
   };
 });

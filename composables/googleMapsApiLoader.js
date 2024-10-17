@@ -1,7 +1,6 @@
-// googleMapsApiLoader.js
 let isGoogleApiLoaded = false;
 
-const googleMapsAPIKey = 'AIzaSyAa4Y_bDRWMU2LXX1j6axlgB49wVUHev9c'; // Use your actual API key
+const googleMapsAPIKey = process.env.GOOGLE_MAPS_API_KEY;
 
 export const loadGoogleMapsScript = () => {
   return new Promise((resolve, reject) => {

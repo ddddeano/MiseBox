@@ -24,4 +24,4 @@ logs
 !.env.example
 
 # Ignore service account credentials
-service-account.json
+config/service-account.json

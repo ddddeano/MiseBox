@@ -13,18 +13,18 @@ export default defineNuxtConfig({
   },
   modules: [
     ['nuxt-vuefire', {
-      credential: './service-account.json',
+      credential: process.env.GOOGLE_APPLICATION_CREDENTIALS, // Use environment variable
       ssr: true,
     }],
   ],
   vuefire: {
     config: {
       apiKey: process.env.FIREBASE_API_KEY,
-      authDomain: 'misebox.app',
-      projectId: 'misebox-78f9c',
-      storageBucket: 'misebox-78f9c.appspot.com',
-      messagingSenderId: '102749723716',
-      appId: '1:102749723716:web:8ecc4b081c505e11017011',
+      authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+      messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+      appId: process.env.FIREBASE_APP_ID,
     },
     auth: {
       enabled: true,
