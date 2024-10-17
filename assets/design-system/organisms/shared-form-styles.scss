@@ -1,0 +1,102 @@
+/* shared-form-styles.css */
+
+/* Component Wrapper */
+.profile-forms {
+  width: 100%;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+@media (min-width: 768px) {
+  .profile-forms {
+    max-width: 300px; /* Restrict the width on larger screens */
+  }
+}
+
+.component {
+  margin-bottom: var(--spacing-m); /* 16px */
+}
+
+/* Divider */
+.component::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 1px;
+  background-color: var(--border); /* Use the border color for the divider */
+  margin-top: var(--spacing-m); /* 16px for spacing above the divider */
+}
+
+/* Form Field Container */
+.form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Top Section with Label and Icons */
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text-primary); /* Primary text color */
+  border-radius: var(--radius-s); /* 8px */
+  background-color: var(--background-2); /* Light background for header */
+}
+
+/* Label Style */
+label {
+  font-weight: var(--font-weight-bold); /* 700 */
+  font-size: var(--font-size-m); /* 16px */
+}
+
+
+/* Display Text */
+.display span {
+  flex-grow: 1;
+  color: var(--text-secondary); /* Secondary text color */
+  font-size: var(--font-size-m); /* 16px */
+  line-height: var(--line-height-m); /* 1.6 */
+}
+
+/* Editable Input Base Class */
+.editable-input {
+  width: 100%;
+  padding-inline: var(--spacing-xxs); /* 12px */
+  font-size: var(--font-size-m); /* 16px */
+  border: 1px solid var(--border); /* Standard border color */
+  border-radius: var(--radius-xs); /* 4px */
+  font-weight: var(--font-weight-regular); /* 400 */
+  line-height: var(--line-height-m); /* 1.6 */
+}
+
+.editable-input:focus {
+  outline: none;
+  border-color: var(--hover); /* Focus border color */
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow for focus */
+}
+
+/* Editable Text Input */
+
+/* Editable Textarea */
+.editable-textarea {
+  min-height: 200px;
+  resize: vertical;
+  /* Inherits other styles from .editable-input */
+}
+
+/* Action Icons */
+.action-icons {
+  display: flex;
+  gap: var(--spacing-xs); /* 8px */
+  /* Optional: Adjust alignment if needed */
+}
+
+/* Additional Classes */
+.input-group {
+  width: 100%;
+  margin-bottom: var(--spacing-s); /* 12px */
+}
+
+.editing .input-group .editable-text {
+  width: 100%;
+}

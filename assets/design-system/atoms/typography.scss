@@ -1,0 +1,28 @@
+/* assets/design-system/atoms/typography.scss */
+
+body {
+  font-family: 'Poppins', sans-serif; // Apply the Poppins font globally
+  line-height: 1.6; // Improve readability with a comfortable line height
+  color: var(--text-primary); // Use a primary text color variable
+  background-color: var(--background); // Set a background color
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Poppins', sans-serif; // Ensure headings use the Poppins font
+  font-weight: 700; // Make headings bold
+  margin: 0 0 10px; // Add some margin below headings
+}
+
+h2 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+p {
+  margin: 0 0 15px; // Add margin below paragraphs
+}

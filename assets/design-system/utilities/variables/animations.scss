@@ -1,0 +1,16 @@
+/* assets/design-system/utilities/variables/animations.scss */
+
+.fade-transition-enter-active,
+.fade-transition-leave-active {
+  transition: opacity 0.3s ease-in-out;
+}
+
+.fade-transition-enter-from,
+.fade-transition-leave-to {
+  opacity: 0;
+}
+
+.fade-transition-enter-to,
+.fade-transition-leave-from {
+  opacity: 1;
+}

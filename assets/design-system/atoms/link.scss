@@ -1,0 +1,32 @@
+a {
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.navigation-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+
+  &.larger {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  li {
+    margin: 0;
+    padding: 10px 15px;
+  }
+
+  a {
+    color: var(--text-primary);
+    padding: 6px;
+    &:hover {
+      color: var(--hover);
+      background-color: var(--background);
+    }
+  }
+}
