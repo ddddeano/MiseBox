@@ -1,16 +1,34 @@
-// composables/useProfessional.js
-export const useProfessional = () => {
-  const createProfessional = async (miseboxUser) => {
+import { computed } from 'vue';
+import { useDocument, useFirestore } from 'vuefire';
+import { doc } from 'firebase/firestore'; // Import Firestore `doc`
+
+export const useProfessional = (miseboxUser) => {
+  const db = useFirestore();
+
+  // Function to fetch the current user's Professional document reactively
+  const professionalDocRef = computed(() => {
+    return miseboxUser.value ? doc(db, 'professionals', miseboxUser.value.id) : null;
+  });
+
+  const { data: professional } = useDocument(professionalDocRef); // Reactive professional document
+
+  const createProfessional = async () => {
+    // Ensure miseboxUser is passed correctly and exists
+    if (!miseboxUser || !miseboxUser.value) {
+      console.error('Misebox user data is missing');
+      return;
+    }
+
     const payload = {
       professional: {
-        id: miseboxUser.id,
-        mise_code: miseboxUser.mise_code,
-        handle: miseboxUser.handle,
-        avatar: miseboxUser.avatar,
-        display_name: miseboxUser.display_name,
+        id: miseboxUser.value.id,
+        mise_code: miseboxUser.value.mise_code,
+        handle: miseboxUser.value.handle,
+        avatar: miseboxUser.value.avatar,
+        display_name: miseboxUser.value.display_name,
       },
       professionalProfile: {
-        // Additional profile data can be added here
+        // Add additional professional profile data here if necessary
       },
     };
 
@@ -20,7 +38,7 @@ export const useProfessional = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ userId: miseboxUser.id, data: payload }),
+        body: JSON.stringify({ userId: miseboxUser.value.id, data: payload }),
       });
 
       if (!response.ok) {
@@ -35,5 +53,6 @@ export const useProfessional = () => {
 
   return {
     createProfessional,
+    professional, // Return the professional document reactively if needed
   };
 };

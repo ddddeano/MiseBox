@@ -1,31 +1,36 @@
 <template>
-  <div class="component">
     <div class="form-field">
       <div class="top">
         <label>{{ label }}</label>
-        <!-- Controls in the Header -->
         <div class="component-icons">
           <PencilIcon
             v-if="!isEditing"
             class="icon edit-icon"
-            @click="startEditing"
+            @click="pencilButtonClicked"
           />
           <template v-else>
             <CheckCircleIcon
               class="icon confirm-icon"
-              @click="updateField"
+              @click="checkButtonClicked"
+            />
+            <MinusCircleIcon
+              class="icon cancel-icon"
+              @click="minusButtonClicked"
             />
             <XCircleIcon
-              class="icon cancel-icon"
-              @click="cancelEditing"
+              v-if="vModel"
+              class="icon clear-icon"
+              @click="deleteButtonClicked"
             />
           </template>
         </div>
       </div>
+
       <!-- Display Mode -->
       <div v-if="!isEditing" class="display">
         <span>{{ firebaseValue || placeholder }}</span>
       </div>
+
       <!-- Edit Mode -->
       <div v-else class="editing">
         <textarea
@@ -34,74 +39,82 @@
           class="editable-input editable-textarea"
           :maxlength="maxLength"
         ></textarea>
+        <!-- Error Message -->
+        <div v-if="errorMessage" class="error-message">
+          {{ errorMessage }}
+        </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { doc, updateDoc } from 'firebase/firestore';
-import { useFirestore } from 'vuefire';
-
-const firestore = useFirestore();
 
 const props = defineProps({
   label: {
     type: String,
-    default: '',
+    default: '', // Critical for rendering
   },
   firebaseValue: {
     type: String,
-    default: '',
-  },
-  collectionName: {
-    type: String,
-    default: '',
-  },
-  documentID: {
-    type: String,
-    default: '',
-  },
-  target: {
-    type: String,
-    default: '',
+    default: '', // Critical for rendering
   },
   placeholder: {
     type: String,
-    default: '',
+    default: '', // Critical for rendering
   },
   maxLength: {
     type: Number,
-    default: null,
+    default: null, // Used in the template
   },
+  // Other props without default values
+  collectionName: String,
+  documentID: String,
+  target: String,
+  formattingFunction: Function,
+  validationFunction: Function,
 });
 
-const isEditing = ref(false);
-const vModel = ref(props.firebaseValue); // Initialize with the value passed from Firestore
+const {
+  isEditing,
+  vModel,
+  errorMessage,
+  startEditing,
+  cancelEditing,
+  updateField,
+  deleteField,
+} = useField(props);
 
-// Methods
-const startEditing = () => {
-  vModel.value = props.firebaseValue; // Reset the value when entering edit mode
-  isEditing.value = true;
+const pencilButtonClicked = () => {
+  startEditing();
 };
 
-const cancelEditing = () => {
+const checkButtonClicked = async () => {
+  await updateField();
   isEditing.value = false;
-  vModel.value = props.firebaseValue; // Reset to the original value on cancel
 };
 
-const updateField = async () => {
-  if (!props.documentID) {
-    console.error('No document ID provided');
-    return;
-  }
-  try {
-    const documentRef = doc(firestore, props.collectionName, props.documentID);
-    await updateDoc(documentRef, { [props.target]: vModel.value }); // Update the field in Firestore
-    isEditing.value = false;
-  } catch (error) {
-    console.error('Error updating document:', error);
-  }
+const minusButtonClicked = () => {
+  cancelEditing();
+};
+
+const deleteButtonClicked = async () => {
+  await deleteField();
 };
 </script>
+<style scoped>
+
+/* Editable Textarea */
+.editable-textarea {
+  resize: vertical;
+  height: fit-content;
+  min-height: 150px;
+}
+
+/* For larger screens, allow both vertical and horizontal resizing */
+@media (min-width: 768px) {
+  .editable-textarea {
+    resize: both;
+  }
+}
+
+</style>

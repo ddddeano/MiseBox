@@ -1,0 +1,100 @@
+.cell {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid var(--border);
+  padding: var(--spacing-s);
+  color: var(--text-primary);
+  width: 100%;
+  cursor: pointer;
+}
+
+.cell-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.avatar-info {
+  display: flex;
+  align-items: center;
+}
+
+.cell-info {
+  margin-left: var(--spacing-s);
+}
+
+.display-name {
+  font-size: var(--font-size-m);
+  font-weight: var(--font-weight-medium);
+  margin: 0;
+}
+
+.handle {
+  font-size: var(--font-size-s);
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.view-profile-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit; /* Ensures that the link doesn't have default link colors */
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-s);
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  width: 100%;
+  background-color: var(--background);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+}
+
+.user-info, .cell-info {
+  margin-left: var(--spacing-s);
+}
+
+.display-name {
+  font-size: var(--font-size-m);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.handle {
+  font-size: var(--font-size-s);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.card-expanded {
+  margin-top: var(--spacing-s);
+}
+
+.bio {
+  font-size: var(--font-size-s);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-s);
+}
+
+.user-apps {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.view-profile-link {
+  text-decoration: none;
+  color: inherit; /* Ensures link color is inherited */
+}
+
+.current-card {
+  background: var(--primary); /* Highlight the current user card */
+}

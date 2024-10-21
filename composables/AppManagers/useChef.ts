@@ -2,15 +2,15 @@ import { computed } from 'vue';
 import { useDocument, useFirestore } from 'vuefire';
 import { doc } from 'firebase/firestore'; // Import Firestore `doc`
 
-export const useChef = (currentUser, miseboxUser) => {
+export const useChef = (miseboxUser) => {
   const db = useFirestore();
 
   // Function to fetch the current user's Chef document reactively
-  const userDocRef = computed(() => {
-    return currentUser.value ? doc(db, 'chefs', currentUser.value.uid) : null;
+  const chefDocRef = computed(() => {
+    return miseboxUser.value ? doc(db, 'chefs', miseboxUser.value.id) : null;
   });
 
-  const { data: chef } = useDocument(userDocRef); // Reactive chef document
+  const { data: chef } = useDocument(chefDocRef); // Reactive chef document
 
   const createChef = async () => {
     // Ensure miseboxUser is passed correctly and exists

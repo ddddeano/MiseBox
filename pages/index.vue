@@ -1,32 +1,50 @@
 <template>
-  <div class="home index">
+  <div class="landing-page">
+    <!-- Hero Section -->
     <section class="hero-section">
       <div class="hero-content">
-        <h1>Welcome to MiseBox</h1>
-        <p>Your central hub for managing culinary professionals and services.</p>
-        <NuxtLink to="/subscribe" class="cta-button">Get Started</NuxtLink>
+        <h1>Shaping the Future of Culinary Excellence</h1>
+        <p>Seamless connection between chefs, professionals, and recruiters to create the culinary revolution.</p>
+        <NuxtLink to="/subscribe" class="cta-button">Start Your Journey</NuxtLink>
       </div>
     </section>
 
-    <section class="apps-showcthase">
-      <div
-        class="app-card chef"
-        v-for="app in availableApps"
-        :key="app.doc"
-      >
-        <div class="app-content">
-          <h2>{{ app.welcome }}</h2>
-          <p class="motto">{{ app.mottoOne }}</p>
-          <p class="motto">{{ app.mottoTwo }}</p>
-          <NuxtLink :to="`/${app.collection}`" class="explore-button">Explore {{ app.name }}</NuxtLink>
-        </div>
+    <!-- About Section -->
+    <section class="about-section">
+      <div class="about-content">
+        <h2>Welcome to MiseBox 2035</h2>
+        <p>The ultimate ecosystem for culinary professionals, transforming how kitchens and careers are managed.</p>
       </div>
     </section>
 
+    <!-- Apps Section -->
+    <section class="apps-section">
+      <div class="app-card chef">
+        <h3>Chef</h3>
+        <p>Manage recipes, kitchens, and the future of culinary art in your hands.</p>
+        <NuxtLink to="/chef" class="explore-button">Explore Chef</NuxtLink>
+      </div>
+
+      <div class="app-card professional">
+        <h3>Professional</h3>
+        <p>Build your professional profile, discover futuristic gigs, and connect with industry leaders.</p>
+        <NuxtLink to="/professional" class="explore-button">Explore Professional</NuxtLink>
+      </div>
+
+      <div class="app-card recruiter">
+        <h3>Recruiter</h3>
+        <p>Shape the next generation of talent with advanced recruitment tools.</p>
+        <NuxtLink to="/recruiter" class="explore-button">Explore Recruiter</NuxtLink>
+      </div>
+    </section>
+
+    <!-- Call to Action Section -->
     <section class="cta-section">
-      <h2>Join the MiseBox Community</h2>
-      <p>Connect with professionals, manage your profiles, and grow your network.</p>
-      <NuxtLink to="/subscribe" class="cta-button">Subscribe Now</NuxtLink>
+      <div class="cta-content">
+        <h2>Step Into the Future</h2>
+        <p>Join the world’s first fully integrated culinary network.</p>
+        <NuxtLink to="/subscribe" class="cta-button">Join Now</NuxtLink>
+      </div>
     </section>
   </div>
 </template>
@@ -36,220 +54,262 @@ const availableApps = miseboxApps.filter(app => app.isAvailable)
 </script>
 
 <style scoped lang="scss">
-.home.index {
-  scroll-behavior: smooth;
+.landing-page {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  padding: 0 20px;
+  background-color: var(--background);
 
+  /* Smooth Scroll */
+  scroll-behavior: smooth;
+
+  /* Hero Section */
   .hero-section {
-    padding: 20px;
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    width: 100%;
+    padding: 80px 20px;
+    background: linear-gradient(120deg, var(--primary), var(--secondary));
+    text-align: center;
     color: var(--text-primary);
     display: flex;
-    align-items: center;
     justify-content: center;
-    text-align: center;
-
-    .hero-content {
-      width: 100%;
-
-      h1 {
-        font-size: 2rem;
-        margin-bottom: 0.5rem;
-      }
-
-      p {
-        font-size: 1rem;
-        margin-bottom: 1.5rem;
-      }
-
-      .cta-button {
-        display: inline-block;
-        background-color: var(--primary);
-        color: var(--text-primary);
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        text-decoration: none;
-        font-size: 1rem;
-        transition: background-color 0.3s;
-
-        &:hover {
-          background-color: var(--secondary);
-          color: var(--text-secondary);
-        }
-      }
-    }
-  }
-
-  .apps-showcase {
-    padding: 20px;
-    background-color: var(--background-2);
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-
-    .app-card {
-      background-color: var(--background);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 2px 4px var(--shadow);
-      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-
-      &.chef {
-        background-color: #FF6B6B;
-        border-color: #FF4C4C;
-      }
-
-      &.professional {
-        background-color: #4ECDC4;
-        border-color: #3CBABA;
-      }
-
-      &.recruiter {
-        background-color: #FFE66D;
-        border-color: #FFD93D;
-      }
-
-      &.kitchen {
-        background-color: #556270;
-        border-color: #445566;
-      }
-
-      &:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 8px var(--shadow);
-      }
-
-      .app-content {
-        text-align: center;
-
-        h2 {
-          font-size: 1.5rem;
-          margin-bottom: 0.5rem;
-        }
-
-        .motto {
-          font-size: 0.95rem;
-          margin-bottom: 0.75rem;
-        }
-
-        .explore-button {
-          display: inline-block;
-          background-color: var(--primary);
-          color: var(--text-primary);
-          padding: 8px 16px;
-          border: none;
-          border-radius: 5px;
-          cursor: pointer;
-          text-decoration: none;
-          font-size: 0.95rem;
-          transition: background-color 0.3s;
-
-          &:hover {
-            background-color: var(--secondary);
-            color: var(--text-secondary);
-          }
-        }
-      }
-    }
-  }
-
-  .cta-section {
-    padding: 20px;
-    background-color: #4B47A6;
-    color: var(--text-primary);
-    display: flex;
-    flex-direction: column;
     align-items: center;
-    text-align: center;
+    flex-direction: column;
+    animation: heroFadeIn 2s ease-in-out;
 
-    h2 {
-      font-size: 1.8rem;
-      margin-bottom: 0.5rem;
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: linear-gradient(90deg, var(--secondary), var(--tertiary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: textGlow 3s infinite ease-in-out;
     }
 
     p {
-      font-size: 1rem;
-      margin-bottom: 1.5rem;
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      max-width: 800px;
     }
 
     .cta-button {
-      display: inline-block;
-      background-color: var(--hover);
+      background-color: var(--tertiary);
       color: var(--text-primary);
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      text-decoration: none;
-      font-size: 1rem;
-      transition: background-color 0.3s;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 1.2rem;
+      transition: background-color 0.4s, transform 0.2s ease-in-out;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 
       &:hover {
-        background-color: var(--secondary);
-        color: var(--text-secondary);
+        background-color: var(--hover);
+        transform: scale(1.05);
       }
     }
   }
 
+  /* About Section */
+  .about-section {
+    width: 100%;
+    padding: 60px 20px;
+    background-color: var(--background-2);
+    text-align: center;
+    color: var(--text-secondary);
+    transition: background-color 0.3s ease;
+
+    h2 {
+      font-size: 2.2rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p {
+      font-size: 1.2rem;
+      max-width: 700px;
+      margin: 0 auto;
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  /* Apps Section */
+  .apps-section {
+    width: 100%;
+    padding: 60px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    background-color: var(--background);
+
+    .app-card {
+      background: rgba(255, 255, 255, 0.07);
+      border: 2px solid var(--border);
+      backdrop-filter: blur(8px);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+      }
+
+      h3 {
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+      }
+
+      p {
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .explore-button {
+        background-color: var(--primary);
+        color: var(--text-primary);
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 1.1rem;
+        transition: background-color 0.4s, transform 0.2s ease-in-out;
+
+        &:hover {
+          background-color: var(--hover);
+          transform: scale(1.05);
+        }
+      }
+    }
+  }
+
+  /* Call to Action Section */
+  .cta-section {
+    width: 100%;
+    padding: 80px 20px;
+    background-color: var(--background-strong);
+    text-align: center;
+    color: var(--text-primary);
+    transition: background-color 0.3s ease;
+
+    h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+    }
+
+    p {
+      font-size: 1.3rem;
+      margin-bottom: 2rem;
+    }
+
+    .cta-button {
+      background-color: var(--secondary);
+      color: var(--text-primary);
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 1.2rem;
+      transition: background-color 0.4s, transform 0.2s ease-in-out;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+
+      &:hover {
+        background-color: var(--hover);
+        transform: scale(1.05);
+      }
+    }
+  }
+
+  /* Animations */
+  @keyframes heroFadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes textGlow {
+    0%, 100% {
+      text-shadow: 0 0 10px var(--secondary), 0 0 20px var(--tertiary), 0 0 30px var(--primary);
+    }
+    50% {
+      text-shadow: 0 0 20px var(--tertiary), 0 0 30px var(--secondary), 0 0 40px var(--primary);
+    }
+  }
+
+  /* Responsive Styles */
   @media (min-width: 768px) {
     .hero-section {
-      .hero-content {
-        h1 {
-          font-size: 3rem;
+      padding: 100px 20px;
+
+      h1 {
+        font-size: 3.5rem;
+      }
+
+      p {
+        font-size: 1.4rem;
+      }
+
+      .cta-button {
+        font-size: 1.4rem;
+        padding: 16px 32px;
+      }
+    }
+
+    .about-section {
+      h2 {
+        font-size: 2.8rem;
+      }
+
+      p {
+        font-size: 1.3rem;
+      }
+    }
+
+    .apps-section {
+      flex-direction: row;
+      justify-content: space-around;
+
+      .app-card {
+        width: 30%;
+        padding: 40px;
+
+        h3 {
+          font-size: 2rem;
         }
 
         p {
-          font-size: 1.2rem;
+          font-size: 1.3rem;
         }
 
-        .cta-button {
-          font-size: 1.1rem;
+        .explore-button {
+          font-size: 1.2rem;
           padding: 12px 24px;
         }
       }
     }
 
-    .apps-showcase {
-      gap: 30px;
-
-      .app-card {
-        padding: 30px;
-
-        .app-content {
-          h2 {
-            font-size: 2rem;
-          }
-
-          .motto {
-            font-size: 1.1rem;
-          }
-
-          .explore-button {
-            font-size: 1rem;
-            padding: 10px 20px;
-          }
-        }
-      }
-    }
-
     .cta-section {
-      padding: 40px;
-
       h2 {
-        font-size: 2.5rem;
+        font-size: 2.8rem;
       }
 
       p {
-        font-size: 1.2rem;
+        font-size: 1.5rem;
       }
 
       .cta-button {
-        font-size: 1.1rem;
-        padding: 12px 24px;
+        font-size: 1.4rem;
+        padding: 16px 32px;
       }
     }
   }

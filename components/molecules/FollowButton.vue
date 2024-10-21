@@ -1,13 +1,13 @@
 <template>
   <div>
     <!-- Follow Button with HeartIcon and click event -->
-    <HeartIcon :class="isFollowingClass" class="icon" @click="toggleFollow" />
+    <HeartIcon :class="['icon', isFollowingClass, { 'clicked': isClicked }]" @click="toggleFollow" />
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
-import { updateDoc, doc, arrayUnion, arrayRemove, serverTimestamp } from 'firebase/firestore'
+import { updateDoc, doc, arrayUnion, arrayRemove } from 'firebase/firestore'
 import { useFirestore, useCurrentUser } from 'vuefire'
 
 // Firestore instance and current user
@@ -28,6 +28,7 @@ const props = defineProps({
 
 // Local state to keep track of follow status
 const localFollowingStatus = ref(props.isFollowing)
+const isClicked = ref(false) // To manage the click animation
 
 // Computed class for the Heart icon color based on follow status
 const isFollowingClass = computed(() => {
@@ -42,8 +43,6 @@ const toggleFollow = async () => {
 
     // Reference to the current user's Firestore document
     const currentUserDocRef = doc(firestore, 'misebox-users', currentUserId)
-    // Reference to the followed user's Firestore document
-    const followedUserDocRef = doc(firestore, 'misebox-users', followedUserId)
 
     // Toggle follow/unfollow logic
     const newFollowingStatus = !localFollowingStatus.value
@@ -61,20 +60,11 @@ const toggleFollow = async () => {
     // Update the local follow status
     localFollowingStatus.value = newFollowingStatus
 
-    // If it's a new follow, add a notification for the followed user
-    if (newFollowingStatus) {
-      const notification = {
-        msg: 'You have a new follower!',
-        subject: currentUserId, // The follower (current user)
-        createdAt: serverTimestamp(),
-        read: false
-      }
-
-      // Update the followed user's notifications array
-      await updateDoc(followedUserDocRef, {
-        notifications: arrayUnion(notification)
-      })
-    }
+    // Trigger the click animation
+    isClicked.value = true
+    setTimeout(() => {
+      isClicked.value = false
+    }, 300)
 
     console.log(`User ${newFollowingStatus ? 'followed' : 'unfollowed'} successfully`)
   } catch (err) {
@@ -87,6 +77,7 @@ const toggleFollow = async () => {
 .icon {
   font-size: 24px;
   cursor: pointer;
+  transition: transform 0.3s ease;
 }
 
 .following {
@@ -94,6 +85,16 @@ const toggleFollow = async () => {
 }
 
 .not-following {
-  color: var(--text-caption)
+  color: var(--background-strong); /* Color when not following */
+}
+
+/* Add a pulse-like scale animation when clicked */
+.clicked {
+  transform: scale(1.3); /* Pulse effect on click */
+  transition: transform 0.2s ease-out;
+}
+
+.clicked:active {
+  transform: scale(0.9); /* Slight shrink on active press */
 }
 </style>

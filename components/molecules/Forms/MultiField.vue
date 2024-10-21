@@ -8,30 +8,35 @@
           <PencilIcon
             v-if="!isEditing"
             class="icon edit-icon"
-            @click="startEditing"
+            @click="pencilButtonClicked"
           />
           <template v-else>
             <CheckCircleIcon
               class="icon confirm-icon"
-              @click="updateField"
+              @click="checkButtonClicked"
+            />
+            <MinusCircleIcon 
+              class="icon cancel-icon"
+              @click="minusButtonClicked"
             />
             <XCircleIcon
-              class="icon cancel-icon"
-              @click="cancelEditing"
+              v-if="Object.values(localValue).some(Boolean)"
+              class="icon clear-icon"
+              @click="deleteButtonClicked"
             />
           </template>
         </div>
       </div>
+
       <!-- Display Mode -->
       <div v-if="!isEditing" class="display">
-        <span>
-          {{ formattedValue || placeholder }}
-        </span>
+        <span>{{ orderedFormattedValue || 'No data' }}</span>
       </div>
+
       <!-- Edit Mode -->
       <div v-else class="editing">
         <div
-          v-for="(placeholder, key) in placeholders"
+          v-for="(placeholder, key) in orderedPlaceholders"
           :key="key"
           class="input-group"
         >
@@ -40,6 +45,10 @@
             :placeholder="placeholder"
             class="editable-input"
           />
+        </div>
+        <!-- Error Message -->
+        <div v-if="errorMessage" class="error-message">
+          {{ errorMessage }}
         </div>
       </div>
     </div>
@@ -76,32 +85,82 @@ const props = defineProps({
   },
   placeholders: {
     type: Object,
-    default: () => ({
-    }),
+    default: () => ({}),
   },
-  placeholder: {
-    type: String,
-    default: '',
+  formattingFunction: {
+    type: Function,
+    default: null, // No formatting by default
+  },
+  validationFunction: {
+    type: Function,
+    default: null, // No validation by default
   },
 });
 
 const isEditing = ref(false);
 const localValue = ref({ ...props.firebaseValue }); // Initialize with a copy of firebaseValue
+const errorMessage = ref(''); // Error message for validation feedback
 
-// Computed property for displaying full name
-const formattedValue = computed(() => {
-  return Object.values(localValue.value).filter(Boolean).join(' ');
+// Sort placeholders based on the key order
+const orderedPlaceholders = computed(() => {
+  return Object.entries(props.placeholders)
+    .sort(([keyA], [keyB]) => keyA - keyB) // Sort by keys to preserve the passed order
+    .reduce((acc, [key, value]) => {
+      acc[key] = value;
+      return acc;
+    }, {});
 });
 
-// Methods
-const startEditing = () => {
-  localValue.value = { ...props.firebaseValue }; // Reset localValue on edit start
+// Computed property for displaying the formatted value following the order of the placeholders
+const orderedFormattedValue = computed(() => {
+  return Object.keys(orderedPlaceholders.value)
+    .map((key) => localValue.value[key])
+    .filter(Boolean)
+    .join(', ');
+});
+
+// Button actions
+
+const deleteButtonClicked = async () => {
+  Object.keys(localValue.value).forEach(key => {
+    localValue.value[key] = ''; // Clear all fields
+  });
+  await updateField(); // Update Firestore with the cleared values
+  isEditing.value = true; // Keep the edit mode open
+};
+
+const pencilButtonClicked = () => {
+  errorMessage.value = '';
+  localValue.value = { ...props.firebaseValue };
   isEditing.value = true;
 };
 
-const cancelEditing = () => {
+const checkButtonClicked = async () => {
   isEditing.value = false;
-  localValue.value = { ...props.firebaseValue }; // Reset to original value on cancel
+  await updateField();
+};
+
+const minusButtonClicked = () => {
+  errorMessage.value = '';
+  localValue.value = { ...props.firebaseValue };  // Reset fields to original value
+  isEditing.value = false;  // Close the editing mode without saving
+};
+
+// Validation and Firestore update logic
+
+const validateInput = async () => {
+  errorMessage.value = '';
+  const value = localValue.value;
+
+  if (props.validationFunction) {
+    const validationResult = await props.validationFunction(value);
+    if (validationResult) {
+      errorMessage.value = validationResult;
+      return false;
+    }
+  }
+
+  return true;
 };
 
 const updateField = async () => {
@@ -109,12 +168,25 @@ const updateField = async () => {
     console.error('No document ID provided');
     return;
   }
+
+  const isValid = await validateInput();
+  if (!isValid) return;
+
+  const formattedValue = props.formattingFunction
+    ? props.formattingFunction(localValue.value)
+    : localValue.value;
+
   try {
     const documentRef = doc(firestore, props.collectionName, props.documentID);
-    await updateDoc(documentRef, { [props.target]: localValue.value }); // Update object in Firestore
-    isEditing.value = false;
+    await updateDoc(documentRef, { [props.target]: formattedValue });
+    console.log('Document updated in Firestore:', formattedValue);
+    errorMessage.value = '';
   } catch (error) {
     console.error('Error updating document:', error);
   }
 };
 </script>
+
+<style scoped>
+/* Include your shared styles or specific styles here */
+</style>

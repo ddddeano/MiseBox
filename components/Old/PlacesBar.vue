@@ -17,6 +17,11 @@
         <div class="place-details">
           <p>{{ item.place_name }}</p>
           <p>{{ item.formatted_address }}</p>
+          <p v-if="item.phone_number">📞 {{ item.phone_number }}</p>
+          <p v-if="item.website">🔗 <a :href="item.website" target="_blank">{{ item.website }}</a></p>
+          <p v-if="item.rating">⭐ Rating: {{ item.rating }}</p>
+          <p v-if="item.types.length">🏢 Types: {{ item.types.join(', ') }}</p>
+          <p v-if="item.opening_hours">🕒 Open Now: {{ item.opening_hours.open_now ? 'Yes' : 'No' }}</p>
         </div>
       </li>
     </ul>
@@ -44,25 +49,38 @@ const fetchPlaces = async (query) => {
   const service = new google.maps.places.PlacesService(document.createElement('div'));
   const request = {
     query,
-    fields: ['name', 'formatted_address', 'place_id', 'photos'], // Request formatted_address instead of address_components
+    fields: [
+      'name', 
+      'formatted_address', 
+      'place_id', 
+      'photos', 
+      'formatted_phone_number', 
+      'opening_hours', 
+      'website', 
+      'rating', 
+      'types'
+    ],
   };
 
   service.textSearch(request, (results, status) => {
     if (status === google.maps.places.PlacesServiceStatus.OK) {
       searchResults.value = results.map(place => {
-        console.log("Place Object:", place); // Log the entire place object for debugging
-
         // Extract the URL of the first photo, if available
         const photo_url = place.photos && place.photos.length > 0 
-          ? place.photos[0].getUrl({ maxWidth: 100, maxHeight: 100 })  // Limiting size for thumbnails
+          ? place.photos[0].getUrl({ maxWidth: 100, maxHeight: 100 })  
           : null;
 
-        // Creating an object structure for each place result
+        // Creating an object structure for each place result with additional fields
         return {
-          place_name: place.name,          // The name of the place
-          formatted_address: place.formatted_address || "", // The formatted address
-          place_id: place.place_id,        // The unique place ID
-          photo_url: photo_url             // The URL of the first photo, or null if not available
+          place_name: place.name,
+          formatted_address: place.formatted_address || "",
+          place_id: place.place_id,
+          photo_url: photo_url,
+          phone_number: place.formatted_phone_number || null,
+          opening_hours: place.opening_hours || null,
+          website: place.website || null,
+          rating: place.rating || null,
+          types: place.types || [],
         };
       });
     } else {

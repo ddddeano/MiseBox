@@ -76,3 +76,83 @@ const renderItem = (items, target) => {
   return items.map(item => renderContent(item, target)).join('');
 };
 </script>
+{
+  "id": "professional_12345",
+  "user_id": "user_12345",
+  "employment_experience": [
+    {
+      "place_name": "Global Tech Inc.",
+      "place_id": "company_001",
+      "role": "Software Engineer",
+      "from_year": 2015,
+      "from_month": 9,
+      "to_year": 2018,
+      "to_month": 12,
+      "formatted_address": "123 Tech Avenue, Silicon Valley, CA",
+      "photo_url": "https://example.com/company_logo.png",
+      "responsibilities": "Developed web applications."
+    },
+    {
+      "place_name": "Innovate Labs",
+      "place_id": "company_002",
+      "role": "Senior Developer",
+      "from_year": 2019,
+      "from_month": 1,
+      "to_year": null,
+      "to_month": null,
+      "formatted_address": "456 Innovation Drive, Tech City, NY",
+      "photo_url": "https://example.com/innovate_logo.png",
+      "responsibilities": "Leading a team of developers."
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Certified Scrum Master",
+      "issuing_organization": "Scrum Alliance",
+      "year": 2017,
+      "credential_id": "CSM-123456",
+      "credential_url": "https://scrumalliance.org/certifications"
+    }
+  ],
+  "education": [
+    {
+      "institution": "Tech University",
+      "degree": "Bachelor of Science in Computer Science",
+      "from_year": 2010,
+      "to_year": 2014,
+      "field_of_study": "Computer Science",
+      "activities": "Programming Club, Robotics Team"
+    }
+  ],
+  "languages": [
+    {
+      "language": "English",
+      "proficiency": "Native"
+    },
+    {
+      "language": "Spanish",
+      "proficiency": "Fluent"
+    }
+  ],
+  "skills": ["JavaScript", "Vue.js", "Firebase", "Agile Methodologies"],
+  "projects": [
+    {
+      "name": "Project X",
+      "description": "A cutting-edge AI project.",
+      "url": "https://example.com/project-x",
+      "from_year": 2020,
+      "to_year": 2021
+    }
+  ],
+  "volunteering": [
+    {
+      "organization": "Tech for Good",
+      "role": "Volunteer Developer",
+      "from_year": 2018,
+      "to_year": 2019,
+      "description": "Developed software for non-profits."
+    }
+  ],
+  "locations": ["Silicon Valley, CA", "Tech City, NY"],
+  "interests": ["Artificial Intelligence", "Open Source", "Travel"]
+}

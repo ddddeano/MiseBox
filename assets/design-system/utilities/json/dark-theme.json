@@ -25,11 +25,11 @@
       "type": "color"
     },
     "Text-Primary": {
-      "value": "{Purple.200}",
+      "value": "{Purple.100}",
       "type": "color"
     },
     "Text-Secondary": {
-      "value": "{Purple.950}",
+      "value": "{Purple.300}",
       "type": "color"
     },
     "Border": {

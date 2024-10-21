@@ -31,7 +31,7 @@
         />
 
         <!-- Reusable Navigation Component -->
-        <BasicInfoNavigation :profileType="'misebox-users'" :userId="miseboxUser.id" />
+        <MoleculesBasicInfoNavigation :profileType="'misebox-users'" :userId="miseboxUser.id" />
       </div>
     </div>
   </client-only>

@@ -5,7 +5,7 @@
       <AtomsLogo class="footer-logo" />
       <p>Device Type: {{ deviceType }}</p>
       <p>&copy; 2024 Mise Box. All rights reserved.</p>
-      <p>Version 2</p>
+      <p>Version 2.0.0.3</p>
       <p>Contact us: support@misebox.com</p>
     </div>
   </footer>
@@ -16,16 +16,21 @@
 const { deviceType } = useDeviceType()
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .footer {
-  padding: var(--spacing-m); 
-  background-color: var(--background);
-  color: var(--text-primary);
-  text-align: center;
-  border-top: 1px solid var(--border);
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
+
+
+  padding: var(--spacing-m); 
+  background-color: var(--background);
+  color: var(--text-primary);
+
+  text-align: center;
+  border-top: 1px solid var(--border);
+
 }
 
 .footer-content {

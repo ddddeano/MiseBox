@@ -14,17 +14,17 @@
   flex-direction: column;
   min-height: 100vh;
   width: 100%;
-}
-
-.layout-header, .layout-footer {
-  width: 100%;
+  align-items: center; /* Center children horizontally */
+  background-color: var(--background-2);
 }
 
 .main-content {
-  flex: 1; 
+  flex: 1;
   display: flex;
-  justify-content: center; 
-  background-color: var(--background-2); /* Background color from your design system */
-  padding-top: 10px;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1200px; /* Define a max-width for centering */
+  margin: 0 auto; /* Center the main content */
+  align-items: center; /* Center children horizontally */
 }
 </style>

@@ -3,13 +3,13 @@
     <!-- Button to Complete Your Profile (Edit) -->
     <NuxtLink :to="`/${profileType}/${userId}/edit`" class="btn pill">
       <SparklesIcon class="icon" />
-      Complete Your {{ profileType }} Profile
+      Complete Your Profile
     </NuxtLink>
 
     <!-- Button to Navigate to Dashboard -->
     <NuxtLink :to="`/${profileType}`" class="btn pill">
       <UserCircleIcon class="icon" />
-      Go to {{ profileType }} Dashboard
+      Go to Dashboard
     </NuxtLink>
   </div>
 </template>
@@ -28,6 +28,8 @@ const props = defineProps({
 </script>
 
 <style scoped>
+
+
 .navigation-buttons {
   display: flex;
   flex-direction: column;
@@ -60,14 +62,4 @@ const props = defineProps({
   color: var(--text-inverted);
 }
 
-@media (min-width: 768px) {
-  .navigation-buttons {
-    flex-direction: row;
-  }
-
-  .btn.pill {
-    width: auto;
-    flex: 1;
-  }
-}
 </style>

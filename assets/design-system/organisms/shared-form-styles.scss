@@ -1,102 +1,133 @@
-/* shared-form-styles.css */
+/* Shared Form Styles */
 
 /* Component Wrapper */
 .profile-forms {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   margin: 0 auto;
   padding: 1rem;
-}
-
-@media (min-width: 768px) {
-  .profile-forms {
-    max-width: 300px; /* Restrict the width on larger screens */
+  max-width: 600px;
+  
+  /* Style for icons */
+  .icon {
+    color: var(--text-secondary);
   }
-}
 
-.component {
-  margin-bottom: var(--spacing-m); /* 16px */
-}
+  /* Input and Textarea text color */
+  input,
+  textarea {
+    color: var(--text-secondary); /* Use your desired color here */
+    background-color: var(--background); /* Background color */
 
-/* Divider */
-.component::after {
-  content: '';
-  display: block;
-  width: 100%;
-  height: 1px;
-  background-color: var(--border); /* Use the border color for the divider */
-  margin-top: var(--spacing-m); /* 16px for spacing above the divider */
+  }
 }
 
 /* Form Field Container */
 .form-field {
   display: flex;
   flex-direction: column;
+  margin-bottom: 1rem;
+  width: 100%;
+  margin-bottom: var(--spacing-xs);
 }
-
+.form-field::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 1px;
+  background-color: var(--border);
+  margin-top: var(--spacing-s);
+}
 /* Top Section with Label and Icons */
 .top {
   display: flex;
   justify-content: space-between;
   align-items: center;
   color: var(--text-primary); /* Primary text color */
-  border-radius: var(--radius-s); /* 8px */
-  background-color: var(--background-2); /* Light background for header */
+  background-color: var(--background-2); /* Background for the header */
+  border-radius: var(--radius-s);
+  padding-bottom: var(--spacing-xs); /* Padding for better spacing */
 }
 
 /* Label Style */
 label {
-  font-weight: var(--font-weight-bold); /* 700 */
-  font-size: var(--font-size-m); /* 16px */
+  font-weight: var(--font-weight-bold); /* Bold label */
+  font-size: var(--font-size-m);
 }
-
 
 /* Display Text */
 .display span {
   flex-grow: 1;
   color: var(--text-secondary); /* Secondary text color */
-  font-size: var(--font-size-m); /* 16px */
-  line-height: var(--line-height-m); /* 1.6 */
+  font-size: var(--font-size-m);
+  line-height: var(--line-height-m);
 }
 
 /* Editable Input Base Class */
 .editable-input {
   width: 100%;
-  padding-inline: var(--spacing-xxs); /* 12px */
-  font-size: var(--font-size-m); /* 16px */
-  border: 1px solid var(--border); /* Standard border color */
-  border-radius: var(--radius-xs); /* 4px */
-  font-weight: var(--font-weight-regular); /* 400 */
-  line-height: var(--line-height-m); /* 1.6 */
+  box-sizing: border-box;
+  padding: var(--spacing-xxs);
+  font-size: var(--font-size-m);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-m);
+  margin-bottom: var(--font-size-s);
 }
 
 .editable-input:focus {
   outline: none;
-  border-color: var(--hover); /* Focus border color */
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow for focus */
+  border-color: var(--hover); /* Change border on focus */
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1); /* Subtle shadow for focus */
 }
-
-/* Editable Text Input */
 
 /* Editable Textarea */
 .editable-textarea {
-  min-height: 200px;
-  resize: vertical;
-  /* Inherits other styles from .editable-input */
+  padding: var(--spacing-xxs);
+  font-size: var(--font-size-m);
+  line-height: var(--line-height-m);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
 }
+
 
 /* Action Icons */
-.action-icons {
+.component-icons, .list-icons, .centred-icons {
   display: flex;
-  gap: var(--spacing-xs); /* 8px */
-  /* Optional: Adjust alignment if needed */
+  gap: var(--spacing-xs); /* Gap between icons */
 }
 
-/* Additional Classes */
+.field-icon {
+  cursor: pointer;
+}
+
+.field-icon:hover {
+  color: var(--hover); /* Color change on hover */
+}
+
+/* Error Message */
+.error-message {
+  color: var(--error);
+  font-size: 0.875em;
+  margin-top: 0.5em;
+}
+
+/* Additional Input Container Styles */
+.input-container {
+  margin-top: 1em;
+}
+
 .input-group {
   width: 100%;
-  margin-bottom: var(--spacing-s); /* 12px */
+  margin-bottom: var(--spacing-s);
 }
 
-.editing .input-group .editable-text {
-  width: 100%;
+.editing-list-item, .display-list-item-view {
+  margin-bottom: 0.5em;
+  color: var(--text-secondary);
+  background-color: var(--background);
+  padding: var(--spacing-xxs);
+  border-radius: var(--radius-xs);
 }

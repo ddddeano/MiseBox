@@ -41,6 +41,6 @@ export default defineNuxtConfig({
     },
   },
   imports: {
-    dirs: ['composables/**', 'components/**', 'assets/**'],
+    dirs: ['composables/**', 'components/**', 'assets/**/**'],
   },
 });

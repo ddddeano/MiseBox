@@ -18,7 +18,7 @@
         />
 
         <!-- Reusable Navigation Component -->
-        <BasicInfoNavigation :profileType="'chefs'" :userId="chef.id" />
+        <MoleculesBasicInfoNavigation :profileType="'chefs'" :userId="chef.id" />
       </div>
     </div>
   </client-only>

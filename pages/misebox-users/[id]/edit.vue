@@ -1,11 +1,7 @@
 <template>
   <client-only>
     <div class="profile-forms">
-      <!-- Misebox User Details -->
       <div v-if="isCurrentUserProfile && miseboxUser">
-        <!-- Avatar -->
-        <MoleculesFormsAvatarSelection :user="miseboxUser" size="large" />
-
         <!-- Display Name -->
         <MoleculesFormsSingleField
           label="Display Name"
@@ -13,7 +9,8 @@
           target="display_name"
           :documentID="miseboxUser.id"
           :firebaseValue="miseboxUser.display_name"
-          placeholder="Enter your display name"
+          :formattingFunction="formatDisplayName"
+          :validationFunction="validateDisplayName"
         />
 
         <!-- Handle -->
@@ -23,7 +20,8 @@
           target="handle"
           :documentID="miseboxUser.id"
           :firebaseValue="miseboxUser.handle"
-          placeholder="Enter your handle"
+          :formattingFunction="formatHandle"
+          :validationFunction="validateHandle"
         />
 
         <!-- Email -->
@@ -33,7 +31,8 @@
           target="email"
           :documentID="miseboxUser.id"
           :firebaseValue="miseboxUser.email"
-          placeholder="Enter your email"
+          :formattingFunction="emailFormatting"
+          :validationFunction="validateEmail"
         />
 
         <!-- Phone Number -->
@@ -43,25 +42,11 @@
           target="phone_number"
           :documentID="miseboxUser.id"
           :firebaseValue="miseboxUser.phone_number"
-          placeholder="Enter your phone number"
+          :formattingFunction="removeWhitespace"
+          :validationFunction="validatePhoneNumber"
         />
 
-        <!-- Full Name -->
-        <MoleculesFormsMultiField
-          label="Full Name"
-          collectionName="misebox-users"
-          target="full_name"
-          :documentID="miseboxUser.id"
-          :firebaseValue="miseboxUser.full_name"
-          :placeholders="{
-            firstName: 'First Name',
-            middleName: 'Middle Name',
-            lastName: 'Last Name'
-          }"
-          placeholder="Enter your full name"
-        />
-
-        <!-- DOB -->
+        <!-- Date of Birth -->
         <MoleculesFormsMultiField
           label="Date of Birth"
           collectionName="misebox-users"
@@ -69,11 +54,12 @@
           :documentID="miseboxUser.id"
           :firebaseValue="miseboxUser.dob"
           :placeholders="{
-            day: 'Day',
-            month: 'Month',
-            year: 'Year'
+            day: 'DD',
+            month: 'MM',
+            year: 'YYYY'
           }"
-          placeholder="Enter your date of birth"
+          :formattingFunction="dobFormatting"
+          :validationFunction="validateDateOfBirth"
         />
 
         <!-- Address -->
@@ -92,17 +78,33 @@
             postalCode: 'Postal Code',
             country: 'Country'
           }"
-          placeholder="Enter your address"
+          :formattingFunction="formatAddress"
+          :validationFunction="validateAddress"
         />
 
-        <!-- Short Bio -->
+        <!-- User Bio -->
         <MoleculesFormsTextAreaField
           label="User Bio"
           collectionName="misebox-users"
           target="user_bio"
           :documentID="miseboxUser.id"
           :firebaseValue="miseboxUser.user_bio"
-          placeholder="Enter your user bio here"
+          placeholder="Enter your bio here"
+          :formattingFunction="formatBio"
+          :validationFunction="validateBio"
+          :maxLength="500"
+        />
+
+        <!-- Tags -->
+        <MoleculesFormsArrayOfStrings
+          label="Tags"
+          collectionName="misebox-users"
+          target="tags"
+          :documentID="miseboxUser.id"
+          :firebaseValue="miseboxUser.tags"
+          itemPlaceholder="Add a tag"
+          :formattingFunction="formatTags"
+          :validationFunction="validateTags"
         />
       </div>
     </div>
@@ -110,15 +112,13 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
 import { useCurrentUser } from 'vuefire';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
-const routeUserId = computed(() => route.params.id);
 const currentUser = useCurrentUser();
 const isCurrentUserProfile = computed(
-  () => currentUser.value?.uid === routeUserId.value
+  () => currentUser.value?.uid === route.params.id
 );
 const { miseboxUser } = useMiseboxUser(currentUser);
 </script>

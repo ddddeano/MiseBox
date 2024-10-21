@@ -29,6 +29,7 @@ export function useFilteredCollection(collectionRef, customFilter) {
 // This function checks whether the current user has a specific app
 export function useHasApp(miseboxUser, appName) {
   const hasApp = computed(() => {
+    console.log('Checking for app:', appName, 'in user:', miseboxUser.value?.user_apps); // Log for debugging
     if (miseboxUser.value && Array.isArray(miseboxUser.value.user_apps)) {
       return miseboxUser.value.user_apps.includes(appName);
     }

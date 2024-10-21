@@ -2,7 +2,7 @@
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore, FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
-import serviceAccount from '../../service-account.json' assert { type: 'json' };
+import serviceAccount from '../../config/service-account.json' assert { type: 'json' };
 
 // Initialize Firebase Admin SDK
 const app = initializeApp({

@@ -1,111 +1,177 @@
 <template>
   <client-only>
-    <div class="profile-forms">
-      <div class="buttons">
-        <div class="edit-button" @click="toggleEditing" :class="{ disabled: isEditing }">
-          <PencilSquareIcon class="icon" />
-        </div>
-        <div class="view-button" @click="toggleEditing" :class="{ disabled: !isEditing }">
-          <EyeIcon class="icon" />
-        </div>
-        <div class="preview-button" @click="goToProfile">
-          <UserCircleIcon class="icon" />
-        </div>
-      </div>
+    <div v-if="isCurrentUserProfile && professional">
+      <OrganismsProfileHeader :user="miseboxUser" />
 
-      <div v-if="profile">
-        <div class="form-field">
-          <MainFormsGenericSingleField
-            :userId="profile.id"
-            :subscription="profile.job_title"
-            :isEditing="isEditing"
-            collectionName="professionals"
-            target="job_title"
-            placeholder="Enter your job title"
-          />
-        </div>
-        <div v-for="field in arrayFields" :key="field.target" class="form-dropdown">
-          <MainFormsArrayManager
-            :userId="profile.id"
-            :title="field.label"
-            :items="profile[field.target]"
-            :isEditing="isEditing"
-            :collectionName="field.collectionName"
-            :target="field.target"
-          >
-            <template #create>
-              <SubProfessionalFormsEmploymentExperienceCreate
-                v-if="field.target === 'employment_experience'"
-                :userId="profile.id"
-                :collectionName="field.collectionName"
-              />
-              <SubProfessionalFormsLanguagesCreate
-                v-else-if="field.target === 'languages'"
-                :userId="profile.id"
-                :collectionName="field.collectionName"
-              />
-              <SubProfessionalFormsCertificationsCreate
-                v-else-if="field.target === 'certifications'"
-                :userId="profile.id"
-                :collectionName="field.collectionName"
-              />
-              <SubProfessionalFormsEducationCreate
-                v-else-if="field.target === 'education'"
-                :userId="profile.id"
-                :collectionName="field.collectionName"
-              />
-              <SubProfessionalFormsLocationsCreate
-                v-else-if="field.target === 'locations'"
-                :userId="profile.id"
-                :collectionName="field.collectionName"
-              />
-            </template>
-          </MainFormsArrayManager>
-        </div>
+      <div class="profile-forms">
+        <!-- Professional Bio -->
+        <MoleculesFormsTextAreaField
+          label="Professional Bio"
+          collectionName="professionals"
+          target="bio"
+          :documentID="professional.id"
+          :firebaseValue="professional.bio"
+          placeholder="Enter your professional bio here"
+          :formattingFunction="formatBio"
+          :validationFunction="validateBio"
+          :maxLength="1000"
+        />
+
+        <!-- Employment Experience -->
+        <MoleculesFormsObjectArray
+          label="Employment Experience"
+          :firebaseValue="professional.employment_experience"
+          collectionName="professionals"
+          :documentID="professional.id"
+          target="employment_experience"
+          :newObject="{
+            place_name: '',
+            place_id: '',
+            role: '',
+            from_year: '',
+            from_month: '',
+            to_year: '',
+            to_month: '',
+            formatted_address: '',
+            photo_url: '',
+            responsibilities: '',
+          }"
+        >
+          <template #display="{ item }">
+            <EmploymentExperienceForm :experience="item" mode="display" />
+          </template>
+          <template #edit="{ item }">
+            <EmploymentExperienceForm :experience="item" mode="edit" />
+          </template>
+          <template #create="{ item }">
+            <EmploymentExperienceForm :experience="item" mode="create" />
+          </template>
+        </MoleculesFormsObjectArray>
+
+        <!-- Certifications -->
+        <MoleculesFormsObjectArray
+          label="Certifications"
+          :firebaseValue="professional.certifications"
+          collectionName="professionals"
+          :documentID="professional.id"
+          target="certifications"
+          :newObject="{
+            name: '',
+            issuing_organization: '',
+            year: '',
+            credential_id: '',
+            credential_url: '',
+          }"
+        >
+          <template #display="{ item }">
+            <CertificationForm :certification="item" mode="display" />
+          </template>
+          <template #edit="{ item }">
+            <CertificationForm :certification="item" mode="edit" />
+          </template>
+          <template #create="{ item }">
+            <CertificationForm :certification="item" mode="create" />
+          </template>
+        </MoleculesFormsObjectArray>
+
+        <!-- Education -->
+        <MoleculesFormsObjectArray
+          label="Education"
+          :firebaseValue="professional.education"
+          collectionName="professionals"
+          :documentID="professional.id"
+          target="education"
+          :newObject="{
+            institution: '',
+            degree: '',
+            from_year: '',
+            to_year: '',
+            field_of_study: '',
+            activities: '',
+          }"
+        >
+          <template #display="{ item }">
+            <EducationForm :education="item" mode="display" />
+          </template>
+          <template #edit="{ item }">
+            <EducationForm :education="item" mode="edit" />
+          </template>
+          <template #create="{ item }">
+            <EducationForm :education="item" mode="create" />
+          </template>
+        </MoleculesFormsObjectArray>
+
+        <!-- Languages -->
+        <MoleculesFormsObjectArray
+          label="Languages"
+          :firebaseValue="professional.languages"
+          collectionName="professionals"
+          :documentID="professional.id"
+          target="languages"
+          :newObject="{ language: '', proficiency: '' }"
+        >
+          <template #display="{ item }">
+            <LanguageForm :language="item" mode="display" />
+          </template>
+          <template #edit="{ item }">
+            <LanguageForm :language="item" mode="edit" />
+          </template>
+          <template #create="{ item }">
+            <LanguageForm :language="item" mode="create" />
+          </template>
+        </MoleculesFormsObjectArray>
+
+        <!-- Locations -->
+        <MoleculesFormsArrayOfStrings
+          label="Preferred Locations"
+          :firebaseValue="professional.locations"
+          collectionName="professionals"
+          :documentID="professional.id"
+          target="locations"
+          placeholder="No locations added yet."
+          itemPlaceholder="Enter a location"
+          addButtonLabel="Add Location"
+        />
+
+        <!-- Skills -->
+        <MoleculesFormsArrayOfStrings
+          label="Skills"
+          :firebaseValue="professional.skills"
+          collectionName="professionals"
+          :documentID="professional.id"
+          target="skills"
+          placeholder="No skills added yet."
+          itemPlaceholder="Enter a skill"
+          addButtonLabel="Add Skill"
+        />
+
+        <!-- Interests -->
+        <MoleculesFormsArrayOfStrings
+          label="Interests"
+          :firebaseValue="professional.interests"
+          collectionName="professionals"
+          :documentID="professional.id"
+          target="interests"
+          placeholder="No interests added yet."
+          itemPlaceholder="Enter an interest"
+          addButtonLabel="Add Interest"
+        />
       </div>
     </div>
   </client-only>
 </template>
 
 <script setup>
-import { useRouter, useRoute } from 'vue-router';
-import { useCurrentUser, useDocument, useFirestore } from 'vuefire';
-import { doc } from 'firebase/firestore';
+import { useCurrentUser } from 'vuefire';
+import { useRoute } from 'vue-router';
 
-const db = useFirestore();
-const router = useRouter();
 const route = useRoute();
 const routeUserId = computed(() => route.params.id);
 const currentUser = useCurrentUser();
-const isCurrentUserProfile = computed(() => currentUser.value?.uid === routeUserId.value);
-const isEditing = ref(false);
+const isCurrentUserProfile = computed(
+  () => currentUser.value?.uid === routeUserId.value
+);
 
-const toggleEditing = () => {
-  if (isCurrentUserProfile.value) {
-    isEditing.value = !isEditing.value;
-  }
-};
-
-const goToProfile = () => {
-  if (currentUser.value?.uid) {
-    router.push(`/professionals/${currentUser.value.uid}`);
-  }
-};
-
-const professionalDocRef = computed(() => {
-  if (currentUser.value) {
-    return doc(db, 'professionals', routeUserId.value);
-  }
-  return null;
-});
-
-const { data: professional } = useDocument(professionalDocRef);
-
-const arrayFields = [
-  { label: 'Employment Experience', target: 'employment_experience', collectionName: 'professionals' },
-  { label: 'Languages', target: 'languages', collectionName: 'professionals' },
-  { label: 'Certifications', target: 'certifications', collectionName: 'professionals' },
-  { label: 'Education', target: 'education', collectionName: 'professionals' },
-  { label: 'Locations', target: 'locations', collectionName: 'professionals' },
-];
+const { miseboxUser } = useMiseboxUser(currentUser);
+const { professional } = useProfessional(miseboxUser);
 </script>

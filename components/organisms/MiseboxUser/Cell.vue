@@ -1,22 +1,22 @@
 <template>
-  <div class="user-cell-container">
+  <div class="cell user-cell">
     <!-- Main Wrapper with Flexbox for alignment -->
-    <div class="user-cell-row">
+    <div class="cell-row">
       <!-- Avatar and Info wrapped in a link to the user profile -->
-      <div class="user-avatar-info">
+      <div class="cell-avatar">
         <NuxtLink :to="`/misebox-users/${user.id}`" class="view-profile-link">
           <MoleculesAvatar :user="user" size="small" />
-          <div class="user-info">
+          <div class="cell-info">
             <div class="display-name">{{ user.display_name }}</div>
-            <div class="handle">@{{ user.handle }}</div>
+            <div class="handle">{{ user.handle }}</div>
           </div>
         </NuxtLink>
       </div>
 
-      <!-- Follow Button on Right -->
+      <!-- Follow Button on Right, hidden if user is current user -->
       <MoleculesFollowButton
-        v-if="isFollowing !== 'hide'"
-        :isFollowing="isFollowing === 'true'"
+        v-if="!isCurrentUser && showFollowButton"
+        :isFollowing="isFollowing"
         :user="user"
       />
     </div>
@@ -24,6 +24,11 @@
 </template>
 
 <script setup>
+import { useCurrentUser } from 'vuefire'
+
+// Get the current user
+const currentUser = useCurrentUser()
+
 // Props for the user and follow status
 const props = defineProps({
   user: {
@@ -31,59 +36,14 @@ const props = defineProps({
     required: true,
   },
   isFollowing: {
-    type: String,
-    default: 'false',
-    validator: (value) => ['true', 'false', 'hide'].includes(value),
+    type: Boolean,
+    default: false,
   },
 })
+
+// Computed property to check if the user being displayed is the current user
+const isCurrentUser = computed(() => currentUser.value?.uid === props.user.id)
+
+// Show follow button if the user is not hidden and not the current user
+const showFollowButton = computed(() => !isCurrentUser.value)
 </script>
-
-<style scoped>
-.user-cell-container {
-  display: flex;
-  flex-direction: column;
-  border-bottom: 1px solid var(--border);
-  padding: var(--spacing-s);
-  color: var(--text-primary);
-
-}
-
-.user-cell-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.user-avatar-info {
-  display: flex;
-  align-items: center;
-}
-
-.user-info {
-  margin-left: var(--spacing-s);
-}
-
-.display-name {
-  font-size: var(--font-size-m);
-  font-weight: var(--font-weight-medium);
-  margin: 0;
-}
-
-.handle {
-  font-size: var(--font-size-s);
-  margin: 0;
-}
-
-/* Styling for the follow button */
-.pin {
-  margin-left: auto; /* Align the Follow Button to the far right */
-}
-
-/* Link styling */
-.view-profile-link {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-  color: inherit; /* Ensures that the link doesn't have default link colors */
-}
-</style>

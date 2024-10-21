@@ -4,10 +4,12 @@
       <AtomsLogo size="medium" />
       <MoleculesNavigationLinks class="larger" v-if="!isMobile" />
       <div v-if="currentUser" class="header-right">
-        <NuxtLink :to="`/misebox-users/${currentUser.uid}`" class="view-profile-link">
-        <MoleculesAvatar :user="miseboxUser" size="small" />
-      </NuxtLink>
-
+        <NuxtLink
+          :to="`/misebox-users/${currentUser.uid}`"
+          class="view-profile-link"
+        >
+          <MoleculesAvatar :user="miseboxUser" size="small" />
+        </NuxtLink>
         <MoleculesBurgerMenuToggle v-if="isMobile" />
       </div>
     </header>
@@ -25,14 +27,15 @@ const { width } = useWindowSize()
 const isMobile = computed(() => width.value < 768)
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .header {
-  height: var(--header-height);
-  background-color: var(--background-strong);
+  width: 100%; /* Ensure full width */
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 var(--spacing-l); 
+  justify-content: space-between; /* Correctly space items */
+  padding: 0 var(--spacing-l);
+  background-color: var(--background-strong);
+  height: var(--header-height);
   border-bottom: 1px solid var(--border);
   box-shadow: var(--shadow-s);
 }
