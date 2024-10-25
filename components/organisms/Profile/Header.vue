@@ -19,7 +19,7 @@ const props = defineProps({
 .profile-header {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: var(--spacing-l);
 }
 

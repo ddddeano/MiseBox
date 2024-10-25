@@ -1,317 +1,163 @@
 <template>
-  <div class="landing-page">
-    <!-- Hero Section -->
-    <section class="hero-section">
-      <div class="hero-content">
-        <h1>Shaping the Future of Culinary Excellence</h1>
-        <p>Seamless connection between chefs, professionals, and recruiters to create the culinary revolution.</p>
-        <NuxtLink to="/subscribe" class="cta-button">Start Your Journey</NuxtLink>
-      </div>
-    </section>
+  <ClientOnly>
+    <div class="landing-page">
+      <!-- User Section Wrapper -->
+      <section v-if="currentUser" class="user-section">
+        <div v-if="!!miseboxUser" class="user-info-card">
+          <p class="welcome-message">👋 Welcome back, <span class="user-name">{{ miseboxUser.display_name }}</span>!</p>
+          <p class="misebox-description">
+            Misebox is your all-in-one platform to elevate your culinary journey. Connect with professionals, manage your profile, and unlock new opportunities in the culinary world.
+          </p>
+          <NuxtLink :to="`/misebox-users/${miseboxUser.id}`" class="cta-button">View Your Dashboard</NuxtLink>
+        </div>
+        <div v-else class="signup-card">
+          <p class="welcome-message">🚀 Join the Misebox Revolution!</p>
+          <p class="misebox-description">
+            Discover how Misebox can transform your culinary career. Sign up to connect, create, and grow within a network designed for chefs, recruiters, and culinary professionals.
+          </p>
+          <NuxtLink to="/auth/signup" class="cta-button">Get Started Now</NuxtLink>
+        </div>
+      </section>
 
-    <!-- About Section -->
-    <section class="about-section">
-      <div class="about-content">
-        <h2>Welcome to MiseBox 2035</h2>
-        <p>The ultimate ecosystem for culinary professionals, transforming how kitchens and careers are managed.</p>
-      </div>
-    </section>
-
-    <!-- Apps Section -->
-    <section class="apps-section">
-      <div class="app-card chef">
-        <h3>Chef</h3>
-        <p>Manage recipes, kitchens, and the future of culinary art in your hands.</p>
-        <NuxtLink to="/chef" class="explore-button">Explore Chef</NuxtLink>
-      </div>
-
-      <div class="app-card professional">
-        <h3>Professional</h3>
-        <p>Build your professional profile, discover futuristic gigs, and connect with industry leaders.</p>
-        <NuxtLink to="/professional" class="explore-button">Explore Professional</NuxtLink>
-      </div>
-
-      <div class="app-card recruiter">
-        <h3>Recruiter</h3>
-        <p>Shape the next generation of talent with advanced recruitment tools.</p>
-        <NuxtLink to="/recruiter" class="explore-button">Explore Recruiter</NuxtLink>
-      </div>
-    </section>
-
-    <!-- Call to Action Section -->
-    <section class="cta-section">
-      <div class="cta-content">
-        <h2>Step Into the Future</h2>
-        <p>Join the world’s first fully integrated culinary network.</p>
-        <NuxtLink to="/subscribe" class="cta-button">Join Now</NuxtLink>
-      </div>
-    </section>
-  </div>
+      <!-- Next Section: Digital Portfolio -->
+      <section class="portfolio-section">
+        <div class="portfolio-content">
+          <h2 class="portfolio-title">Never Email Your CV Again</h2>
+          <p class="portfolio-description">
+            Create a professional portfolio that highlights your skills and achievements, all in one place. Let opportunities find you with a streamlined digital profile.
+          </p>
+          <NuxtLink to="/professionals" class="portfolio-button">Build Your Portfolio</NuxtLink>
+        </div>
+      </section>
+    </div>
+  </ClientOnly>
 </template>
 
 <script setup>
-const availableApps = miseboxApps.filter(app => app.isAvailable)
+const currentUser = useCurrentUser(); // Fetch current user
+const { miseboxUser } = useMiseboxUser(currentUser); // Fetch miseboxUser from custom hook
 </script>
 
-<style scoped lang="scss">
-.landing-page {
+<style scoped>
+/* User Section Styles */
+.user-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-l);
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  min-height: 300px;
+  text-align: center;
+}
+
+.user-info-card, .signup-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 20px;
+  padding: var(--spacing-l);
+  background-color: var(--background-strong);
+  border-radius: var(--radius-m);
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  max-width: 400px;
+  width: 100%;
+}
+
+.user-info-card:hover, .signup-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 15px 25px rgba(0, 0, 0, 0.3);
+}
+
+.welcome-message {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-m);
+  line-height: 1.3;
+}
+
+.user-name {
+  color: var(--primary);
+  font-weight: var(--font-weight-bold);
+}
+
+.misebox-description {
+  font-size: var(--font-size-m);
+  color: var(--text-secondary);
+  line-height: var(--line-height-m);
+  margin: var(--spacing-s) 0 var(--spacing-m);
+  max-width: 90%;
+}
+
+.cta-button {
+  padding: var(--spacing-s) var(--spacing-l);
+  font-size: var(--font-size-l);
+  font-weight: var(--font-weight-medium);
+  color: #fff;
+  background: linear-gradient(135deg, var(--secondary), var(--tertiary));
+  border-radius: var(--radius-full);
+  text-decoration: none;
+  transition: background 0.3s ease, transform 0.2s ease;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.cta-button:hover {
+  background: linear-gradient(135deg, var(--tertiary), var(--hover));
+  transform: translateY(-3px);
+}
+
+/* Portfolio Section Styles */
+.portfolio-section {
+  display: flex;
+  justify-content: center;
+  padding: var(--spacing-xl);
+  background-color: var(--background-2);
+  text-align: center;
+}
+
+.portfolio-content {
+  max-width: 600px;
+  width: 100%;
+  padding: var(--spacing-l);
   background-color: var(--background);
+  border-radius: var(--radius-m);
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
 
-  /* Smooth Scroll */
-  scroll-behavior: smooth;
+.portfolio-content:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 15px 25px rgba(0, 0, 0, 0.2);
+}
 
-  /* Hero Section */
-  .hero-section {
-    width: 100%;
-    padding: 80px 20px;
-    background: linear-gradient(120deg, var(--primary), var(--secondary));
-    text-align: center;
-    color: var(--text-primary);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    animation: heroFadeIn 2s ease-in-out;
+.portfolio-title {
+  font-size: var(--font-size-xxl);
+  font-weight: var(--font-weight-bold);
+  color: var(--primary);
+  margin-bottom: var(--spacing-s);
+}
 
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 1.5rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      background: linear-gradient(90deg, var(--secondary), var(--tertiary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: textGlow 3s infinite ease-in-out;
-    }
+.portfolio-description {
+  font-size: var(--font-size-m);
+  color: var(--text-secondary);
+  line-height: var(--line-height-m);
+  margin-bottom: var(--spacing-l);
+}
 
-    p {
-      font-size: 1.2rem;
-      margin-bottom: 2rem;
-      max-width: 800px;
-    }
+.portfolio-button {
+  padding: var(--spacing-s) var(--spacing-l);
+  font-size: var(--font-size-l);
+  font-weight: var(--font-weight-medium);
+  color: #fff;
+  background: linear-gradient(135deg, var(--secondary), var(--primary));
+  border-radius: var(--radius-full);
+  text-decoration: none;
+  transition: background 0.3s ease, transform 0.2s ease;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+}
 
-    .cta-button {
-      background-color: var(--tertiary);
-      color: var(--text-primary);
-      padding: 12px 24px;
-      border-radius: 10px;
-      font-size: 1.2rem;
-      transition: background-color 0.4s, transform 0.2s ease-in-out;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-
-      &:hover {
-        background-color: var(--hover);
-        transform: scale(1.05);
-      }
-    }
-  }
-
-  /* About Section */
-  .about-section {
-    width: 100%;
-    padding: 60px 20px;
-    background-color: var(--background-2);
-    text-align: center;
-    color: var(--text-secondary);
-    transition: background-color 0.3s ease;
-
-    h2 {
-      font-size: 2.2rem;
-      margin-bottom: 1rem;
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    p {
-      font-size: 1.2rem;
-      max-width: 700px;
-      margin: 0 auto;
-      margin-bottom: 1.5rem;
-    }
-  }
-
-  /* Apps Section */
-  .apps-section {
-    width: 100%;
-    padding: 60px 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    background-color: var(--background);
-
-    .app-card {
-      background: rgba(255, 255, 255, 0.07);
-      border: 2px solid var(--border);
-      backdrop-filter: blur(8px);
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-      width: 100%;
-      max-width: 400px;
-      text-align: center;
-      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-
-      &:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-      }
-
-      h3 {
-        font-size: 1.8rem;
-        margin-bottom: 1rem;
-      }
-
-      p {
-        font-size: 1.1rem;
-        margin-bottom: 1.5rem;
-      }
-
-      .explore-button {
-        background-color: var(--primary);
-        color: var(--text-primary);
-        padding: 10px 20px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-size: 1.1rem;
-        transition: background-color 0.4s, transform 0.2s ease-in-out;
-
-        &:hover {
-          background-color: var(--hover);
-          transform: scale(1.05);
-        }
-      }
-    }
-  }
-
-  /* Call to Action Section */
-  .cta-section {
-    width: 100%;
-    padding: 80px 20px;
-    background-color: var(--background-strong);
-    text-align: center;
-    color: var(--text-primary);
-    transition: background-color 0.3s ease;
-
-    h2 {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-      text-transform: uppercase;
-    }
-
-    p {
-      font-size: 1.3rem;
-      margin-bottom: 2rem;
-    }
-
-    .cta-button {
-      background-color: var(--secondary);
-      color: var(--text-primary);
-      padding: 14px 28px;
-      border-radius: 10px;
-      font-size: 1.2rem;
-      transition: background-color 0.4s, transform 0.2s ease-in-out;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-
-      &:hover {
-        background-color: var(--hover);
-        transform: scale(1.05);
-      }
-    }
-  }
-
-  /* Animations */
-  @keyframes heroFadeIn {
-    0% {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes textGlow {
-    0%, 100% {
-      text-shadow: 0 0 10px var(--secondary), 0 0 20px var(--tertiary), 0 0 30px var(--primary);
-    }
-    50% {
-      text-shadow: 0 0 20px var(--tertiary), 0 0 30px var(--secondary), 0 0 40px var(--primary);
-    }
-  }
-
-  /* Responsive Styles */
-  @media (min-width: 768px) {
-    .hero-section {
-      padding: 100px 20px;
-
-      h1 {
-        font-size: 3.5rem;
-      }
-
-      p {
-        font-size: 1.4rem;
-      }
-
-      .cta-button {
-        font-size: 1.4rem;
-        padding: 16px 32px;
-      }
-    }
-
-    .about-section {
-      h2 {
-        font-size: 2.8rem;
-      }
-
-      p {
-        font-size: 1.3rem;
-      }
-    }
-
-    .apps-section {
-      flex-direction: row;
-      justify-content: space-around;
-
-      .app-card {
-        width: 30%;
-        padding: 40px;
-
-        h3 {
-          font-size: 2rem;
-        }
-
-        p {
-          font-size: 1.3rem;
-        }
-
-        .explore-button {
-          font-size: 1.2rem;
-          padding: 12px 24px;
-        }
-      }
-    }
-
-    .cta-section {
-      h2 {
-        font-size: 2.8rem;
-      }
-
-      p {
-        font-size: 1.5rem;
-      }
-
-      .cta-button {
-        font-size: 1.4rem;
-        padding: 16px 32px;
-      }
-    }
-  }
+.portfolio-button:hover {
+  background: linear-gradient(135deg, var(--primary), var(--hover));
+  transform: translateY(-3px);
 }
 </style>

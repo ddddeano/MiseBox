@@ -1,4 +1,3 @@
-//plugin./heroIcons
 import { defineNuxtPlugin } from '#app'
 import {
   ArrowUpCircleIcon,
@@ -31,6 +30,7 @@ import {
   XCircleIcon,
   XMarkIcon,
   CakeIcon,
+  ArrowRightEndOnRectangleIcon, // Import the new icon
 } from '@heroicons/vue/24/solid'
 
 export default defineNuxtPlugin((nuxtApp) => {
@@ -65,6 +65,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     XCircleIcon,
     XMarkIcon,
     CakeIcon,
+    ArrowRightEndOnRectangleIcon, // Add the new icon to the icons object
   }
 
   Object.entries(icons).forEach(([name, component]) => {

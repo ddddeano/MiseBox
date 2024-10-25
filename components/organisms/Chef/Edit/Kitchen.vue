@@ -1,20 +1,17 @@
 <template>
   <div class="kitchen-form">
     <div v-if="mode === 'display'">
-      <p><strong>Kitchen Name:</strong> {{ kitchen.name }}</p>
-      <p><strong>Location:</strong> {{ kitchen.location }}</p>
+      <span>{{ kitchen.name }} - {{ kitchen.location }}</span>
     </div>
 
-    <div v-else>
+    <div v-if="mode !== 'display'">
       <input
         v-model="kitchen.name"
         placeholder="Kitchen Name"
-        class="editable-input"
       />
       <input
         v-model="kitchen.location"
         placeholder="Location"
-        class="editable-input"
       />
     </div>
   </div>
@@ -25,7 +22,14 @@ const props = defineProps({
   kitchen: Object,
   mode: {
     type: String,
-    default: 'display',
+    default: 'display', // display, edit, create
   },
 });
 </script>
+
+<style scoped>
+.kitchen-form {
+  display: flex;
+  flex-direction: column;
+}
+</style>

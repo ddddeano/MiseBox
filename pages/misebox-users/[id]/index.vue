@@ -7,16 +7,19 @@
       <!-- Divider -->
       <hr class="profile-divider" />
 
-      <!-- Edit Profile or Message Button -->
+      <!-- Edit Profile, Message, and Sign Out Button -->
       <div class="button-container">
         <div v-if="isCurrentUserProfile">
           <NuxtLink :to="`/misebox-users/${routeUserId}/edit`" class="edit-profile-btn">
             <PencilIcon class="icon button-icon" /> Edit Profile
           </NuxtLink>
+          <button @click="handleSignOut" class="sign-out-btn">
+            <ArrowRightEndOnRectangleIcon class="icon button-icon" /> Sign Out
+          </button>
         </div>
         <div v-else>
           <button class="message-btn">
-            <ChatBubbleLeftIcon class="icon button-icon" /> Message
+            <PencilIcon class="icon button-icon" /> Message
           </button>
         </div>
       </div>
@@ -71,11 +74,12 @@
     </div>
   </client-only>
 </template>
+
 <script setup>
 import { useCurrentUser, useDocument, useFirestore } from 'vuefire';
 import { doc } from 'firebase/firestore';
 import { useRoute } from 'vue-router';
-
+import { signOut } from 'firebase/auth';
 
 const currentUser = useCurrentUser();
 const db = useFirestore();
@@ -84,14 +88,8 @@ const route = useRoute();
 const routeUserId = computed(() => route.params.id);
 const isCurrentUserProfile = computed(() => currentUser.value?.uid === routeUserId.value);
 
-const miseboxUserDocRef = computed(() => {
-  if (routeUserId.value) {
-    return doc(db, 'misebox-users', routeUserId.value);
-  }
-  return null;
-});
 
-const { data: miseboxUser } = useDocument(miseboxUserDocRef);
+const { miseboxUser } = useMiseboxUser(currentUser);
 
 const email = computed(() => miseboxUser.value?.email || '');
 const phone_number = computed(() => miseboxUser.value?.phone_number || '');
@@ -129,7 +127,12 @@ const formatAppName = (app) => {
     .replace(/-/g, ' ')
     .replace(/\b\w/g, (char) => char.toUpperCase());
 };
+
+const handleSignOut = async () => {
+  await signOut();
+};
 </script>
+
 <style scoped>
 /* Mobile-first styles */
 
@@ -152,15 +155,17 @@ const formatAppName = (app) => {
   border-top: 1px solid var(--border);
 }
 
-/* Edit Profile and Message Button */
+/* Edit Profile, Message, and Sign Out Button */
 .button-container {
   display: flex;
   justify-content: center;
+  gap: var(--spacing-s);
   margin-bottom: var(--spacing-m);
 }
 
 .edit-profile-btn,
-.message-btn {
+.message-btn,
+.sign-out-btn {
   display: flex;
   align-items: center;
   background-color: var(--primary);
@@ -181,73 +186,6 @@ const formatAppName = (app) => {
 
 .profile-details {
   margin-top: var(--spacing-l);
-}
-
-section {
-  margin-bottom: var(--spacing-l);
-}
-
-section h2 {
-  margin-bottom: var(--spacing-s);
-  border-bottom: 1px solid var(--border);
-  padding-bottom: var(--spacing-xs);
-  font-size: var(--font-size-l);
-  color: var(--text-primary);
-}
-
-.details-grid {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-m);
-}
-
-.detail-item {
-  display: flex;
-  align-items: center;
-}
-
-.detail-item.full-width {
-  width: 100%;
-}
-
-.detail-item .icon {
-  width: 24px;
-  height: 24px;
-  margin-right: var(--spacing-s);
-  color: var(--text-secondary);
-}
-
-.user-bio {
-  margin: 0;
-  color: var(--text-primary);
-  font-style: italic;
-  font-weight: 300; /* Thinner font weight */
-}
-
-.apps-grid {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-m);
-}
-
-.app-item {
-  display: flex;
-  align-items: center;
-  background-color: var(--background-2);
-  padding: var(--spacing-s);
-  border-radius: var(--radius-s);
-}
-
-.app-icon {
-  width: 32px;
-  height: 32px;
-  margin-right: var(--spacing-s);
-  color: var(--primary);
-}
-
-.app-name {
-  font-weight: var(--font-weight-bold);
-  color: var(--text-primary);
 }
 
 /* Media queries for larger screens */

@@ -1,4 +1,3 @@
-// useField.js
 import { ref } from 'vue';
 import { doc, updateDoc } from 'firebase/firestore';
 import { useFirestore } from 'vuefire';
@@ -10,45 +9,36 @@ export function useField(props) {
   const errorMessage = ref('');
 
   // Initialize vModel based on the type of firebaseValue
-  const vModel = ref(
-    typeof props.firebaseValue === 'object' && props.firebaseValue !== null
-      ? { ...props.firebaseValue }
-      : props.firebaseValue || ''
-  );
+  const vModel = ref(props.firebaseValue || '');
 
   // Start editing function
   const startEditing = () => {
-    errorMessage.value = '';
-    isEditing.value = true;
-    vModel.value =
-      typeof props.firebaseValue === 'object' && props.firebaseValue !== null
-        ? { ...props.firebaseValue }
-        : props.firebaseValue || '';
+    errorMessage.value = ''; // Reset the error message
+    vModel.value = props.firebaseValue || ''; // Initialize vModel
+    isEditing.value = true; // Enter edit mode
   };
 
   // Cancel editing function
   const cancelEditing = () => {
-    errorMessage.value = '';
-    isEditing.value = false;
-    vModel.value =
-      typeof props.firebaseValue === 'object' && props.firebaseValue !== null
-        ? { ...props.firebaseValue }
-        : props.firebaseValue || '';
+    errorMessage.value = ''; // Clear error on cancel
+    vModel.value = props.firebaseValue || ''; // Reset the value
+    isEditing.value = false; // Exit edit mode
   };
 
   // Validate input function
   const validateInput = async () => {
-    errorMessage.value = '';
+    errorMessage.value = ''; // Reset error
     const value = vModel.value;
 
+    // Run the validation function, if provided
     if (props.validationFunction) {
       const validationResult = await props.validationFunction(value);
       if (validationResult) {
         errorMessage.value = validationResult;
-        return false;
+        return false; // Validation failed
       }
     }
-    return true;
+    return true; // Validation succeeded
   };
 
   // Update field function
@@ -60,7 +50,7 @@ export function useField(props) {
     }
 
     const isValid = await validateInput();
-    if (!isValid) return;
+    if (!isValid) return; // Stop if validation fails
 
     const formattedValue = props.formattingFunction
       ? props.formattingFunction(vModel.value)
@@ -69,17 +59,17 @@ export function useField(props) {
     try {
       const documentRef = doc(firestore, props.collectionName, props.documentID);
       await updateDoc(documentRef, { [props.target]: formattedValue });
-      errorMessage.value = '';
+      errorMessage.value = ''; // Clear error on success
     } catch (error) {
       console.error('Error updating document:', error);
-      errorMessage.value = 'Failed to update field.';
+      errorMessage.value = 'Failed to update field.'; // Set error message
     }
   };
 
   // Delete field function
   const deleteField = async () => {
-    vModel.value = typeof vModel.value === 'object' ? {} : ''; // Clear the field
-    await updateField();
+    vModel.value = ''; // Clear the field
+    await updateField(); // Update Firestore
     isEditing.value = true; // Keep the editing panel open
   };
 
@@ -89,7 +79,6 @@ export function useField(props) {
     errorMessage,
     startEditing,
     cancelEditing,
-    validateInput,
     updateField,
     deleteField,
   };

@@ -1,30 +1,65 @@
 <template>
-  <div class="language-form">
-    <div v-if="mode === 'display'">
-      <p>{{ language.language }} - {{ language.level }}</p>
+  <div class="language-item">
+    <!-- Display Mode -->
+    <div v-if="mode === 'display'" class="display-mode">
+      <div><strong>{{ language.language }}</strong></div>
+      <div>{{ language.proficiency }}</div>
     </div>
 
-    <div v-else>
+    <!-- Edit Mode -->
+    <div v-else-if="mode === 'edit'" class="edit-mode">
+      <label for="language">Language</label>
       <input
+        type="text"
+        id="language"
         v-model="language.language"
-        placeholder="Language"
+        placeholder="Enter language"
         class="editable-input"
       />
-      <select v-model="language.level" class="editable-input">
-        <option value="Beginner">Beginner</option>
-        <option value="Intermediate">Intermediate</option>
-        <option value="Fluent">Fluent</option>
-      </select>
+
+      <label for="proficiency">Proficiency</label>
+      <input
+        type="text"
+        id="proficiency"
+        v-model="language.proficiency"
+        placeholder="Enter proficiency level"
+        class="editable-input"
+      />
+    </div>
+
+    <!-- Create Mode -->
+    <div v-else-if="mode === 'create'" class="create-mode">
+      <label for="language">Language</label>
+      <input
+        type="text"
+        id="language"
+        v-model="language.language"
+        placeholder="Enter language"
+        class="editable-input"
+      />
+
+      <label for="proficiency">Proficiency</label>
+      <input
+        type="text"
+        id="proficiency"
+        v-model="language.proficiency"
+        placeholder="Enter proficiency level"
+        class="editable-input"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
 const props = defineProps({
-  language: Object,
+  language: {
+    type: Object,
+    required: true,
+  },
   mode: {
     type: String,
-    default: 'display',
+    required: true,
+    validator: value => ['display', 'edit', 'create'].includes(value),
   },
 });
 </script>

@@ -5,7 +5,7 @@
       <MoleculesAvatar :user="user" size="large" />
 
       <!-- Camera icon overlay -->
-      <label class="camera-icon">
+      <label class="icon camera-icon">
         <CameraIcon />
         <input type="file" @change="handleFileChange" accept="image/*" />
       </label>
@@ -73,8 +73,8 @@ const handleFileChange = async (event) => {
   width: 32px;
   height: 32px;
   cursor: pointer;
-  color: #fff;
-  background-color: rgba(0, 0, 0, 0.6);
+  color: var(--text-secondary);
+  background-color: var(--background-strong);
   border-radius: 50%;
   padding: 4px;
   display: flex;
@@ -83,7 +83,8 @@ const handleFileChange = async (event) => {
 }
 
 .camera-icon:hover {
-  background-color: rgba(0, 0, 0, 0.8);
+  color: var(--text-primary);
+  background-color: var(--hover)
 }
 
 .camera-icon input {

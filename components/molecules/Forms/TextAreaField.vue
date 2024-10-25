@@ -1,54 +1,54 @@
 <template>
-    <div class="form-field">
-      <div class="top">
-        <label>{{ label }}</label>
-        <div class="component-icons">
-          <PencilIcon
-            v-if="!isEditing"
-            class="icon edit-icon"
-            @click="pencilButtonClicked"
+  <div class="form-field">
+    <div class="top">
+      <label>{{ label }}</label>
+      <div class="component-icons">
+        <PencilIcon
+          v-if="!isEditing"
+          class="icon edit-icon"
+          @click="pencilButtonClicked"
+        />
+        <template v-else>
+          <CheckCircleIcon
+            class="icon confirm-icon"
+            @click="checkButtonClicked"
           />
-          <template v-else>
-            <CheckCircleIcon
-              class="icon confirm-icon"
-              @click="checkButtonClicked"
-            />
-            <MinusCircleIcon
-              class="icon cancel-icon"
-              @click="minusButtonClicked"
-            />
-            <XCircleIcon
-              v-if="vModel"
-              class="icon clear-icon"
-              @click="deleteButtonClicked"
-            />
-          </template>
-        </div>
-      </div>
-
-      <!-- Display Mode -->
-      <div v-if="!isEditing" class="display">
-        <span>{{ firebaseValue || placeholder }}</span>
-      </div>
-
-      <!-- Edit Mode -->
-      <div v-else class="editing">
-        <textarea
-          v-model="vModel"
-          :placeholder="placeholder"
-          class="editable-input editable-textarea"
-          :maxlength="maxLength"
-        ></textarea>
-        <!-- Error Message -->
-        <div v-if="errorMessage" class="error-message">
-          {{ errorMessage }}
-        </div>
+          <MinusCircleIcon
+            class="icon cancel-icon"
+            @click="minusButtonClicked"
+          />
+          <XCircleIcon
+            v-if="vModel"
+            class="icon clear-icon"
+            @click="deleteButtonClicked"
+          />
+        </template>
       </div>
     </div>
+
+    <!-- Display Mode -->
+    <div v-if="!isEditing" class="display">
+      <span class="bio-text">{{ firebaseValue }}</span>
+    </div>
+
+    <!-- Edit Mode -->
+    <div v-else class="editing">
+      <textarea
+        v-model="vModel"
+        :placeholder="placeholder"
+        class="editable-input editable-textarea"
+        :maxlength="maxLength"
+      ></textarea>
+    </div>
+
+    <!-- Error Message (Always displayed) -->
+    <div v-if="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+  </div>
 </template>
 
 <script setup>
-
 const props = defineProps({
   label: {
     type: String,
@@ -72,7 +72,7 @@ const props = defineProps({
   target: String,
   formattingFunction: Function,
   validationFunction: Function,
-});
+})
 
 const {
   isEditing,
@@ -82,39 +82,22 @@ const {
   cancelEditing,
   updateField,
   deleteField,
-} = useField(props);
+} = useField(props)
 
 const pencilButtonClicked = () => {
-  startEditing();
-};
+  startEditing()
+}
 
 const checkButtonClicked = async () => {
-  await updateField();
-  isEditing.value = false;
-};
+  await updateField()
+  isEditing.value = false
+}
 
 const minusButtonClicked = () => {
-  cancelEditing();
-};
+  cancelEditing()
+}
 
 const deleteButtonClicked = async () => {
-  await deleteField();
-};
+  await deleteField()
+}
 </script>
-<style scoped>
-
-/* Editable Textarea */
-.editable-textarea {
-  resize: vertical;
-  height: fit-content;
-  min-height: 150px;
-}
-
-/* For larger screens, allow both vertical and horizontal resizing */
-@media (min-width: 768px) {
-  .editable-textarea {
-    resize: both;
-  }
-}
-
-</style>

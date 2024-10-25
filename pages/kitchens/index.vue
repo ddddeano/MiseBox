@@ -1,57 +1,43 @@
+<!-- pages/kitchens.vue -->
+
 <template>
   <client-only>
-    <div class="index" v-if="currentUser?.uid">
-      <div v-if="hasApp">
-        <NuxtLink :to="`/kitchens/${currentUser.uid}`">
-          <SubKitchenCard :uid="currentUser.uid" />
-        </NuxtLink>
-      </div>
+    <div class="search-container">
+      <!-- Reusable kitchen search component -->
+      <OrganismsKitchenSearch @select-kitchen="selectKitchen" />
 
-      <div v-else>
-        <button @click="createKitchenApp">Create Kitchen App</button>
-      </div>
-
-      <div class="all-kitchens" v-if="filteredKitchens.length > 0">
-        <h2>All Kitchens</h2>
-        <ul>
-          <li v-for="kitchen in filteredKitchens" :key="kitchen.id">
-            <NuxtLink :to="`/kitchens/${kitchen.id}`">
-              <SubKitchenCard :uid="kitchen.id" />
-            </NuxtLink>
-          </li>
-        </ul>
+      <!-- Selected Kitchen Display and Confirm Button -->
+      <div v-if="selectedKitchen" class="selected-place">
+        <h3>Selected Kithen</h3>
+        <pre>
+        {{ {
+          ...selectedKitchen,
+          photo_url: selectedKitchen.photo_url.slice(0, 5) + '...'
+        } }}
+      </pre>
+        <p>Name: {{ selectedKitchen.place_name }}</p>
+        <p>Address: {{ selectedKitchen.formatted_address }}</p>
+        <p>City: {{ selectedKitchen.city }}</p>
+        <p>Region: {{ selectedKitchen.region }}</p>
+        <p>Country: {{ selectedKitchen.country }}</p>
+        <button @click="confirmKitchen">Confirm Kitchen</button>
       </div>
     </div>
-    <p v-else>Loading user data...</p>
   </client-only>
 </template>
 
 <script setup>
-import { useCurrentUser } from 'vuefire';
-import { useFirestore, useDocument, useCollection } from 'vuefire';
-import { doc, collection } from 'firebase/firestore';
+import { ref } from 'vue';
 
-const currentUser = useCurrentUser();
-const db = useFirestore();
-const userDocRef = computed(() =>
-  currentUser.value ? doc(db, 'misebox-users', currentUser.value.uid) : null
-);
-const { data: miseboxUserDoc } = useDocument(userDocRef);
+const selectedKitchen = ref(null);
 
-const hasApp = computed(() => {
-  return Array.isArray(miseboxUserDoc.value?.user_apps) && miseboxUserDoc.value.user_apps.includes('kitchen');
-});
+const selectKitchen = (kitchen) => {
+  selectedKitchen.value = kitchen;
+};
 
-const kitchensCollection = collection(db, 'kitchens');
-const { data: kitchens } = useCollection(kitchensCollection);
+const confirmKitchen = () => {
+  // Confirm the selected kitchen logic here and must geerate     const searchPhraseLower = item.search_phrase.toLowerCase();
 
-const filteredKitchens = computed(() => {
-  return kitchens.value?.filter(kitchen => kitchen.id !== currentUser.value?.uid) || [];
-});
-
-const createKitchenApp = () => {
-  if (miseboxUserDoc.value) {
-    createKitchen(miseboxUserDoc.value);
-  }
+  console.log('Kitchen confirmed:', selectedKitchen.value);
 };
 </script>

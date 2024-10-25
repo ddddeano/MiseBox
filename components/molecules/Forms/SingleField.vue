@@ -38,10 +38,11 @@
         :placeholder="placeholder"
         class="editable-input"
       />
-      <!-- Error Message -->
-      <div v-if="errorMessage" class="error-message">
-        {{ errorMessage }}
-      </div>
+    </div>
+
+    <!-- Error Message (always outside edit block for visibility) -->
+    <div v-if="errorMessage" class="error-message">
+      {{ errorMessage }}
     </div>
   </div>
 </template>
@@ -49,22 +50,12 @@
 <script setup>
 
 const props = defineProps({
-  label: {
-    type: String,
-    default: '', // Critical for rendering
-  },
-  firebaseValue: {
-    type: String,
-    default: '', // Critical for rendering
-  },
-  placeholder: {
-    type: String,
-    default: '', // Critical for rendering
-  },
-  // Other props without default values
+  label: String,
+  firebaseValue: String,
   collectionName: String,
   documentID: String,
   target: String,
+  placeholder: String,
   formattingFunction: Function,
   validationFunction: Function,
 });
@@ -97,6 +88,10 @@ const deleteButtonClicked = async () => {
 };
 </script>
 
-<style scoped>
-/* Include your shared styles or specific styles here */
+<style lang="scss" scoped>
+.error-message {
+  color: var(--error);
+  font-size: 0.875em;
+  margin-top: 0.5em;
+}
 </style>

@@ -1,17 +1,15 @@
 import { computed } from 'vue';
 import { useCollection, useCurrentUser } from 'vuefire';
 
-// This function fetches and filters a collection, excluding the current user and applying any custom filter.
-export function useFilteredCollection(collectionRef, customFilter) {
-  const currentUser = useCurrentUser();
-  
+
+// This function fetches and filters a collection, applying any custom filter.
+export function useCustomFilteredCollection(collectionRef, customFilter) {
   // Fetch the collection of items (e.g., users, chefs, etc.)
   const { data: collectionData } = useCollection(collectionRef);
   
-  // Filter out the current user and apply a custom filter (if provided)
+  // Apply a custom filter (if provided)
   const filteredCollection = computed(() => {
-    const currentUserId = currentUser.value?.uid;
-    let filtered = collectionData.value?.filter(item => item.id !== currentUserId) || [];
+    let filtered = collectionData.value || [];
     
     // Apply the custom filter if it exists
     if (customFilter) {
@@ -25,6 +23,7 @@ export function useFilteredCollection(collectionRef, customFilter) {
     filteredCollection,
   };
 }
+
 
 // This function checks whether the current user has a specific app
 export function useHasApp(miseboxUser, appName) {

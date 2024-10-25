@@ -30,7 +30,7 @@
 
       <!-- Display Mode -->
       <div v-if="!isEditing" class="display">
-        <span>{{ orderedFormattedValue || 'No data' }}</span>
+        <span>{{ orderedFormattedValue }}</span>
       </div>
 
       <!-- Edit Mode -->

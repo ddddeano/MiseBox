@@ -4,7 +4,7 @@
       <MoleculesThemeToggle />
       <AtomsLogo class="footer-logo" />
       <p>Device Type: {{ deviceType }}</p>
-      <p>&copy; 2024 Mise Box. All rights reserved.</p>
+      <p>&copy; 2024 Misebox. All rights reserved.</p>
       <p>Version 2.0.0.3</p>
       <p>Contact us: support@misebox.com</p>
     </div>

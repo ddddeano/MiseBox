@@ -2,6 +2,9 @@
   <client-only>
     <div class="profile-forms">
       <div v-if="isCurrentUserProfile && miseboxUser">
+
+        <MoleculesFormsAvatarSelection :user="miseboxUser"/>
+
         <!-- Display Name -->
         <MoleculesFormsSingleField
           label="Display Name"
@@ -89,23 +92,23 @@
           target="user_bio"
           :documentID="miseboxUser.id"
           :firebaseValue="miseboxUser.user_bio"
-          placeholder="Enter your bio here"
           :formattingFunction="formatBio"
           :validationFunction="validateBio"
           :maxLength="500"
         />
 
-        <!-- Tags -->
-        <MoleculesFormsArrayOfStrings
-          label="Tags"
-          collectionName="misebox-users"
-          target="tags"
-          :documentID="miseboxUser.id"
-          :firebaseValue="miseboxUser.tags"
-          itemPlaceholder="Add a tag"
-          :formattingFunction="formatTags"
-          :validationFunction="validateTags"
-        />
+        <!-- Navigation Buttons -->
+        <div class="navigation-buttons">
+          <NuxtLink :to="`/professionals/${miseboxUser.id}/edit`" class="btn btn-primary btn-pill">
+            <SparklesIcon class="icon" />
+            Edit Professional Profile
+          </NuxtLink>
+          <NuxtLink :to="`/chefs/${miseboxUser.id}/edit`" class="btn btn-primary btn-pill">
+            <UserCircleIcon class="icon" />
+            Edit Chef Profile
+          </NuxtLink>
+        </div>
+
       </div>
     </div>
   </client-only>
@@ -114,6 +117,24 @@
 <script setup>
 import { useCurrentUser } from 'vuefire';
 import { useRoute } from 'vue-router';
+import {
+  formatDisplayName,
+  formatHandle,
+  emailFormatting,
+  removeWhitespace,
+  formatBio,
+  dobFormatting,
+  formatAddress,
+  formatTags,
+  validateDisplayName,
+  validateHandle,
+  validateEmail,
+  validatePhoneNumber,
+  validateDateOfBirth,
+  validateAddress,
+  validateBio,
+  validateTags
+} from '~/composables/utils/useFormattingAndValidation';
 
 const route = useRoute();
 const currentUser = useCurrentUser();
@@ -122,3 +143,16 @@ const isCurrentUserProfile = computed(
 );
 const { miseboxUser } = useMiseboxUser(currentUser);
 </script>
+
+<style scoped>
+.profile-forms {
+  /* Your specific styles for profile-forms */
+}
+
+.navigation-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+  margin-top: var(--spacing-l);
+}
+</style>

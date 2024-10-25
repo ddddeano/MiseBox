@@ -2,17 +2,35 @@
   <div class="form-field">
     <div class="top">
       <label>{{ label }}</label>
-      <PencilIcon
-        v-if="!isEditing"
-        class="icon edit-icon"
-        @click="startEditing"
+      <!-- Fold/Unfold Icon -->
+      <ChevronDownIcon
+        v-if="isFolded"
+        class="icon toggle-icon"
+        @click="toggleFold"
       />
+      <div class="top-icons" v-if="!isFolded">
+        <ChevronUpIcon
+          class="icon toggle-icon"
+          @click="toggleFold"
+        />
+        <!-- Add New Entry Icon -->
+        <PlusCircleIcon
+          v-if="!isEditing && !isCreating"
+          class="icon add-icon"
+          @click="startCreating"
+        />
+        <!-- Edit Mode Icon -->
+        <PencilIcon
+          v-if="!isEditing && !isCreating"
+          class="icon edit-icon"
+          @click="startEditing"
+        />
+      </div>
     </div>
 
     <!-- Display Mode -->
-    <div v-if="!isEditing" class="display">
+    <div v-if="!isEditing && !isCreating && !isFolded" class="display">
       <ul>
-        <!-- Simple display of items, no controls -->
         <li
           v-for="(item, index) in firebaseValue"
           :key="index"
@@ -24,24 +42,35 @@
       </ul>
     </div>
 
+    <!-- Create Mode -->
+    <div v-if="isCreating && !isFolded" class="create bordered-section">
+      <div class="input-container">
+        <slot name="create" :item="localNewObject" />
+      </div>
+      <div class="centred-icons">
+        <CheckCircleIcon
+          class="icon confirm-icon"
+          @click="sendNewToFirestore"
+        />
+        <ChevronUpIcon class="icon toggle-icon" @click="cancelCreating" />
+      </div>
+    </div>
+
     <!-- Edit Mode -->
-    <div v-else class="editing">
+    <div v-else-if="isEditing && !isFolded" class="editing">
       <ul>
         <li
           v-for="(item, index) in firebaseValue"
           :key="index"
           class="editing-list-item"
         >
-          <!-- Use slots for the item being edited -->
           <slot
             v-if="editingIndex === index"
             name="edit"
             :item="viewModel[index]"
             :index="index"
           />
-          <!-- If not editing, just display the item with edit/delete controls -->
           <slot v-else name="display" :item="item" :index="index" />
-
           <div class="list-icons">
             <PencilIcon
               v-if="editingIndex !== index"
@@ -53,28 +82,17 @@
               class="icon confirm-icon"
               @click="overwriteItem(index)"
             />
-            <MinusCircleIcon
+            <ChevronUpIcon
               v-if="editingIndex === index"
-              class="icon confirm-icon"
-              @click="isEditing = false"
+              class="icon toggle-icon"
+              @click="editingIndex = null"
             />
             <XCircleIcon class="icon delete-icon" @click="removeItem(index)" />
           </div>
         </li>
-        <li v-if="!firebaseValue.length">{{ placeholder }}</li>
       </ul>
-
-      <!-- Create New Object Form -->
-      <div class="input-container">
-        <slot name="create" :item="localNewObject" />
-      </div>
-
       <div class="centred-icons">
-        <CheckCircleIcon
-          class="icon confirm-icon"
-          @click="sendNewToFirestore"
-        />
-        <XCircleIcon class="icon cancel-icon" @click="cancelEditing" />
+        <ChevronUpIcon class="icon toggle-icon" @click="cancelEditing" />
       </div>
     </div>
   </div>
@@ -110,11 +128,12 @@ const props = defineProps({
 })
 
 const isEditing = ref(false)
+const isCreating = ref(false)
+const isFolded = ref(true)
 const editingIndex = ref(null)
 const viewModel = ref([...props.firebaseValue])
-const localNewObject = ref({ ...props.newObject }) // Create a local copy of the new object
+const localNewObject = ref({ ...props.newObject })
 
-// Sync viewModel with firebaseValue changes
 watch(
   () => props.firebaseValue,
   (newVal) => {
@@ -122,53 +141,54 @@ watch(
   }
 )
 
-// Start editing
-const startEditing = () => {
-  isEditing.value = true
+const toggleFold = () => {
+  isFolded.value = !isFolded.value
 }
 
-// Cancel editing and reset state
+const startCreating = () => {
+  isCreating.value = true
+  isEditing.value = false
+}
+
+const startEditing = () => {
+  isEditing.value = true
+  isCreating.value = false
+}
+
+const cancelCreating = () => {
+  isCreating.value = false
+  localNewObject.value = { ...props.newObject }
+}
+
 const cancelEditing = () => {
   isEditing.value = false
   editingIndex.value = null
-  localNewObject.value = { ...props.newObject } // Reset the local new object
 }
 
-// Send new object to Firestore
 const sendNewToFirestore = async () => {
-
   try {
-    // Validation: Ensure the localNewObject is not empty
     if (Object.keys(localNewObject.value).length === 0) {
       console.error('Cannot send an empty object.')
       return
     }
 
-    // Get a reference to the Firestore document
     const documentRef = doc(firestore, props.collectionName, props.documentID)
-
-    // Update Firestore by adding the new object to the array
     await updateDoc(documentRef, {
       [props.target]: arrayUnion(localNewObject.value),
     })
 
-    console.log('Successfully added new object:', localNewObject.value)
-
-    // Reset the new object to its default structure
     localNewObject.value = { ...props.newObject }
-
-    // Exit edit mode after successful addition
+    isCreating.value = false
   } catch (error) {
     console.error('Error sending new object to Firestore:', error)
   }
 }
+
 const editItem = (index) => {
   editingIndex.value = index
 }
 
-// Overwrite existing object in Firestore
 const overwriteItem = async (index) => {
-  editingIndex.value = null // Reset the editing index
   const updatedItem = viewModel.value[index]
 
   if (!updatedItem || Object.keys(updatedItem).length === 0) {
@@ -176,20 +196,21 @@ const overwriteItem = async (index) => {
     return
   }
 
-  try {
-    const updatedArray = [...props.firebaseValue] // Clone the current array
-    updatedArray[index] = updatedItem // Modify the array locally
+  const updatedArray = [...props.firebaseValue]
+  updatedArray[index] = { ...updatedItem }
 
+  try {
     const documentRef = doc(firestore, props.collectionName, props.documentID)
     await updateDoc(documentRef, {
-      [props.target]: updatedArray, // Update the array in Firestore
+      [props.target]: updatedArray,
     })
+
+    editingIndex.value = null
   } catch (error) {
-    console.error('[ObjectArray] Error overwriting Firestore item:', error)
+    console.error('Error overwriting item in Firestore:', error)
   }
 }
 
-// Remove an item from the array
 const removeItem = async (index) => {
   const itemToRemove = props.firebaseValue[index]
 
@@ -204,4 +225,45 @@ const removeItem = async (index) => {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.form-field {
+  margin-bottom: 1rem;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.top-icons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.editing-list-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.centred-icons {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.list-icons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.bordered-section {
+  border: 1px solid var(--primary);
+  padding: 1em;
+  margin-bottom: 1em;
+  border-radius: var(--spacing-s);
+  background-color: var(--tertiary);
+}
+</style>

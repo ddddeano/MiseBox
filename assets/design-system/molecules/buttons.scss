@@ -12,30 +12,47 @@
   text-decoration: none;
   cursor: pointer;
   transition: all 0.3s ease;
+}
 
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px var(--primary);
-  }
+.btn:hover {
+  text-decoration: none;
+}
+
+.btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--primary);
 }
 
 /* Button Variants */
 .btn-primary {
   background-color: var(--primary);
   color: var(--text-inverse);
+}
 
-  &:hover {
-    background-color: var(--primary-dark);
-  }
+.btn-primary:hover {
+  background-color: var(--primary-dark);
 }
 
 .btn-secondary {
   background-color: var(--secondary);
   color: var(--text);
+}
 
-  &:hover {
-    background-color: var(--secondary-dark);
-  }
+.btn-secondary:hover {
+  background-color: var(--secondary-dark);
+}
+
+/* Pill Button Variant */
+.btn-pill {
+  border-radius: var(--radius-full);
+  width: 100%;
+}
+
+.btn-pill .icon {
+  width: 20px;
+  height: 20px;
+  margin-right: var(--spacing-xs);
+  color: var(--text-inverse);
 }
 
 /* Toggle Button Styles */
@@ -45,16 +62,16 @@
   padding: 0;
   background-color: var(--background-3);
   color: var(--text-muted);
+}
 
-  &.active {
-    background-color: var(--primary);
-    color: var(--text-inverse);
-  }
+.btn-toggle.active {
+  background-color: var(--primary);
+  color: var(--text-inverse);
+}
 
-  .toggle-label {
-    font-size: var(--font-size-small);
-    font-weight: var(--font-weight-bold);
-  }
+.btn-toggle .toggle-label {
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-bold);
 }
 
 /* Button Sizes */

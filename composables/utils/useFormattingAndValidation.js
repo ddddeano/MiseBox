@@ -24,7 +24,19 @@ export function removeWhitespace(value) {
 }
 
 export function formatBio(value) {
-  return value ? value.replace(/\s{2,}/g, ' ').trim() : value;
+  // Ensure line breaks (\n) are preserved while removing excess spaces
+  return value ? value.replace(/[ \t]{2,}/g, ' ').trim() : value;
+}
+
+
+export function formatTitle(value) {
+  // Convert to title case and remove trailing whitespace
+  return value
+    .toLowerCase()
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+    .trim();
 }
 
 // Date of Birth Formatting Function
@@ -194,14 +206,39 @@ export function validateTags(tags, optional = false) {
   return ''; // No error
 }
 
+// Bio Validation Function (Allows line breaks)
 export function validateBio(value, optional = false) {
   if (optional && (!value || value.trim() === '')) {
     return ''; // No error for blank bios
   }
-  return ''; // Placeholder for future validation logic
+
+  // Validate minimum length, you can adjust as needed
+  if (value.length < 10) {
+    return 'Bio must be at least 10 characters long.';
+  }
+
+  return ''; // No validation errors
 }
 
-// Helper functions
+// Title Validation Function (Ensures no numbers)
+export function validateTitle(value, optional = false) {
+  if (optional && (!value || value.trim() === '')) {
+    return ''; // No error for blank titles
+  }
+
+  if (value.length < 3) {
+    return 'Title must be at least 3 characters long.';
+  }
+
+  const forbiddenCharacters = /[^a-zA-Z -]/; // Only letters, spaces, and dashes allowed
+  if (forbiddenCharacters.test(value)) {
+    return 'Title can only contain letters, spaces, and dashes (no numbers or special characters).';
+  }
+
+  return ''; // No validation errors
+}
+
+// Helper Functions
 
 export function validateMinLength(minLength) {
   return (value) => (value.length >= minLength ? '' : `Minimum ${minLength} characters required.`);
@@ -217,5 +254,3 @@ export async function validateHandleUniqueness(value) {
   const querySnapshot = await getDocs(handleQuery);
   return querySnapshot.empty ? '' : 'Handle is already taken.';
 }
-
-// Export all functions just not formatted into a long string, still trim white space etc

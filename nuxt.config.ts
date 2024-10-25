@@ -1,3 +1,5 @@
+// nuxt.config.js
+
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   ssr: true,
@@ -7,7 +9,9 @@ export default defineNuxtConfig({
       gen: 2,
     },
   },
-  css: ['~/assets/design-system/main.scss'],
+  css: [
+    '~/assets/design-system/main.scss',
+  ],
   devtools: {
     enabled: true,
   },
@@ -35,6 +39,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
+      googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY, // Expose Google Maps API Key
     },
     private: {
       stripeSecretKey: process.env.STRIPE_SECRET_KEY,
