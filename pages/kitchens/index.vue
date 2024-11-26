@@ -1,43 +1,77 @@
-<!-- pages/kitchens.vue -->
-
 <template>
   <client-only>
-    <div class="search-container">
-      <!-- Reusable kitchen search component -->
-      <OrganismsKitchenSearch @select-kitchen="selectKitchen" />
-
-      <!-- Selected Kitchen Display and Confirm Button -->
-      <div v-if="selectedKitchen" class="selected-place">
-        <h3>Selected Kithen</h3>
-        <pre>
-        {{ {
-          ...selectedKitchen,
-          photo_url: selectedKitchen.photo_url.slice(0, 5) + '...'
-        } }}
-      </pre>
-        <p>Name: {{ selectedKitchen.place_name }}</p>
-        <p>Address: {{ selectedKitchen.formatted_address }}</p>
-        <p>City: {{ selectedKitchen.city }}</p>
-        <p>Region: {{ selectedKitchen.region }}</p>
-        <p>Country: {{ selectedKitchen.country }}</p>
-        <button @click="confirmKitchen">Confirm Kitchen</button>
+    <div class="kitchens-index index">
+      <!-- Authentication and Profile Checks -->
+      <div v-if="!currentUser" class="missing-acc-message">
+        You first need a Vuefire account.
       </div>
+      <div v-if="!miseboxUser" class="missing-acc-message">
+        You first need a Misebox account.
+      </div>
+      <div v-if="!chef" class="missing-acc-message">
+        You first need a Chef profile to manage kitchens.
+      </div>
+     <!-- Segue to Create or Connect a Kitchen -->
+     <section v-if="chef" class="create-or-connect-kitchen-section">
+        <h2>Create or Connect to a Kitchen</h2>
+        <NuxtLink to="/kitchens/create-or-connect" class="btn btn-primary btn-pill">
+          Go to Create or Connect
+        </NuxtLink>
+      </section>
+      <!-- My Kitchens Section -->
+      <section v-if="chef && myKitchens?.length" class="my-kitchens-section">
+        <h2>My Kitchens</h2>
+        <div class="kitchen-list">
+          <OrganismsKitchenCard
+            v-for="kitchen in myKitchens"
+            :key="kitchen.place_id"
+            :kitchen="kitchen"
+          />
+        </div>
+      </section>
+
+      <!-- All Kitchens Section -->
+      <section v-if="currentUser && miseboxUser" class="all-kitchens-section">
+        <h2>All Kitchens</h2>
+        <div class="kitchen-list">
+          <OrganismsKitchenCard
+            v-for="kitchen in allKitchens"
+            :key="kitchen.place_id"
+            :kitchen="kitchen"
+          />
+        </div>
+      </section>
+
     </div>
   </client-only>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { useCurrentUser, useCollection, useFirestore } from 'vuefire';
+import { collection, query, where } from 'firebase/firestore';
 
-const selectedKitchen = ref(null);
+// Get the current user and Firestore instance
+const currentUser = useCurrentUser();
+const db = useFirestore();
 
-const selectKitchen = (kitchen) => {
-  selectedKitchen.value = kitchen;
-};
+// Mocking miseboxUser and chef for this example
+const miseboxUser = ref(true);
+const chef = ref(true);
 
-const confirmKitchen = () => {
-  // Confirm the selected kitchen logic here and must geerate     const searchPhraseLower = item.search_phrase.toLowerCase();
+// Query kitchens connected to the current chef (My Kitchens)
+const myKitchensCollectionRef = computed(() =>
+  currentUser.value && chef.value
+    ? query(
+        collection(db, 'kitchens'),
+        where('team', 'array-contains', currentUser.value.uid)
+      )
+    : null
+);
+const { data: myKitchens } = useCollection(myKitchensCollectionRef);
 
-  console.log('Kitchen confirmed:', selectedKitchen.value);
-};
+// Query all kitchens in the database
+const allKitchensCollectionRef = computed(() =>
+  currentUser.value ? collection(db, 'kitchens') : null
+);
+const { data: allKitchens } = useCollection(allKitchensCollectionRef);
 </script>

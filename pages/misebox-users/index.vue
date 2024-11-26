@@ -1,18 +1,29 @@
 <template>
   <client-only>
-    <div class="index" v-if="currentUser && miseboxUser">
-      <div v-if="!hasApp" class="create-app-container">
-        <button class="create-app-button" @click="createMiseboxUser">Join Misebox!</button>
+    <div class="index">
+      <!-- Check if the user has a Vuefire account -->
+      <div v-if="!currentUser" class="missing-acc-message">
+        You first need a Vuefire account.
       </div>
-      <ul class="collection">
-        <li v-if="hasApp" class="card-container">
-          <OrganismsMiseboxUserCard :user="miseboxUser" class="current-card"/>
+
+      <!-- Show "Join Misebox" section if the user doesn't have a profile -->
+      <div v-if="!miseboxUser" class="create-app-container">
+        <OrganismsSharedJoinCallToAction type="misebox" :onJoinClick="createMiseboxUser" />
+      </div>
+
+      <!-- Show the current user's card -->
+      <ul v-if="miseboxUser" class="collection">
+        <li class="card-container">
+          <OrganismsMiseboxUserCard :miseboxUser="miseboxUser" class="current-card" />
         </li>
-        <li v-for="user in miseoxUsers" :key="user.id" class="filtered-collection-container">
-          <OrganismsMiseboxUserCell
-            :user="user"
-            :isFollowing="miseboxUser.following?.includes(user.id) ? true : false"
-          />
+
+        <!-- Show list of other users -->
+        <li
+          v-for="user in miseboxUsers"
+          :key="user.id"
+          class="collection-container"
+        >
+          <OrganismsMiseboxUserCell :miseboxUser="user" />
         </li>
       </ul>
     </div>
@@ -20,14 +31,19 @@
 </template>
 
 <script setup>
-import { useFirestore, useCurrentUser } from 'vuefire'
-import { collection } from 'firebase/firestore'
+import { useCurrentUser, useCollection, useFirestore } from 'vuefire';
+import { collection } from 'firebase/firestore';
 
-const currentUser = useCurrentUser()
-const collectionRef = collection(useFirestore(), 'misebox-users')
+const currentUser = useCurrentUser();
+const db = useFirestore();
 
-const { createMiseboxUser, miseboxUser } = useMiseboxUser(currentUser)
-const { data: miseoxUsers } = useCollection(collectionRef)
-const { hasApp } = useHasApp(miseboxUser, 'misebox-users')
+// Fetch the current Misebox user profile
+const { currentMiseboxUser: miseboxUser, createMiseboxUser } = useMiseboxUser();
+
+// Fetch the collection of all Misebox users
+const miseboxUsersCollectionRef = computed(() =>
+  currentUser.value ? collection(db, 'misebox-users') : null
+);
+
+const { data: miseboxUsers } = useCollection(miseboxUsersCollectionRef);
 </script>
-

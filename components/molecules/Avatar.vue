@@ -1,3 +1,4 @@
+<!-- avatar -->
 <template>
   <div class="avatar" :class="`avatar--${size}`">
     <!-- Display avatar image if the URL exists and is not empty -->

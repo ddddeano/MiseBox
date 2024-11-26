@@ -1,5 +1,4 @@
 <template>
-  <div class="component">
     <div class="form-field">
       <div class="top">
         <label>{{ label }}</label>
@@ -52,7 +51,6 @@
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script setup>

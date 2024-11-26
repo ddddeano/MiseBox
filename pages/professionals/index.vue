@@ -1,26 +1,37 @@
-<!-- Professional Page -->
 <template>
   <client-only>
-    <div class="index" v-if="currentUser && professional">
-      <!-- If the user doesn't have the professional app, show the "Join Professional Network" button -->
-      <div v-if="!hasApp" class="create-app-container">
-        <button class="create-app-button" @click="createProfessionalUser">
-          Join Professional Network!
-        </button>
+    <div class="professional-index index">
+      <!-- Check if the user has a Vuefire account -->
+      <div v-if="!currentUser" class="missing-acc-message">
+        You first need a Vuefire account.
       </div>
-      
-      <!-- If the user has the app, show the professional card -->
-      <ul class="collection">
-        <li v-if="hasApp" class="card-container">
-          <OrganismsProfessionalCard :professional="professional" class="current-card" />
+
+      <!-- Check if the user has a Misebox account -->
+      <div v-if="!miseboxUser" class="missing-acc-message">
+        You first need a Misebox account.
+      </div>
+
+      <!-- Show "Join Professional" section if the user doesn't have a professional profile -->
+      <div v-if="!professional" class="create-app-container">
+        <OrganismsSharedJoinCallToAction
+          type="professional"
+          :onJoinClick="createProfessional"
+        />
+      </div>
+
+      <!-- Show current user's professional profile card -->
+      <ul v-else class="collection">
+        <li class="card-container">
+          <OrganismsProfessionalCard :professional="professional" />
         </li>
-        
-        <!-- List all professionals fetched from Firestore -->
-        <li v-for="professionalItem in professionals" :key="professionalItem.id" class="filtered-collection-container">
-          <OrganismsProfessionalCell
-            :professional="professionalItem"
-            :isFollowing="miseboxUser.following?.includes(professionalItem.id) ? true : false"
-          />
+
+        <!-- Show list of other professionals -->
+        <li
+          v-for="otherProfessional in professionals"
+          :key="otherProfessional.id"
+          class="collection-container"
+        >
+          <OrganismsProfessionalCell :professional="otherProfessional" />
         </li>
       </ul>
     </div>
@@ -28,26 +39,21 @@
 </template>
 
 <script setup>
-import { useCurrentUser, useFirestore, useCollection } from 'vuefire'
-import { collection } from 'firebase/firestore'
+import { useCurrentUser, useCollection, useFirestore } from 'vuefire';
+import { collection } from 'firebase/firestore';
 
-// Get the current authenticated user
-const currentUser = useCurrentUser()
+// Fetch the current user's Misebox account
+const currentUser = useCurrentUser();
+const db = useFirestore();
+const { currentMiseboxUser: miseboxUser } = useMiseboxUser();
 
-// Access Firestore instance
-const firestore = useFirestore()
+// Fetch the current user's professional profile
+const { currentProfessional: professional, createProfessional } = useProfessional();
 
-// Fetch the miseboxUser based on the currentUser
-const { miseboxUser } = useMiseboxUser(currentUser)
+// Fetch the collection of all Professional profiles
+const professionalsCollectionRef = computed(() =>
+  currentUser.value ? collection(db, 'professionals') : null
+);
 
-// Fetch the professional profile linked to the miseboxUser
-const { createProfessionalUser, professional } = useProfessional(miseboxUser)
-
-// Fetch the collection of all professionals from Firestore
-const professionalsRef = collection(firestore, 'professionals')
-const { data: professionals } = useCollection(professionalsRef)
-
-// Check if the user has joined the professional app
-const { hasApp } = useHasApp(miseboxUser, 'professionals')
+const { data: professionals } = useCollection(professionalsCollectionRef);
 </script>
-

@@ -1,12 +1,12 @@
 <template>
-  <div class="component">
+  <div class="form-field">
     <div class="avatar-container">
       <!-- Display the user's avatar -->
       <MoleculesAvatar :user="user" size="large" />
 
       <!-- Camera icon overlay -->
-      <label class="icon camera-icon">
-        <CameraIcon />
+      <label class="camera">
+        <CameraIcon class="icon" />
         <input type="file" @change="handleFileChange" accept="image/*" />
       </label>
     </div>
@@ -66,7 +66,7 @@ const handleFileChange = async (event) => {
   display: inline-block;
 }
 
-.camera-icon {
+.camera {
   position: absolute;
   bottom: 0;
   right: 0;
@@ -82,12 +82,12 @@ const handleFileChange = async (event) => {
   justify-content: center;
 }
 
-.camera-icon:hover {
+.camera:hover {
   color: var(--text-primary);
   background-color: var(--hover)
 }
 
-.camera-icon input {
+.camera input {
   display: none;
 }
 </style>

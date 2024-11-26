@@ -1,77 +1,73 @@
 <template>
   <client-only>
-    <div v-if="chef && miseboxUser" class="display-profile-page">
-      <!-- Use the OrganismsProfileHeader component -->
-      <OrganismsProfileHeader :user="miseboxUser" />
+    <div v-if="miseboxUser && chef" class="shared-view-profile-index">
+      <MoleculesMiseboxUserHeader :fetchedMiseboxUser="miseboxUser" />
+      <OrganismsChefViewProfile :chef="chef" />
+      <OrganismsUniversalBubble :id="miseboxUser.id" parent="chefs" />
 
-      <!-- Edit Profile Link -->
-      <div v-if="isCurrentUserProfile" class="edit-button-container">
-        <NuxtLink :to="`/chefs/${routeUserId}/edit`" class="edit-profile-btn">Edit Profile</NuxtLink>
-      </div>
-
-      <!-- Profile Details Section -->
-      <div class="display-profile-details">
-        <!-- Bio -->
-        <div v-if="miseboxUser.user_bio" class="display-section">
-          <h4 class="section-title">Bio</h4>
-          <p class="section-content">{{ miseboxUser.user_bio }}</p>
-        </div>
-
-        <!-- Specialities -->
-        <div v-if="specialities.length" class="display-section">
-          <h4 class="section-title">Specialities</h4>
-          <ul class="section-content">
-            <li v-for="speciality in specialities" :key="speciality">{{ speciality }}</li>
-          </ul>
-        </div>
-
-        <!-- Kitchens -->
-        <div v-if="kitchens.length" class="display-section">
-          <h4 class="section-title">Kitchens</h4>
-          <ul class="section-content">
-            <li v-for="kitchen in kitchens" :key="kitchen.id">
-              {{ kitchen.name }} - {{ kitchen.location }}
-            </li>
-          </ul>
-        </div>
-
-        <!-- Additional Sections as needed -->
-      </div>
+      <!-- Segue to Dashboard for Own Profile -->
+      <NuxtLink
+        v-if="isViewingOwnRoute"
+        :to="`/chefs/${chef.id}/dashboard`"
+        class="btn btn-primary btn-pill"
+      >
+        Go to Dashboard
+      </NuxtLink>
     </div>
+    <div v-else>
+      <p class="shared-view-profile-loading">Loading...</p>
+      <NuxtLink v-if="!currentUser" to="/auth" class="btn btn-primary btn-pill">
+        Go to Auth
+      </NuxtLink>
+    </div>
+    <button @click="logout" class="btn btn-secondary btn-pill">
+      Sign Out
+    </button>
   </client-only>
 </template>
 
 <script setup>
-import { useCurrentUser, useDocument, useFirestore } from 'vuefire';
+import { useFirestore, useDocument, useCurrentUser } from 'vuefire';
 import { doc } from 'firebase/firestore';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
-const currentUser = useCurrentUser();
 const db = useFirestore();
+const currentUser = useCurrentUser();
 const route = useRoute();
+const router = useRouter();
 
-const routeUserId = computed(() => route.params.id);
-const isCurrentUserProfile = computed(() => currentUser.value?.uid === routeUserId.value);
-
-const chefDocRef = computed(() => {
-  if (routeUserId.value) {
-    return doc(db, 'chefs', routeUserId.value);
-  }
-  return null;
-});
-
-const { data: chef } = useDocument(chefDocRef);
-
-const miseboxUserDocRef = computed(() => {
-  if (routeUserId.value) {
-    return doc(db, 'misebox-users', routeUserId.value);
-  }
-  return null;
-});
+// Fetch the Misebox user data
+const miseboxUserDocRef = computed(() =>
+  currentUser.value ? doc(db, 'misebox-users', route.params.id) : undefined
+);
 
 const { data: miseboxUser } = useDocument(miseboxUserDocRef);
 
-const specialities = computed(() => chef.value?.specialities || []);
-const kitchens = computed(() => chef.value?.kitchens || []);
-// Other computed properties as needed
+// Fetch the Chef profile data
+const chefDocRef = computed(() =>
+  currentUser.value ? doc(db, 'chefs', route.params.id) : undefined
+);
+
+const { data: chef } = useDocument(chefDocRef);
+
+// Check if the current user is viewing their own profile
+const isViewingOwnRoute = computed(() => {
+  return currentUser.value?.uid === route.params.id;
+});
+
+const { logout } = useAuth();
 </script>
+
+<style scoped>
+.shared-view-profile-index {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.shared-view-profile-loading {
+  text-align: center;
+  color: var(--text-secondary);
+  margin-top: var(--spacing-m);
+}
+</style>

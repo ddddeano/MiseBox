@@ -14,8 +14,8 @@
   flex-direction: column;
   min-height: 100vh;
   width: 100%;
-  align-items: center; /* Center children horizontally */
-  background-color: var(--background-2);
+  align-items: center;
+  background: linear-gradient(135deg, var(--background-2), var(--background)); /* Full-page gradient */
 }
 
 .main-content {
@@ -23,8 +23,8 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 1200px; /* Define a max-width for centering */
-  margin: 0 auto; /* Center the main content */
-  align-items: center; /* Center children horizontally */
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: center;
 }
 </style>

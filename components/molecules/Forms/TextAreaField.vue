@@ -28,7 +28,7 @@
 
     <!-- Display Mode -->
     <div v-if="!isEditing" class="display">
-      <span class="bio-text">{{ firebaseValue }}</span>
+      <span class="bio-text" v-html="formattedText"></span>
     </div>
 
     <!-- Edit Mode -->
@@ -49,24 +49,25 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+
 const props = defineProps({
   label: {
     type: String,
-    default: '', // Critical for rendering
+    default: '',
   },
   firebaseValue: {
     type: String,
-    default: '', // Critical for rendering
+    default: '',
   },
   placeholder: {
     type: String,
-    default: '', // Critical for rendering
+    default: '',
   },
   maxLength: {
     type: Number,
-    default: null, // Used in the template
+    default: null,
   },
-  // Other props without default values
   collectionName: String,
   documentID: String,
   target: String,
@@ -83,6 +84,11 @@ const {
   updateField,
   deleteField,
 } = useField(props)
+
+const formattedText = computed(() => {
+  // Convert newline characters to <br> for display
+  return props.firebaseValue.replace(/\n/g, '<br>')
+})
 
 const pencilButtonClicked = () => {
   startEditing()
@@ -101,3 +107,9 @@ const deleteButtonClicked = async () => {
   await deleteField()
 }
 </script>
+
+<style scoped>
+.bio-text {
+  white-space: pre-wrap; /* Ensures that spaces and line breaks are preserved */
+}
+</style>

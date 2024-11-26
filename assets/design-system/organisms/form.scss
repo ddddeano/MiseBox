@@ -1,0 +1,44 @@
+/* organisms/form.scss */
+
+@import './shared';
+
+/* Use shared container */
+.profile-forms {
+  @extend .shared-container;
+  width: 100%
+}
+
+/* Use shared input styles */
+.editable-input {
+  @extend .shared-input;
+}
+
+.editable-textarea {
+  @extend .shared-textarea;
+}
+
+/* Specific styles for form */
+.form-field {
+  position: relative;
+  color: var(--text-secondary);
+  // padding: var(--spacing-xs); /* Use design token for spacing */
+}
+.form-field:nth-child(even) {
+  background-color: var(--background-2); 
+  color: var(--text-secondary); 
+}
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--spacing-xs); /* Use design token for spacing */
+}
+label {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-m);
+}
+.display {
+  margin-bottom: var(--spacing-s);
+  padding: 0 var(--spacing-s);
+}

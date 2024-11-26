@@ -1,122 +1,228 @@
 <template>
   <client-only>
-    <div v-if="isCurrentUserProfile && chef">
-      <OrganismsProfileHeader :user="miseboxUser" />
+    <div class="profile-forms">
+      <!-- Check if the routed chef is the current user for editing access -->
+      <div v-if="isViewingOwnRoute && chef">
+        <button @click="handleSignOut" class="btn btn-secondary btn-pill sign-out-btn">
+          Sign Out
+        </button>
 
-      <div class="profile-forms">
-        <!-- Array of Strings -->
-        <MoleculesFormsArrayOfStrings
-          v-for="(stringSection, index) in stringArraySections"
-          :key="index"
-          :label="stringSection.label"
-          :firebaseValue="stringSection.value"
+        <!-- Kitchens -->
+        <MoleculesFormsObjectArray
+          label="Kitchens"
+          :firebaseValue="chef.kitchens"
           collectionName="chefs"
           :documentID="chef.id"
-          :target="stringSection.target"
-          :placeholder="stringSection.placeholder"
-          :itemPlaceholder="stringSection.itemPlaceholder"
-          :addButtonLabel="stringSection.addButtonLabel"
-        />
+          target="kitchens"
+          :formattingFunction="formatKitchens"
+          :validationFunction="validateKitchens"
+          :newObject="{
+            place_name: '',
+            place_id: '',
+            role: '',
+            from_year: '',
+            from_month: '',
+            to_year: '',
+            to_month: '',
+            formatted_address: '',
+            responsibilities: '',
+            document_url: '',
+            city: '',
+            region: ''
+          }"
+        >
+          <template #display="{ item }">
+            <OrganismsChefEditKitchen :kitchen="item" mode="display" />
+          </template>
+          <template #edit="{ item }">
+            <OrganismsChefEditKitchen :kitchen="item" mode="edit" />
+          </template>
+          <template #create="{ item }">
+            <OrganismsChefEditKitchen :kitchen="item" mode="create" />
+          </template>
+        </MoleculesFormsObjectArray>
 
-        <!-- Object Arrays -->
-        <div v-for="(section, index) in objectArraySections" :key="index">
-          <MoleculesFormsObjectArray
-            :label="section.label"
-            :firebaseValue="section.value"
-            collectionName="chefs"
-            :documentID="chef.id"
-            :target="section.target"
-          >
-            <template #display="{ item }">
-              <component :is="section.displayComponent" :[section.target]="item" mode="display" />
-            </template>
-            <template #edit="{ item }">
-              <component :is="section.displayComponent" :[section.target]="item" mode="edit" />
-            </template>
-            <template #create>
-              <component :is="section.displayComponent" mode="create" />
-            </template>
-          </MoleculesFormsObjectArray>
-        </div>
-
-        <!-- Bio Field -->
-        <MoleculesFormsTextAreaField
-          label="Chef Bio"
+        <!-- Availability -->
+        <MoleculesFormsObjectArray
+          label="Availability"
+          :firebaseValue="chef.availability"
           collectionName="chefs"
-          target="bio"
           :documentID="chef.id"
-          :firebaseValue="chef.bio"
-          placeholder="Enter your bio here"
-          :formattingFunction="formatBio"
-          :validationFunction="validateBio"
-          :maxLength="500"
+          target="availability"
+          :formattingFunction="formatAvailability"
+          :validationFunction="validateAvailability"
+          :newObject="{ day: '', time_from: '', time_to: '' }"
+        >
+          <template #display="{ item }">
+            <OrganismsChefEditAvailability :availability="item" mode="display" />
+          </template>
+          <template #edit="{ item }">
+            <OrganismsChefEditAvailability :availability="item" mode="edit" />
+          </template>
+          <template #create="{ item }">
+            <OrganismsChefEditAvailability mode="create" />
+          </template>
+        </MoleculesFormsObjectArray>
+
+        <!-- Recipes -->
+        <MoleculesFormsObjectArray
+          label="Recipes"
+          :firebaseValue="chef.recipes"
+          collectionName="chefs"
+          :documentID="chef.id"
+          target="recipes"
+          :formattingFunction="formatRecipes"
+          :validationFunction="validateRecipes"
+          :newObject="{ id: '', name: '', ingredients: '', instructions: '' }"
+        >
+          <template #display="{ item }">
+            <OrganismsChefEditRecipe :recipe="item" mode="display" />
+          </template>
+          <template #edit="{ item }">
+            <OrganismsChefEditRecipe :recipe="item" mode="edit" />
+          </template>
+          <template #create="{ item }">
+            <OrganismsChefEditRecipe :recipe="item" mode="create" />
+          </template>
+        </MoleculesFormsObjectArray>
+
+        <!-- Events -->
+        <MoleculesFormsObjectArray
+          label="Events"
+          :firebaseValue="chef.events"
+          collectionName="chefs"
+          :documentID="chef.id"
+          target="events"
+          :formattingFunction="formatEvents"
+          :validationFunction="validateEvents"
+          :newObject="{
+            name: '',
+            date: '',
+            location: '',
+            description: '',
+            document_url: ''
+          }"
+        >
+          <template #display="{ item }">
+            <OrganismsChefEditEvent :event="item" mode="display" />
+          </template>
+          <template #edit="{ item }">
+            <OrganismsChefEditEvent :event="item" mode="edit" />
+          </template>
+          <template #create="{ item }">
+            <OrganismsChefEditEvent mode="create" />
+          </template>
+        </MoleculesFormsObjectArray>
+
+        <!-- Gallery -->
+        <MoleculesFormsObjectArray
+          label="Gallery"
+          :firebaseValue="chef.gallery"
+          collectionName="chefs"
+          :documentID="chef.id"
+          target="gallery"
+          :formattingFunction="formatGallery"
+          :validationFunction="validateGallery"
+          :newObject="{ image_url: '', description: '' }"
+        >
+          <template #display="{ item }">
+            <OrganismsChefEditGallery :image="item" mode="display" />
+          </template>
+          <template #edit="{ item }">
+            <OrganismsChefEditGallery :image="item" mode="edit" />
+          </template>
+          <template #create="{ item }">
+            <OrganismsChefEditGallery mode="create" />
+          </template>
+        </MoleculesFormsObjectArray>
+
+        <!-- Specialties -->
+        <MoleculesFormsSingleField
+          label="Specialties"
+          collectionName="chefs"
+          target="specialties"
+          :documentID="chef.id"
+          :firebaseValue="chef.specialties"
+          :formattingFunction="formatSpecialties"
+          :validationFunction="validateSpecialties"
         />
+
+        <!-- View Profile Button -->
+        <button @click="viewProfile" class="btn btn-primary">View My Profile</button>
+      </div>
+
+      <div v-else>
+        <p class="access-denied-message">You do not have permission to edit this profile.</p>
       </div>
     </div>
   </client-only>
 </template>
 
 <script setup>
-import { useCurrentUser } from 'vuefire';
-import { useRoute } from 'vue-router';
+import {
+  formatKitchens,
+  validateKitchens,
+  formatAvailability,
+  validateAvailability,
+  formatRecipes,
+  validateRecipes,
+  formatEvents,
+  validateEvents,
+  formatGallery,
+  validateGallery,
+  formatSpecialties,
+  validateSpecialties,
+} from '~/composables/utils/useChefFormattingAndValidation';
+import { useRouter, useRoute } from 'vue-router';
+import { useFirestore, useDocument, useCurrentUser } from 'vuefire';
+import { doc } from 'firebase/firestore';
 
+const router = useRouter();
 const route = useRoute();
-const routeUserId = computed(() => route.params.id);
+const db = useFirestore();
 const currentUser = useCurrentUser();
-const isCurrentUserProfile = computed(() => currentUser.value?.uid === routeUserId.value);
 
-const { miseboxUser } = useMiseboxUser(currentUser);
-const { chef } = useChef(miseboxUser);
+// Fetch routed Chef profile from Firestore
+const chefDocRef = computed(() =>
+  currentUser.value ? doc(db, 'chefs', route.params.id) : undefined
+);
 
-// Array of strings sections
-const stringArraySections = ref([
-  {
-    label: "Chef Specialities",
-    value: chef?.specialities || [],
-    target: "specialities",
-    placeholder: "No specialities added yet.",
-    itemPlaceholder: "Enter a speciality",
-    addButtonLabel: "Add Speciality"
+const { data: chef } = useDocument(chefDocRef);
+
+// Check if the current user is viewing their own profile
+const isViewingOwnRoute = computed(() => {
+  return currentUser.value?.uid === route.params.id;
+});
+
+const { logout } = useAuth();
+
+const handleSignOut = () => logout();
+
+const viewProfile = () => {
+  if (chef.value) {
+    router.push(`/chefs/${chef.value.id}`);
   }
-]);
-
-// Object array sections
-const objectArraySections = ref([
-  {
-    label: "Kitchens",
-    value: chef?.kitchens || [],
-    target: "kitchens",
-    displayComponent: "KitchenForm"
-  },
-  {
-    label: "Availability",
-    value: chef?.availability || [],
-    target: "availability",
-    displayComponent: "AvailabilityForm"
-  },
-  {
-    label: "Awards",
-    value: chef?.awards || [],
-    target: "awards",
-    displayComponent: "AwardForm"
-  },
-  {
-    label: "Recipes",
-    value: chef?.recipes || [],
-    target: "recipes",
-    displayComponent: "RecipeForm"
-  },
-  {
-    label: "Events",
-    value: chef?.events || [],
-    target: "events",
-    displayComponent: "EventForm"
-  },
-  {
-    label: "Gallery",
-    value: chef?.gallery || [],
-    target: "gallery",
-    displayComponent: "GalleryForm"
-  }
-]);
+};
 </script>
+
+<style scoped>
+.profile-forms {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sign-out-btn {
+  margin-top: var(--spacing-s);
+}
+
+.btn-primary {
+  margin-top: var(--spacing-m);
+}
+
+.access-denied-message {
+  text-align: center;
+  margin-top: var(--spacing-m);
+  color: var(--text-secondary);
+}
+</style>

@@ -1,39 +1,50 @@
 <template>
   <client-only>
     <div class="profile-forms">
-      <div v-if="isCurrentUserProfile && professional">
-        <OrganismsProfileHeader :user="miseboxUser" />
+      <div v-if="isViewingOwnRoute && professional">
+        <h3>Edit your Professional Profile</h3>
+        <!-- Sign Out Button -->
+        <button @click="handleSignOut" class="btn btn-secondary btn-pill sign-out-btn">
+          Sign Out
+        </button>
 
-        <!-- Single Field Forms -->
+        <!-- Header Component -->
+        <MoleculesMiseboxUserHeader :fetchedMiseboxUser="miseboxUser" />
+
+        <!-- Title -->
         <MoleculesFormsSingleField
           label="Title"
           collectionName="professionals"
           target="title"
-          :documentID="professional.id"
+          :documentID="route.params.id"
           :firebaseValue="professional.title"
+          placeholder="Chef de Partie / Freelance / Pâtissier"
           :formattingFunction="formatTitle"
           :validationFunction="validateTitle"
-          placeholder="Chef de Partie / Freelance / Pâtissier"
         />
+
+        <!-- Short Bio -->
         <MoleculesFormsTextAreaField
           label="Short Bio"
           collectionName="professionals"
           target="bio_short"
-          :documentID="professional.id"
+          :documentID="route.params.id"
           :firebaseValue="professional.bio_short"
+          :maxLength="450"
           :formattingFunction="formatBio"
           :validationFunction="validateBio"
-          :maxLength="450"
         />
+
+        <!-- Long Bio -->
         <MoleculesFormsTextAreaField
           label="Long Bio"
           collectionName="professionals"
           target="bio_long"
-          :documentID="professional.id"
+          :documentID="route.params.id"
           :firebaseValue="professional.bio_long"
+          :maxLength="1000"
           :formattingFunction="formatBio"
           :validationFunction="validateBio"
-          :maxLength="1000"
         />
 
         <!-- Kitchen Experience -->
@@ -41,8 +52,10 @@
           label="Kitchen Experience"
           :firebaseValue="professional.kitchen_experience"
           collectionName="professionals"
-          :documentID="professional.id"
+          :documentID="route.params.id"
           target="kitchen_experience"
+          :formattingFunction="formatKitchenExperience"
+          :validationFunction="validateKitchenExperience"
           :newObject="{
             place_name: '',
             place_id: '',
@@ -59,32 +72,25 @@
           }"
         >
           <template #display="{ item }">
-            <OrganismsProfessionalEditKitchenExperience
-              :experience="item"
-              mode="display"
-            />
+            <OrganismsProfessionalEditKitchenExperience :experience="item" mode="display" />
           </template>
           <template #edit="{ item }">
-            <OrganismsProfessionalEditKitchenExperience
-              :experience="item"
-              mode="edit"
-            />
+            <OrganismsProfessionalEditKitchenExperience :experience="item" mode="edit" />
           </template>
           <template #create="{ item }">
-            <OrganismsProfessionalEditKitchenExperience
-              :experience="item"
-              mode="create"
-            />
+            <OrganismsProfessionalEditKitchenExperience :experience="item" mode="create" />
           </template>
         </MoleculesFormsObjectArray>
 
         <!-- Other Employment Experience -->
         <MoleculesFormsObjectArray
-          label="Other Employment Experience"
+          label="Other Experience"
           :firebaseValue="professional.other_employment_experience"
           collectionName="professionals"
-          :documentID="professional.id"
+          :documentID="route.params.id"
           target="other_employment_experience"
+          :formattingFunction="formatOtherExperience"
+          :validationFunction="validateOtherExperience"
           :newObject="{
             place_name: '',
             place_id: '',
@@ -101,22 +107,13 @@
           }"
         >
           <template #display="{ item }">
-            <OrganismsProfessionalEditOtherEmploymentExperience
-              :experience="item"
-              mode="display"
-            />
+            <OrganismsProfessionalEditOtherEmploymentExperience :experience="item" mode="display" />
           </template>
           <template #edit="{ item }">
-            <OrganismsProfessionalEditOtherEmploymentExperience
-              :experience="item"
-              mode="edit"
-            />
+            <OrganismsProfessionalEditOtherEmploymentExperience :experience="item" mode="edit" />
           </template>
           <template #create="{ item }">
-            <OrganismsProfessionalEditOtherEmploymentExperience
-              :experience="item"
-              mode="create"
-            />
+            <OrganismsProfessionalEditOtherEmploymentExperience :experience="item" mode="create" />
           </template>
         </MoleculesFormsObjectArray>
 
@@ -125,8 +122,10 @@
           label="Certifications"
           :firebaseValue="professional.certifications"
           collectionName="professionals"
-          :documentID="professional.id"
+          :documentID="route.params.id"
           target="certifications"
+          :formattingFunction="formatCertifications"
+          :validationFunction="validateCertifications"
           :newObject="{
             name: '',
             issuing_organization: '',
@@ -135,60 +134,13 @@
           }"
         >
           <template #display="{ item }">
-            <OrganismsProfessionalEditCertification
-              :certification="item"
-              mode="display"
-            />
+            <OrganismsProfessionalEditCertification :certification="item" mode="display" />
           </template>
           <template #edit="{ item }">
-            <OrganismsProfessionalEditCertification
-              :certification="item"
-              mode="edit"
-            />
+            <OrganismsProfessionalEditCertification :certification="item" mode="edit" />
           </template>
           <template #create="{ item }">
-            <OrganismsProfessionalEditCertification
-              :certification="item"
-              mode="create"
-            />
-          </template>
-        </MoleculesFormsObjectArray>
-
-        <!-- Education -->
-        <MoleculesFormsObjectArray
-          label="Education"
-          :firebaseValue="professional.education"
-          collectionName="professionals"
-          :documentID="professional.id"
-          target="education"
-          :newObject="{
-            degree: '',
-            school_name: '',
-            school_place_id: '',
-            formatted_address: '',
-            year: '',
-            document_url: '',
-            city: '',
-            region: ''
-          }"
-        >
-          <template #display="{ item }">
-            <OrganismsProfessionalEditEducation
-              :education="item"
-              mode="display"
-            />
-          </template>
-          <template #edit="{ item }">
-            <OrganismsProfessionalEditEducation
-              :education="item"
-              mode="edit"
-            />
-          </template>
-          <template #create="{ item }">
-            <OrganismsProfessionalEditEducation
-              :education="item"
-              mode="create"
-            />
+            <OrganismsProfessionalEditCertification :certification="item" mode="create" />
           </template>
         </MoleculesFormsObjectArray>
 
@@ -197,15 +149,14 @@
           label="Languages"
           :firebaseValue="professional.languages"
           collectionName="professionals"
-          :documentID="professional.id"
+          :documentID="route.params.id"
           target="languages"
+          :formattingFunction="formatLanguages"
+          :validationFunction="validateLanguages"
           :newObject="{ language: '', proficiency: '' }"
         >
           <template #display="{ item }">
-            <OrganismsProfessionalEditLanguage
-              :language="item"
-              mode="display"
-            />
+            <OrganismsProfessionalEditLanguage :language="item" mode="display" />
           </template>
           <template #edit="{ item }">
             <OrganismsProfessionalEditLanguage :language="item" mode="edit" />
@@ -214,83 +165,50 @@
             <OrganismsProfessionalEditLanguage :language="item" mode="create" />
           </template>
         </MoleculesFormsObjectArray>
-
-        <!-- Projects -->
-        <MoleculesFormsObjectArray
-          label="Projects"
-          :firebaseValue="professional.projects"
-          collectionName="professionals"
-          :documentID="professional.id"
-          target="projects"
-          :newObject="{
-            name: '',
-            description: '',
-            url: '',
-            from_year: '',
-            to_year: '',
-            document_url: ''
-          }"
-        >
-          <template #display="{ item }">
-            <OrganismsProfessionalEditProject :project="item" mode="display" />
-          </template>
-          <template #edit="{ item }">
-            <OrganismsProfessionalEditProject :project="item" mode="edit" />
-          </template>
-          <template #create="{ item }">
-            <OrganismsProfessionalEditProject :project="item" mode="create" />
-          </template>
-        </MoleculesFormsObjectArray>
-
-        <!-- Volunteering -->
-        <MoleculesFormsObjectArray
-          label="Volunteering"
-          :firebaseValue="professional.volunteering"
-          collectionName="professionals"
-          :documentID="professional.id"
-          target="volunteering"
-          :newObject="{
-            organization: '',
-            role: '',
-            from_year: '',
-            to_year: '',
-            description: '',
-            document_url: ''
-          }"
-        >
-          <template #display="{ item }">
-            <OrganismsProfessionalEditVolunteering
-              :volunteering="item"
-              mode="display"
-            />
-          </template>
-          <template #edit="{ item }">
-            <OrganismsProfessionalEditVolunteering
-              :volunteering="item"
-              mode="edit"
-            />
-          </template>
-          <template #create="{ item }">
-            <OrganismsProfessionalEditVolunteering
-              :volunteering="item"
-              mode="create"
-            />
-          </template>
-        </MoleculesFormsObjectArray>
       </div>
+      <button @click="viewProfile" class="btn btn-primary">View My Profile</button>
     </div>
   </client-only>
 </template>
 
 <script setup>
-import { useCurrentUser } from 'vuefire';
-import { useRoute } from 'vue-router';
+import {
+  formatTitle,
+  formatBio,
+  formatKitchenExperience,
+  formatOtherExperience,
+  formatCertifications,
+  formatLanguages,
+  validateTitle,
+  validateBio,
+  validateKitchenExperience,
+  validateOtherExperience,
+  validateCertifications,
+  validateLanguages
+} from '~/composables/utils/useProfessionalFormattingAndValidation';
+import { useRouter } from 'vue-router';
+import { useDocument, useFirestore } from 'vuefire';
+import { doc } from 'firebase/firestore';
 
+const router = useRouter();
 const route = useRoute();
-const currentUser = useCurrentUser();
-const isCurrentUserProfile = computed(() => currentUser.value?.uid === route.params.id);
+const db = useFirestore();
 
-// Misebox and professional data setup
-const { miseboxUser } = useMiseboxUser(currentUser);
-const { professional } = useProfessional(miseboxUser);
+const professionalDocRef = computed(() =>
+  route.params.id ? doc(db, 'professionals', route.params.id) : undefined
+);
+
+const { data: professional } = useDocument(professionalDocRef);
+
+const isViewingOwnRoute = computed(() => {
+  return professional.value && professional.value.id === route.params.id;
+});
+
+const handleSignOut = () => {
+  logout();
+};
+
+const viewProfile = () => {
+  router.push(`/professionals/${route.params.id}`);
+};
 </script>

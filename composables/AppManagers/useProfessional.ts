@@ -1,49 +1,79 @@
 import { computed } from 'vue';
-import { doc, setDoc, getDoc, arrayUnion, updateDoc } from 'firebase/firestore';
-import { useFirestore } from 'vuefire';
+import { useCurrentUser, useDocument, useFirestore } from 'vuefire';
+import { doc, setDoc, updateDoc, arrayUnion, arrayRemove, deleteDoc } from 'firebase/firestore';
+import { useMiseboxUser } from './useMiseboxUser';
 
-export const useProfessional = (miseboxUser) => {
+export const useProfessional = () => {
   const db = useFirestore();
+  const currentUser = useCurrentUser();
+  const { currentMiseboxUser, createMiseboxUser } = useMiseboxUser();
 
-  const professionalDocRef = computed(() => {
-    return miseboxUser.value ? doc(db, 'professionals', miseboxUser.value.id) : null;
-  });
+  // Get the current user's Professional profile
+  const currentProfessionalDocRef = computed(() =>
+    currentUser.value ? doc(db, 'professionals', currentUser.value.uid) : null
+  );
+  const { data: currentProfessional } = useDocument(currentProfessionalDocRef);
 
-  const { data: professional } = useDocument(professionalDocRef);
-
-  const createProfessional = async (isLookingForWork) => {  // Collect work status during creation
-    if (!miseboxUser.value) {
-      console.error('Misebox user data is missing');
+  // Create a new Professional profile
+  const createProfessional = async () => {
+    if (!currentUser.value) {
+      console.error('User not authenticated.');
       return;
     }
 
-    const professionalRef = doc(db, 'professionals', miseboxUser.value.id);
-    const userRef = doc(db, 'misebox-users', miseboxUser.value.id);
+    if (!currentMiseboxUser) {
+      console.log('Misebox user not found, creating one...');
+      await createMiseboxUser();
+    }
 
+    const { uid } = currentUser.value;
+    const professionalRef = doc(db, 'professionals', uid);
     const professionalData = {
-      id: miseboxUser.value.id,
-      isLookingForWork: !!isLookingForWork,  // Store the boolean value
+      id: uid,
+      createdAt: new Date().toISOString(),
     };
 
     try {
-      const professionalDoc = await getDoc(professionalRef);
-      if (!professionalDoc.exists()) {
-        await setDoc(professionalRef, professionalData);  // Create professional profile if it doesn't exist
-      }
+      await setDoc(professionalRef, professionalData);
 
-      // Add 'professional' to the user_apps array
-      await updateDoc(userRef, {
-        user_apps: arrayUnion('professionals')
+      const miseboxUserRef = doc(db, 'misebox-users', uid);
+      await updateDoc(miseboxUserRef, {
+        user_apps: arrayUnion('professionals'),
       });
 
       console.log('Professional profile created successfully.');
     } catch (error) {
-      console.error('Error during professional profile creation:', error);
+      console.error('Error creating Professional profile:', error);
+    }
+  };
+
+  // Delete the current Professional profile
+  const deleteProfessional = async () => {
+    if (!currentUser.value) {
+      console.error('User not authenticated.');
+      return;
+    }
+
+    const { uid } = currentUser.value;
+    const professionalRef = doc(db, 'professionals', uid);
+
+    try {
+      await deleteDoc(professionalRef);
+
+      const miseboxUserRef = doc(db, 'misebox-users', uid);
+      await updateDoc(miseboxUserRef, {
+        user_apps: arrayRemove('professionals'),
+      });
+
+      console.log('Professional profile deleted successfully.');
+    } catch (error) {
+      console.error('Error deleting Professional profile:', error);
     }
   };
 
   return {
+    currentProfessional: computed(() => currentProfessional?.value || null),
     createProfessional,
-    professional,
+    deleteProfessional,
   };
 };

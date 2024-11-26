@@ -1,20 +1,30 @@
 <template>
   <client-only>
-    <div class="index" v-if="currentUser && chef">
-      <div v-if="!hasApp" class="create-app-container">
-        <button class="create-app-button" @click="createChef">
-          Create Chef Profile
-        </button>
+    <div class="chef-index index">
+      <!-- Check if the user has a Vuefire account -->
+      <div v-if="!currentUser" class="missing-acc-message">
+        You first need a Vuefire account.
       </div>
-      <ul class="collection">
-        <li v-if="hasApp" class="card-container">
-          <OrganismsChefCard :chef="chef" class="current-card" />
+
+      <!-- Check if the user has a Misebox account -->
+      <div v-if="!miseboxUser" class="missing-acc-message">
+        You first need a Misebox account.
+      </div>
+
+      <!-- Show "Join Chef" section if the user doesn't have a chef profile -->
+      <div v-if="!chef" class="create-app-container">
+        <OrganismsSharedJoinCallToAction type="chef" :onJoinClick="createChef" />
+      </div>
+
+      <!-- Show current user's chef profile card -->
+      <ul v-else class="collection">
+        <li class="card-container">
+          <OrganismsChefCard :chef="chef" />
         </li>
-        <li v-for="chef in filteredChefs" :key="chef.id" class="filtered-collection-container">
-          <OrganismsChefCell
-           :chef="chef"
-           :isFollowing="miseboxUser.following?.includes(chef.id) ? true : false"
-           />
+
+        <!-- Show list of other chefs -->
+        <li v-for="otherChef in chefs" :key="otherChef.id" class="collection-container">
+          <OrganismsChefCell :chef="otherChef" />
         </li>
       </ul>
     </div>
@@ -22,17 +32,21 @@
 </template>
 
 <script setup>
-import { useCurrentUser, useFirestore } from 'vuefire'
-import { collection } from 'firebase/firestore'
+import { useCurrentUser, useCollection, useFirestore } from 'vuefire';
+import { collection } from 'firebase/firestore';
 
-const currentUser = useCurrentUser()
-const collectionRef = collection(useFirestore(), 'chefs')
+// Fetch the current user's Misebox account
+const currentUser = useCurrentUser();
+const db = useFirestore();
+const { currentMiseboxUser: miseboxUser } = useMiseboxUser();
 
-// Fetch miseboxUser instead of using currentUser directly
-const { miseboxUser } = useMiseboxUser(currentUser)
+// Fetch the current user's chef profile
+const { currentChef: chef, createChef } = useChef();
 
-// Pass miseboxUser to useChef
-const { createChef, chef } = useChef(miseboxUser)
-const { filteredCollection: filteredChefs } = useFilteredCollection(collectionRef)
-const { hasApp } = useHasApp(miseboxUser, 'chefs')
+// Fetch the collection of all Chef profiles
+const chefsCollectionRef = computed(() =>
+  currentUser.value ? collection(db, 'chefs') : null
+);
+
+const { data: chefs } = useCollection(chefsCollectionRef);
 </script>

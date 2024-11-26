@@ -1,5 +1,16 @@
-/* design-system/main.scss */
-@import './atoms/_atoms';
-@import './molecules/_molecules';
-@import './organisms/_organisms';
-@import './utilities/_utilities';
+/* main.scss */
+
+/* Utilities */
+@import './utilities/variables';
+@import './utilities/base';
+
+/* Elements */
+@import './elements/atoms';
+@import './elements/molecules';
+
+/* Organisms */
+@import './organisms/form';
+@import './organisms/profile';
+@import './organisms/shared';
+@import './organisms/card-cell';
+

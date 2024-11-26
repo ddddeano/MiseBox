@@ -4,13 +4,17 @@
     <div v-if="mode === 'display'" class="display-mode">
       <div><strong>{{ volunteering.role }}</strong></div>
       <div>{{ volunteering.organization }}</div>
-      <div>{{ volunteering.from_year }} - {{ volunteering.to_year }}</div>
+      <div>
+        {{ volunteering.from_year }} - 
+        <span v-if="volunteering.ongoing">Present</span>
+        <span v-else>{{ volunteering.to_year }}</span>
+      </div>
       <div>{{ volunteering.description }}</div>
       <a v-if="volunteering.document_url" :href="volunteering.document_url" target="_blank">View Document</a>
     </div>
 
-    <!-- Edit Mode -->
-    <div v-else-if="mode === 'edit'" class="edit-mode">
+    <!-- Create/Edit Mode -->
+    <div v-else>
       <label for="organization">Organization</label>
       <input
         type="text"
@@ -37,13 +41,22 @@
         inputId="from-year-select"
       />
 
-      <label for="to-year">To Year</label>
-      <MoleculesYearSelector
-        v-model="volunteering.to_year"
-        :startYear="1950"
-        :endYear="new Date().getFullYear()"
-        inputId="to-year-select"
-      />
+      <!-- Ongoing Checkbox -->
+      <label>
+        <input type="checkbox" v-model="volunteering.ongoing" /> Ongoing
+      </label>
+
+      <!-- To Year Field (disabled if ongoing is true) -->
+      <div :class="{ 'disabled': volunteering.ongoing }">
+        <label for="to-year">To Year</label>
+        <MoleculesYearSelector
+          v-model="volunteering.to_year"
+          :startYear="1950"
+          :endYear="new Date().getFullYear()"
+          inputId="to-year-select"
+          :disabled="volunteering.ongoing"
+        />
+      </div>
 
       <label for="description">Description</label>
       <textarea
@@ -83,3 +96,10 @@ const onFileChange = (event) => {
   }
 };
 </script>
+
+<style scoped>
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+</style>

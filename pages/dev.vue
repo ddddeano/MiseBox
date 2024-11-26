@@ -1,99 +1,52 @@
 <template>
   <client-only>
-    <div class="development-area" v-if="professional">
-      <h1>Kitchen Experience - Full Details</h1>
+    <div class="development-area">
+      <h1>Icon Testing Area</h1>
 
-      <!-- Kitchen Experience Full Object Array -->
-      <MoleculesFormsObjectArray
-        label="Kitchen Experience"
-        :firebaseValue="professional.kitchen_experience"
-        collectionName="professionals"
-        :documentID="professional.id"
-        target="kitchen_experience"
-        :newObject="{
-          from_month: '',
-          from_year: '',
-          to_month: '',
-          to_year: '',
-          place_id: '',
-          place_name: '',
-          formatted_address: '',
-          role: '',
-          document_url: '',
-          responsibilities: ''
-        }"
-      >
-        <!-- Display Mode -->
-        <template #display="{ item }">
-          <OrganismsProfessionalEditKitchenExperience
-            :experience="item"
-            mode="display"
-          />
-        </template>
-
-        <!-- Edit Mode -->
-        <template #edit="{ item }">
-          <OrganismsProfessionalEditKitchenExperience
-            :experience="item"
-            mode="edit"
-          />
-        </template>
-
-        <!-- Create Mode -->
-        <template #create="{ item }">
-          <OrganismsProfessionalEditKitchenExperience
-            :experience="item"
-            mode="create"
-          />
-        </template>
-      </MoleculesFormsObjectArray>
-
-      <!-- Explicitly Show Different States for Date -->
-      <h2>Explicit States - Full Object</h2>
-
-      <h3>Create State</h3>
-      <OrganismsProfessionalEditKitchenExperience
-        :experience="dummyItem"
-        mode="create"
-      />
-
-      <h3>Edit State</h3>
-      <OrganismsProfessionalEditKitchenExperience
-        :experience="dummyItem"
-        mode="edit"
-      />
-
-      <h3>Display State</h3>
-      <OrganismsProfessionalEditKitchenExperience
-        :experience="dummyItem"
-        mode="display"
-      />
+      <!-- Render all icons to test the current setup -->
+      <div class="icons-grid">
+        <ArrowUpCircleIcon class="icon" />
+        <ArrowUpOnSquareIcon class="icon" />
+        <AtSymbolIcon class="icon" />
+        <Bars3Icon class="icon" />
+        <CalendarIcon class="icon" />
+        <CameraIcon class="icon" />
+        <CheckCircleIcon class="icon" />
+        <ChevronDownIcon class="icon" />
+        <ChevronRightIcon class="icon" />
+        <ChevronUpIcon class="icon" />
+        <DevicePhoneMobileIcon class="icon" />
+        <DocumentTextIcon class="icon" />
+        <EnvelopeIcon class="icon" />
+        <EyeIcon class="icon" />
+        <HeartIcon class="icon" />
+        <IdentificationIcon class="icon" />
+        <MinusCircleIcon class="icon" />
+        <MoonIcon class="icon" />
+        <PaperClipIcon class="icon" />
+        <PencilIcon class="icon" />
+        <PencilSquareIcon class="icon" />
+        <PlusCircleIcon class="icon" />
+        <QrCodeIcon class="icon" />
+        <RocketLaunchIcon class="icon" />
+        <SunIcon class="icon" />
+        <SparklesIcon class="icon" />
+        <UserCircleIcon class="icon" />
+        <XCircleIcon class="icon" />
+        <XMarkIcon class="icon" />
+        <CakeIcon class="icon" />
+        <ArrowRightEndOnRectangleIcon class="icon" />
+        <BriefcaseIcon class="icon" />
+        <DocumentPlusIcon class="icon" />
+        <DocumentMagnifyingGlassIcon class="icon" />
+        <PlusIcon class="icon" />
+      </div>
     </div>
   </client-only>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useCurrentUser } from 'vuefire';
-
-// Firebase hooks
-const currentUser = useCurrentUser();
-const { miseboxUser } = useMiseboxUser(currentUser);
-const { professional } = useProfessional(miseboxUser);
-
-// Initialize a dummyItem for explicit state handling with the full object
-const dummyItem = ref({
-  from_month: '',
-  from_year: '',
-  to_month: '',
-  to_year: '',
-  place_id: '',
-  place_name: '',
-  formatted_address: '',
-  role: '',
-  document_url: '',
-  responsibilities: ''
-});
+// No additional imports needed since we are testing the plugin registration.
 </script>
 
 <style scoped>
@@ -101,13 +54,20 @@ const dummyItem = ref({
   padding: 20px;
 }
 
-h1,
-h2,
-h3 {
-  margin-top: 20px;
+h1 {
+  margin-bottom: 20px;
 }
 
-.development-area div {
-  margin-bottom: 20px;
+.icons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  gap: 20px;
+}
+
+.icon {
+  width: 40px;
+  height: 40px;
+  color: var(--text-primary);
+  margin: auto;
 }
 </style>

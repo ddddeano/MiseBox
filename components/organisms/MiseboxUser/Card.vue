@@ -1,23 +1,23 @@
 <template>
-  <div class="card user-card" v-if="user">
-    <NuxtLink :to="`/misebox-users/${user.id}`" class="view-profile-link">
+  <div class="card misebox-user-card" v-if="miseboxUser">
+    <NuxtLink :to="`/misebox-users/${miseboxUser.id}`" class="view-profile-link">
       <div class="card-header">
-        <MoleculesAvatar :user="user" size="small" />
+        <MoleculesAvatar :user="miseboxUser" size="small" />
         <div class="user-info">
-          <p v-if="user.display_name" class="display-name">
-            {{ user.display_name }}
-          </p>
-          <p v-if="user.handle" class="handle">{{ user.handle }}</p>
+          <p class="display-name">{{ miseboxUser.display_name }}</p>
+          <p class="handle">{{ miseboxUser.handle }}</p>
         </div>
       </div>
     </NuxtLink>
 
     <div class="card-expanded">
-      <p v-if="user.user_bio" class="bio">{{ user.user_bio }}</p>
-      <div v-if="user.user_apps && user.user_apps.length > 0" class="user-apps">
-        <div v-for="app in user.user_apps" :key="app" class="app-icon-container">
-          <MoleculesUserAppIcon :app="app" />
-        </div>
+      <p class="bio" v-if="miseboxUser.user_bio">{{ miseboxUser.user_bio }}</p>
+      <div class="user-apps" v-if="miseboxUser.user_apps?.length">
+        <MoleculesUserAppIcon
+          v-for="app in miseboxUser.user_apps"
+          :key="app"
+          :app="app"
+        />
       </div>
     </div>
   </div>
@@ -25,12 +25,13 @@
 
 <script setup>
 const props = defineProps({
-  user: {
+  miseboxUser: {
     type: Object,
     required: true,
   },
-})
+});
 </script>
-<style>
 
+<style scoped>
+/* Only include unique styles for MiseboxUserCard if needed */
 </style>

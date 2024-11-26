@@ -39,6 +39,7 @@ const toggleMenu = () => {
 .highest-z-index {
   z-index: 1002; /* Ensure this is higher than other elements */
 }
+
 .smaller {
   position: fixed;
   top: 60px;
@@ -48,6 +49,20 @@ const toggleMenu = () => {
   width: 100%;
   box-shadow: 0 2px 4px var(--shadow);
   padding: 10px;
+
+  /* Ensure each list item has padding */
+  li {
+    padding: 6px 0;
+  }
 }
 
+.backdrop {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
 </style>

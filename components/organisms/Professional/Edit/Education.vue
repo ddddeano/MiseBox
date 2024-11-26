@@ -6,7 +6,11 @@
         <div class="school-name">{{ education.school_name }}</div>
         <div class="subheader">
           <div>{{ education.city }}, {{ education.region }}</div>
-          <div class="dates">{{ education.year }}</div>
+          <div class="dates">
+            {{ education.from_month }} {{ education.from_year }} - 
+            <span v-if="education.ongoing">Present</span>
+            <span v-else>{{ education.to_month }} {{ education.to_year }}</span>
+          </div>
         </div>
       </div>
 
@@ -17,8 +21,8 @@
       </div>
     </div>
 
-    <!-- Create Mode -->
-    <div v-else-if="mode === 'create'">
+    <!-- Create/Edit Mode -->
+    <div v-else>
       <div v-if="education.school_name" class="selected-place editable-input" @click="clearSchoolSelection">
         <div><strong>Selected School:</strong> {{ education.school_name }}</div>
         <div>{{ education.city }}, {{ education.region }}</div>
@@ -29,39 +33,30 @@
 
       <input type="text" v-model="education.degree" class="editable-input" placeholder="Enter degree" />
 
-      <label>Year</label>
+      <label>From</label>
       <MoleculesMonthAndYearSelector
-        :year="education.year"
-        @update:year="(newYear) => education.year = newYear"
+        :month="education.from_month"
+        :year="education.from_year"
+        @update:month="(newMonth) => education.from_month = newMonth"
+        @update:year="(newYear) => education.from_year = newYear"
       />
 
-      <div class="document-upload">
-        <DocumentPlusIcon class="icon" @click="triggerFileInput" />
-        <input type="file" ref="fileInput" @change="handleFileUpload" style="display: none;" />
+      <!-- Ongoing Checkbox -->
+      <label>
+        <input type="checkbox" v-model="education.ongoing" /> Ongoing
+      </label>
+
+      <!-- To Date Fields (disabled if ongoing is true) -->
+      <div :class="{ 'disabled': education.ongoing }">
+        <label>To</label>
+        <MoleculesMonthAndYearSelector
+          :month="education.to_month"
+          :year="education.to_year"
+          @update:month="(newMonth) => education.to_month = newMonth"
+          @update:year="(newYear) => education.to_year = newYear"
+          :disabled="education.ongoing"
+        />
       </div>
-
-      <textarea v-model="education.formatted_address" class="editable-input" placeholder="School Address"></textarea>
-
-      <div v-if="isUploading">Uploading... {{ uploadProgress }}%</div>
-    </div>
-
-    <!-- Edit Mode -->
-    <div v-else class="edit-mode">
-      <div v-if="education.school_name" class="selected-place editable-input" @click="clearSchoolSelection">
-        <div><strong>Selected School:</strong> {{ education.school_name }}</div>
-        <div>{{ education.city }}, {{ education.region }}</div>
-      </div>
-      <div v-else>
-        <OrganismsPlacesSearch @select-place="selectSchool" />
-      </div>
-
-      <input type="text" v-model="education.degree" class="editable-input" placeholder="Enter degree" />
-
-      <label>Year</label>
-      <MoleculesMonthAndYearSelector
-        :year="education.year"
-        @update:year="(newYear) => education.year = newYear"
-      />
 
       <div class="document-upload">
         <DocumentPlusIcon class="icon" @click="triggerFileInput" />
@@ -105,30 +100,7 @@ const triggerFileInput = () => {
 
 const handleFileUpload = async (event) => {
   const file = event.target.files[0];
-  if (file && currentUser.value) {
-    const storage = getStorage();
-    const filePath = `documents/${currentUser.value.uid}/${file.name}`;
-    const fileRef = storageRef(storage, filePath);
-    const uploadTask = uploadBytesResumable(fileRef, file);
-
-    isUploading.value = true;
-    uploadTask.on(
-      'state_changed',
-      (snapshot) => {
-        uploadProgress.value = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-      },
-      (error) => {
-        console.error('Upload error:', error);
-        isUploading.value = false;
-      },
-      async () => {
-        isUploading.value = false;
-        uploadProgress.value = 100;
-        const downloadURL = await getDownloadURL(fileRef);
-        props.education.document_url = downloadURL;
-      }
-    );
-  }
+  // Implement your file upload logic here
 };
 
 const selectSchool = (place) => {
@@ -153,33 +125,8 @@ const openDocument = (url) => {
 </script>
 
 <style scoped>
-.education-form {
-  width: 100%;
-}
-
-.display-selected-header {
-  display: flex;
-  flex-direction: column;
-}
-
-.school-name {
-  font-size: 1.5em;
-  font-weight: bold;
-  margin-bottom: 0.2em;
-}
-
-.subheader {
-  display: flex;
-  gap: 15px;
-  justify-content: space-between;
-  font-size: 0.9em;
-}
-
-.dates {
-  font-style: italic;
-}
-
-.document-upload .icon {
-  cursor: pointer;
+.education-form .disabled {
+  opacity: 0.5;
+  pointer-events: none;
 }
 </style>

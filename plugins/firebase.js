@@ -1,11 +1,9 @@
 import { defineNuxtPlugin } from '#app';
-import { initializeApp, getApps } from 'firebase/app'; // Import getApps to check existing instances
-import { getAuth, onAuthStateChanged, signInAnonymously } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { initializeApp, getApps } from 'firebase/app';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { ref } from 'vue';
 
-export default defineNuxtPlugin(() => {
-  // Check if any Firebase apps have been initialized
-  let firebaseApp;
+export default defineNuxtPlugin((nuxtApp) => {
   if (!getApps().length) {
     const firebaseConfig = {
       apiKey: process.env.FIREBASE_API_KEY,
@@ -15,33 +13,27 @@ export default defineNuxtPlugin(() => {
       messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
       appId: process.env.FIREBASE_APP_ID,
     };
-
-    // Initialize Firebase only if no apps have been initialized
-    firebaseApp = initializeApp(firebaseConfig);
-  } else {
-    // Use the existing Firebase app
-    firebaseApp = getApps()[0];
+    initializeApp(firebaseConfig);
   }
 
-  // Initialize Firebase services
-  const auth = getAuth(firebaseApp);
-  const firestore = getFirestore(firebaseApp);
+  const auth = getAuth();
 
-  // Ensure anonymous sign-in
-  onAuthStateChanged(auth, (user) => {
-    if (!user) {
-      signInAnonymously(auth).catch((error) => {
-        console.error(error);
-      });
-    }
-  });
+  // Reactively track the authentication state
+  if (import.meta.client) {
+    onAuthStateChanged(auth, (user) => {
+      console.log('Auth state changed.');
+      if (user) {
+        console.log(`User ID: ${user.uid}`);
+      } else {
+        console.log('No user currently signed in.');
+      }
+    });
+  }
 
-  // Provide firebase auth and firestore to Nuxt context
   return {
     provide: {
       firebase: {
         auth,
-        firestore,
       },
     },
   };

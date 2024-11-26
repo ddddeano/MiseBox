@@ -1,0 +1,75 @@
+/* Shared Card and Cell Styles */
+.card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  padding: var(--spacing-s);
+  background-color: var(--background);
+  box-shadow: var(--shadow-xs);
+  margin-bottom: var(--spacing-m);
+  display: flex;
+  flex-direction: column;
+}
+
+.cell {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  padding: var(--spacing-s);
+  background-color: var(--background);
+  box-shadow: var(--shadow-xs);
+  margin-bottom: var(--spacing-m);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-s);
+}
+
+/* Shared Header Styles */
+.card-header, .cell-avatar, .cell-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-s);
+  width: 100%;
+  justify-content: space-between;
+}
+
+/* Shared User Info */
+.user-info, .cell-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Shared Display Name */
+.display-name {
+  font-weight: bold;
+  font-size: var(--font-size-m);
+  margin: 0;
+}
+
+/* Shared Handle/Text Secondary */
+.handle, .title {
+  color: var(--text-secondary);
+  font-size: var(--font-size-s);
+  margin: 0;
+}
+
+/* Shared Follow Button Styles */
+.follow-button {
+  margin-left: auto;
+}
+
+/* Shared Expanded Card */
+.card-expanded {
+  margin-top: var(--spacing-s);
+}
+
+/* Shared Bio */
+.bio {
+  color: var(--text-primary);
+}
+
+/* Shared List Styles */
+.user-apps {
+  display: flex;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-s);
+}

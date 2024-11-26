@@ -1,9 +1,13 @@
 <template>
   <client-only>
     <div class="profile-forms">
-      <div v-if="isCurrentUserProfile && miseboxUser">
+      <div v-if="isViewingOwnRoute && miseboxUser">
+        <button @click="handleSignOut" class="btn btn-secondary btn-pill sign-out-btn">
+          Sign Out
+        </button>
 
-        <MoleculesFormsAvatarSelection :user="miseboxUser"/>
+        <!-- Avatar Selection -->
+        <MoleculesFormsAvatarSelection :user="miseboxUser" />
 
         <!-- Display Name -->
         <MoleculesFormsSingleField
@@ -34,7 +38,7 @@
           target="email"
           :documentID="miseboxUser.id"
           :firebaseValue="miseboxUser.email"
-          :formattingFunction="emailFormatting"
+          :formattingFunction="formatEmail"
           :validationFunction="validateEmail"
         />
 
@@ -45,7 +49,7 @@
           target="phone_number"
           :documentID="miseboxUser.id"
           :firebaseValue="miseboxUser.phone_number"
-          :formattingFunction="removeWhitespace"
+          :formattingFunction="formatPhoneNumber"
           :validationFunction="validatePhoneNumber"
         />
 
@@ -56,12 +60,8 @@
           target="dob"
           :documentID="miseboxUser.id"
           :firebaseValue="miseboxUser.dob"
-          :placeholders="{
-            day: 'DD',
-            month: 'MM',
-            year: 'YYYY'
-          }"
-          :formattingFunction="dobFormatting"
+          :placeholders="{ day: 'DD', month: 'MM', year: 'YYYY' }"
+          :formattingFunction="formatDateOfBirth"
           :validationFunction="validateDateOfBirth"
         />
 
@@ -96,36 +96,23 @@
           :validationFunction="validateBio"
           :maxLength="500"
         />
-
-        <!-- Navigation Buttons -->
-        <div class="navigation-buttons">
-          <NuxtLink :to="`/professionals/${miseboxUser.id}/edit`" class="btn btn-primary btn-pill">
-            <SparklesIcon class="icon" />
-            Edit Professional Profile
-          </NuxtLink>
-          <NuxtLink :to="`/chefs/${miseboxUser.id}/edit`" class="btn btn-primary btn-pill">
-            <UserCircleIcon class="icon" />
-            Edit Chef Profile
-          </NuxtLink>
-        </div>
-
       </div>
+
+      <button @click="viewProfile" class="btn btn-primary">View My Profile</button>
     </div>
   </client-only>
 </template>
 
 <script setup>
-import { useCurrentUser } from 'vuefire';
-import { useRoute } from 'vue-router';
+import { computed } from 'vue';
 import {
   formatDisplayName,
   formatHandle,
-  emailFormatting,
-  removeWhitespace,
-  formatBio,
-  dobFormatting,
+  formatEmail,
+  formatPhoneNumber,
+  formatDateOfBirth,
   formatAddress,
-  formatTags,
+  formatBio,
   validateDisplayName,
   validateHandle,
   validateEmail,
@@ -133,26 +120,51 @@ import {
   validateDateOfBirth,
   validateAddress,
   validateBio,
-  validateTags
-} from '~/composables/utils/useFormattingAndValidation';
+} from '~/composables/utils/useMiseboxUserFormattingAndValidation';
+import { useRouter, useRoute } from 'vue-router';
+import { useFirestore, useDocument, useCurrentUser } from 'vuefire';
+import { doc } from 'firebase/firestore';
 
+const router = useRouter();
 const route = useRoute();
+const db = useFirestore();
 const currentUser = useCurrentUser();
-const isCurrentUserProfile = computed(
-  () => currentUser.value?.uid === route.params.id
+
+// Guard against operations without a current user
+const miseboxUserDocRef = computed(() =>
+  currentUser.value ? doc(db, 'misebox-users', route.params.id) : undefined
 );
-const { miseboxUser } = useMiseboxUser(currentUser);
+
+const { data: miseboxUser } = useDocument(miseboxUserDocRef);
+
+// Check if the current user is viewing their own profile
+const isViewingOwnRoute = computed(() => {
+  return currentUser.value?.uid === route.params.id;
+});
+
+const { logout } = useAuth();
+
+const handleSignOut = () => logout();
+
+const viewProfile = () => {
+  if (miseboxUser.value) {
+    router.push(`/misebox-users/${miseboxUser.value.id}`);
+  }
+};
 </script>
 
 <style scoped>
 .profile-forms {
-  /* Your specific styles for profile-forms */
-}
-
-.navigation-buttons {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-m);
-  margin-top: var(--spacing-l);
+  align-items: center;
+}
+
+.sign-out-btn {
+  margin-top: var(--spacing-s);
+}
+
+.btn-primary {
+  margin-top: var(--spacing-m);
 }
 </style>

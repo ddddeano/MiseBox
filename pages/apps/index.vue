@@ -76,7 +76,7 @@ const hasAllApps = computed(() => {
 
 // Manage and create app functions
 const manageApp = (app) => {
-  router.push(`/${app.collection}/${currentUser.value.uid}/basic-info`);
+  router.push(`/${app.collection}/${currentUser.value.uid}`);
 };
 
 const createApp = (app) => {

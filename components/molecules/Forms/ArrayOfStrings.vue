@@ -63,14 +63,14 @@
       <!-- Input for adding a new item (create mode) -->
       <div class="input-container">
         <input
-          v-model="viewModel[firebaseValue.length]"
+          v-model="newItem"
           :placeholder="itemPlaceholder"
           class="editable-input"
         />
         <div class="centred-icons">
           <CheckCircleIcon
             class="icon confirm-icon"
-            @click="sendNewToFirestore(firebaseValue.length)"
+            @click="addItem"
           />
           <XCircleIcon class="icon cancel-icon" @click="cancelEditing" />
         </div>
@@ -109,6 +109,7 @@ const errorMessage = ref('');
 const isEditing = ref(false);
 const editingIndex = ref(null);
 const viewModel = ref([...props.firebaseValue]);
+const newItem = ref('');
 
 // Sync viewModel with firebaseValue when it changes
 watch(
@@ -118,6 +119,146 @@ watch(
   }
 );
 
-// Functions for editing, adding, removing items remain the same
-// (refer to your earlier implementation)
+// Start editing a specific item
+const editItem = (index) => {
+  editingIndex.value = index;
+  errorMessage.value = '';
+};
+
+// Cancel editing mode for the currently selected item
+const cancelInlineEditing = () => {
+  editingIndex.value = null;
+  errorMessage.value = '';
+  viewModel.value = [...props.firebaseValue];
+};
+
+// Save the edited item back to Firestore
+const overwriteItem = async (index) => {
+  try {
+    let updatedItem = viewModel.value[index];
+
+    // Apply formatting function if provided
+    if (props.formattingFunction) {
+      updatedItem = props.formattingFunction(updatedItem);
+    }
+
+    // Apply validation function if provided
+    if (props.validationFunction) {
+      const validationError = props.validationFunction(updatedItem);
+      if (validationError) {
+        errorMessage.value = validationError;
+        return;
+      }
+    }
+
+    const updatedArray = [...props.firebaseValue];
+    updatedArray[index] = updatedItem;
+
+    const documentRef = doc(firestore, props.collectionName, props.documentID);
+    await updateDoc(documentRef, {
+      [props.target]: updatedArray,
+    });
+
+    editingIndex.value = null;
+  } catch (error) {
+    console.error('Error updating item in Firestore:', error);
+  }
+};
+
+// Add a new item to Firestore
+const addItem = async () => {
+  try {
+    let newItemValue = newItem.value.trim();
+
+    // Apply formatting and validation if provided
+    if (props.formattingFunction) {
+      newItemValue = props.formattingFunction(newItemValue);
+    }
+
+    if (props.validationFunction) {
+      const validationError = props.validationFunction(newItemValue);
+      if (validationError) {
+        errorMessage.value = validationError;
+        return;
+      }
+    }
+
+    if (!newItemValue) {
+      errorMessage.value = 'Item cannot be empty.';
+      return;
+    }
+
+    const documentRef = doc(firestore, props.collectionName, props.documentID);
+    await updateDoc(documentRef, {
+      [props.target]: arrayUnion(newItemValue),
+    });
+
+    newItem.value = ''; // Clear input field
+  } catch (error) {
+    console.error('Error adding new item to Firestore:', error);
+  }
+};
+
+// Remove an item from Firestore
+const removeItem = async (index) => {
+  try {
+    const itemToRemove = props.firebaseValue[index];
+
+    const documentRef = doc(firestore, props.collectionName, props.documentID);
+    await updateDoc(documentRef, {
+      [props.target]: arrayRemove(itemToRemove),
+    });
+  } catch (error) {
+    console.error('Error removing item from Firestore:', error);
+  }
+};
+
+// Start editing mode
+const startEditing = () => {
+  isEditing.value = true;
+  errorMessage.value = '';
+};
+
+// Cancel editing mode entirely
+const cancelEditing = () => {
+  isEditing.value = false;
+  newItem.value = '';
+  errorMessage.value = '';
+};
 </script>
+
+<style scoped>
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.display-list-item-view {
+  padding: 0.5rem;
+}
+
+.editing-item {
+  margin-top: 1rem;
+}
+
+.input-container {
+  margin-top: 1rem;
+}
+
+.list-icons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.centred-icons {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.error-message {
+  color: red;
+  margin-top: 0.5rem;
+}
+</style>

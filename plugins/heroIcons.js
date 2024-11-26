@@ -30,11 +30,19 @@ import {
   XCircleIcon,
   XMarkIcon,
   CakeIcon,
-  ArrowRightEndOnRectangleIcon, // Import the new icon
+  ArrowRightEndOnRectangleIcon,
+  BriefcaseIcon,
+  DocumentPlusIcon,
+  DocumentMagnifyingGlassIcon,
+  PlusIcon
 } from '@heroicons/vue/24/solid'
 
 export default defineNuxtPlugin((nuxtApp) => {
   const icons = {
+    DocumentMagnifyingGlassIcon,
+    PlusIcon,
+    DocumentPlusIcon,
+    BriefcaseIcon,
     ArrowUpCircleIcon,
     ArrowUpOnSquareIcon,
     AtSymbolIcon,
@@ -65,7 +73,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     XCircleIcon,
     XMarkIcon,
     CakeIcon,
-    ArrowRightEndOnRectangleIcon, // Add the new icon to the icons object
+    ArrowRightEndOnRectangleIcon,
   }
 
   Object.entries(icons).forEach(([name, component]) => {

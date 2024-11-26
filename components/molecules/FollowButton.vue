@@ -6,71 +6,86 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { updateDoc, doc, arrayUnion, arrayRemove } from 'firebase/firestore'
-import { useFirestore, useCurrentUser } from 'vuefire'
+import { ref, computed, onMounted } from 'vue';
+import { updateDoc, doc, arrayUnion, arrayRemove, getDoc } from 'firebase/firestore';
+import { useFirestore, useCurrentUser } from 'vuefire';
 
 // Firestore instance and current user
-const firestore = useFirestore()
-const currentUser = useCurrentUser()
+const firestore = useFirestore();
+const currentUser = useCurrentUser();
 
-// Props to receive the user object and initial following status
+// Props to receive the user object
 const props = defineProps({
   user: {
     type: Object,
     required: true,
   },
-  isFollowing: {
-    type: Boolean,
-    default: false,  // Default to not following
-  },
-})
+});
 
-// Local state to keep track of follow status
-const localFollowingStatus = ref(props.isFollowing)
-const isClicked = ref(false) // To manage the click animation
+// Local state for follow status and animation
+const localFollowingStatus = ref(false);
+const isClicked = ref(false);
 
 // Computed class for the Heart icon color based on follow status
 const isFollowingClass = computed(() => {
-  return localFollowingStatus.value ? 'following' : 'not-following'
-})
+  return localFollowingStatus.value ? 'following' : 'not-following';
+});
+
+// Initialize following status from Firestore on mount
+onMounted(async () => {
+  if (currentUser.value) {
+    const currentUserDocRef = doc(firestore, 'misebox-users', currentUser.value.uid);
+    const docSnapshot = await getDoc(currentUserDocRef);
+
+    // Check if current user is following the target user
+    if (docSnapshot.exists()) {
+      const followingList = docSnapshot.data().following || [];
+      localFollowingStatus.value = followingList.includes(props.user.id);
+    }
+  }
+});
 
 // Function to toggle follow/unfollow in Firestore
 const toggleFollow = async () => {
+  if (!currentUser.value) {
+    console.error('User not authenticated.');
+    return;
+  }
+
   try {
-    const currentUserId = currentUser.value.uid
-    const followedUserId = props.user.id
+    const currentUserId = currentUser.value.uid;
+    const followedUserId = props.user.id;
 
     // Reference to the current user's Firestore document
-    const currentUserDocRef = doc(firestore, 'misebox-users', currentUserId)
+    const currentUserDocRef = doc(firestore, 'misebox-users', currentUserId);
 
     // Toggle follow/unfollow logic
-    const newFollowingStatus = !localFollowingStatus.value
+    const newFollowingStatus = !localFollowingStatus.value;
 
     // Update the following array based on the new status
     const updatedFollowingList = newFollowingStatus
-      ? arrayUnion(followedUserId)  // Add to following list
-      : arrayRemove(followedUserId) // Remove from following list
+      ? arrayUnion(followedUserId) // Add to following list
+      : arrayRemove(followedUserId); // Remove from following list
 
     // Update Firestore with the new following status
     await updateDoc(currentUserDocRef, {
       following: updatedFollowingList,
-    })
+    });
 
     // Update the local follow status
-    localFollowingStatus.value = newFollowingStatus
+    localFollowingStatus.value = newFollowingStatus;
 
     // Trigger the click animation
-    isClicked.value = true
+    isClicked.value = true;
     setTimeout(() => {
-      isClicked.value = false
-    }, 300)
+      isClicked.value = false;
+    }, 300);
 
-    console.log(`User ${newFollowingStatus ? 'followed' : 'unfollowed'} successfully`)
+    console.log(`User ${newFollowingStatus ? 'followed' : 'unfollowed'} successfully`);
   } catch (err) {
-    console.error('Error updating follow status:', err)
+    console.error('Error updating follow status:', err);
   }
-}
+};
 </script>
 
 <style scoped>

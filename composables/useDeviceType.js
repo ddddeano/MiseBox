@@ -1,12 +1,13 @@
+// composables/useDeviceType.js
 import { ref, onMounted, onUnmounted } from 'vue'
 
 export function useDeviceType() {
   const deviceType = ref('')
 
-  // Define breakpoints
+  // Define breakpoints with more precise orientation ranges
   const breakpoints = {
     mobilePortrait: 375,
-    mobileLandscape: 812,
+    mobileLandscape: 600, // Adjusted to avoid overlap
     tabletPortrait: 768,
     tabletLandscape: 1024,
     desktop: 1440,
@@ -17,20 +18,11 @@ export function useDeviceType() {
     const width = window.innerWidth
     if (width <= breakpoints.mobilePortrait) {
       deviceType.value = 'Mobile (Portrait)'
-    } else if (
-      width > breakpoints.mobilePortrait &&
-      width <= breakpoints.mobileLandscape
-    ) {
+    } else if (width > breakpoints.mobilePortrait && width <= breakpoints.mobileLandscape) {
       deviceType.value = 'Mobile (Landscape)'
-    } else if (
-      width > breakpoints.mobileLandscape &&
-      width <= breakpoints.tabletLandscape
-    ) {
+    } else if (width > breakpoints.mobileLandscape && width <= breakpoints.tabletPortrait) {
       deviceType.value = 'Tablet (Portrait)'
-    } else if (
-      width > breakpoints.tabletLandscape &&
-      width <= breakpoints.desktop
-    ) {
+    } else if (width > breakpoints.tabletPortrait && width <= breakpoints.tabletLandscape) {
       deviceType.value = 'Tablet (Landscape)'
     } else {
       deviceType.value = 'Desktop'

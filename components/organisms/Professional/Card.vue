@@ -1,25 +1,39 @@
 <template>
-  <div class="card" v-if="professional">
+  <div class="card professional-card" v-if="professional && miseboxUser">
+    <!-- Link to the full profile -->
     <NuxtLink :to="`/professionals/${professional.id}`" class="view-profile-link">
       <div class="card-header">
-        <MoleculesAvatar :user="professional" size="small" />
+        <MoleculesAvatar :user="miseboxUser" size="small" />
         <div class="user-info">
-          <p v-if="professional.display_name" class="display-name">{{ professional.display_name }}</p>
-          <p v-if="professional.handle" class="handle">@{{ professional.handle }}</p>
+          <p class="display-name">{{ miseboxUser.display_name }}</p>
+          <p class="handle">{{ miseboxUser.handle }}</p>
+          <p class="title">{{ professional.title }}</p>
         </div>
       </div>
     </NuxtLink>
+
+    <!-- Expanded card with additional details -->
     <div class="card-expanded">
-      <p v-if="professional.bio" class="bio">{{ professional.bio }}</p>
+      <p class="bio" v-if="professional.bio_short">{{ professional.bio_short }}</p>
     </div>
   </div>
 </template>
 
 <script setup>
+import { useDocument } from 'vuefire';
+import { doc } from 'firebase/firestore';
+import { useFirestore } from 'vuefire';
+
 const props = defineProps({
   professional: {
     type: Object,
     required: true,
   },
-})
+});
+
+const db = useFirestore();
+
+// Fetching the corresponding Misebox user document based on professional.id
+const miseboxUserDocRef = doc(db, 'misebox-users', props.professional.id);
+const { data: miseboxUser } = useDocument(miseboxUserDocRef);
 </script>
