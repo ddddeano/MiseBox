@@ -1,0 +1,147 @@
+/* Shared Form Styles */
+
+/* Wrapper for profile forms */
+.profile-forms {
+  display: flex;
+  flex-direction: column;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0.5rem;
+  color: var(--text-primary);
+}
+
+/* General form field styling */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: var(--spacing-xs);
+  padding-bottom: var(--spacing-xs);
+  position: relative;
+  color: var(--text-secondary);;
+}
+
+.form-field::after {
+  content: '';
+  width: 100%;
+  height: 1px;
+  background-color: var(--border);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+/* Top section with label and icon */
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xs);
+}
+
+label {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-m);
+  display: block;
+}
+
+/* Input and textarea shared styles */
+.editable-input,
+.editable-textarea {
+  width: 100%;
+  padding: var(--spacing-xs);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  font-size: var(--font-size-m);
+  color: var(--text-secondary);
+  background-color: var(--background);
+  margin-bottom: var(--spacing-s);
+}
+
+.editable-input:focus,
+.editable-textarea:focus {
+  outline: none;
+  border-color: var(--text-secondary);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.editable-textarea {
+  resize: vertical;
+  min-height: 150px;
+}
+
+/* Icons styling */
+.icon {
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.icon:hover {
+  color: var(--hover);
+}
+
+.component-icons,
+.list-icons,
+.centred-icons {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+/* Center icons layout */
+.centred-icons {
+  justify-content: center;
+}
+
+/* List item view styles */
+.display-list-item-view,
+.editing-list-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-xs);
+  padding: var(--spacing-xxs);
+  border-radius: var(--radius-xs);
+  background-color: var(--background);
+  color: var(--text-secondary);
+}
+
+/* Input container for "create mode" */
+.input-container {
+  margin-top: var(--spacing-m);
+}
+
+/* Dropdown styling */
+.dropdown {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  background-color: var(--tertiary);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* General spacing between form elements */
+.form-field,
+.editable-input,
+.editable-textarea,
+.display-list-item-view {
+  margin-bottom: var(--spacing-m);
+}
+
+/* Shared list layout */
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+li {
+  margin-bottom: var(--spacing-s);
+}
+
+/* Media query for larger screens */
+@media (min-width: 768px) {
+  .editable-textarea {
+    resize: both; /* Allow horizontal and vertical resizing on larger screens */
+  }
+  .display-mode {
+    width: 100%;
+  }
+}
