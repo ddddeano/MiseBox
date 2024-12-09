@@ -1,77 +1,88 @@
 <template>
   <client-only>
-    <div class="kitchens-index index">
-      <!-- Authentication and Profile Checks -->
-      <div v-if="!currentUser" class="missing-acc-message">
-        You first need a Vuefire account.
-      </div>
-      <div v-if="!miseboxUser" class="missing-acc-message">
-        You first need a Misebox account.
-      </div>
-      <div v-if="!chef" class="missing-acc-message">
-        You first need a Chef profile to manage kitchens.
-      </div>
-     <!-- Segue to Create or Connect a Kitchen -->
-     <section v-if="chef" class="create-or-connect-kitchen-section">
-        <h2>Create or Connect to a Kitchen</h2>
-        <NuxtLink to="/kitchens/create-or-connect" class="btn btn-primary btn-pill">
-          Go to Create or Connect
-        </NuxtLink>
-      </section>
-      <!-- My Kitchens Section -->
-      <section v-if="chef && myKitchens?.length" class="my-kitchens-section">
-        <h2>My Kitchens</h2>
-        <div class="kitchen-list">
-          <OrganismsKitchenCard
-            v-for="kitchen in myKitchens"
-            :key="kitchen.place_id"
-            :kitchen="kitchen"
-          />
-        </div>
+    <div class="index">
+      <!-- Call-to-Action Component -->
+      <OrganismsKitchenCTA />
+      <!-- Debugging: Display Raw Chef Data -->
+      <section>
+        <h3>Raw Chef Data</h3>
+        <pre>{{ chef }}</pre>
       </section>
 
-      <!-- All Kitchens Section -->
-      <section v-if="currentUser && miseboxUser" class="all-kitchens-section">
-        <h2>All Kitchens</h2>
-        <div class="kitchen-list">
-          <OrganismsKitchenCard
-            v-for="kitchen in allKitchens"
-            :key="kitchen.place_id"
-            :kitchen="kitchen"
-          />
-        </div>
+      <!-- Debugging: Display All Kitchens Data -->
+      <section>
+        <h3>All Kitchens Data from Firestore</h3>
+        <pre>
+          Total Kitchens: {{ kitchens?.length || 0 }}
+          Kitchens Data:
+          {{ kitchens }}
+        </pre>
       </section>
 
+      <!-- Debugging: Display Filtered Chef Kitchens -->
+      <section>
+        <h3>Filtered Chef's Kitchens</h3>
+        <pre>
+          Total Chef Kitchens: {{ chefKitchens?.length || 0 }}
+          Chef Kitchens Data:
+          {{ chefKitchens }}
+        </pre>
+      </section>
+      <!-- Debugging: Display Filtered All Kitchens -->
+      <section>
+        <h3>Filtered Non-Chef Kitchens</h3>
+        <pre>
+          Total Non-Chef Kitchens: {{ allKitchens?.length || 0 }}
+          Non-Chef Kitchens Data:
+          {{ allKitchens }}
+        </pre>
+      </section>
+
+      <!-- Chef's Kitchens -->
+      <section v-if="chef?.kitchens?.length">
+        <h2>Your Kitchens</h2>
+        <OrganismsKitchenList :kitchens="chefKitchens" />
+      </section>
+
+      <!-- All Kitchens -->
+      <section>
+        <h2>Explore Kitchens</h2>
+        <OrganismsKitchenList :kitchens="allKitchens" />
+      </section>
     </div>
   </client-only>
 </template>
 
 <script setup>
-import { useCurrentUser, useCollection, useFirestore } from 'vuefire';
-import { collection, query, where } from 'firebase/firestore';
+import { computed } from "vue";
+import { collection } from "firebase/firestore";
+import { useFirestore, useCurrentUser, useCollection } from "vuefire";
 
-// Get the current user and Firestore instance
-const currentUser = useCurrentUser();
 const db = useFirestore();
+const currentUser = useCurrentUser();
+const { currentChef: chef } = useChef();
 
-// Mocking miseboxUser and chef for this example
-const miseboxUser = ref(true);
-const chef = ref(true);
-
-// Query kitchens connected to the current chef (My Kitchens)
-const myKitchensCollectionRef = computed(() =>
-  currentUser.value && chef.value
-    ? query(
-        collection(db, 'kitchens'),
-        where('team', 'array-contains', currentUser.value.uid)
-      )
-    : null
+// Fetch all kitchens from Firestore
+const allKitchensRef = computed(() =>
+  currentUser.value ? collection(db, "kitchens") : null
 );
-const { data: myKitchens } = useCollection(myKitchensCollectionRef);
+const { data: kitchens } = useCollection(allKitchensRef);
 
-// Query all kitchens in the database
-const allKitchensCollectionRef = computed(() =>
-  currentUser.value ? collection(db, 'kitchens') : null
+// Filter kitchens belonging to the current chef
+const chefKitchens = computed(() =>
+  currentUser.value
+    ? kitchens.value?.filter((kitchen) =>
+        chef.value?.kitchens?.some((chefKitchen) => chefKitchen.kitchenId === kitchen.id)
+      ) || []
+    : []
 );
-const { data: allKitchens } = useCollection(allKitchensCollectionRef);
+
+// Filter kitchens not belonging to the current chef
+const allKitchens = computed(() =>
+  currentUser.value
+    ? kitchens.value?.filter((kitchen) =>
+        !chef.value?.kitchens?.some((chefKitchen) => chefKitchen.kitchenId === kitchen.id)
+      ) || []
+    : []
+);
 </script>

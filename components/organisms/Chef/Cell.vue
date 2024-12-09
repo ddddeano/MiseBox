@@ -1,14 +1,15 @@
+<!-- components/Organisms/Chef/Cell.vue -->
 <template>
   <div class="cell chef-cell" v-if="chef && miseboxUser">
     <NuxtLink :to="`/chefs/${chef.id}`" class="cell-avatar">
       <MoleculesAvatar :user="miseboxUser" size="small" />
       <div class="cell-info">
         <div v-if="miseboxUser.display_name" class="display-name">{{ miseboxUser.display_name }}</div>
-        <div class="title">{{ chef.specialty }}</div>
+        <div class="specialty">{{ chef.specialty }}</div>
       </div>
     </NuxtLink>
     <MoleculesFollowButton
-      v-if="!isViewingOwnRoute && miseboxUser"
+      v-if="!interactingWithSelf"
       :user="miseboxUser"
       class="follow-button"
     />
@@ -16,23 +17,28 @@
 </template>
 
 <script setup>
-import { useDocument } from 'vuefire';
-import { doc } from 'firebase/firestore';
-import { useFirestore } from 'vuefire';
+import { useDocument } from "vuefire";
+import { doc } from "firebase/firestore";
+import { useFirestore } from "vuefire";
 
 const props = defineProps({
   chef: {
     type: Object,
-    required: true,
+    required: true, 
   },
 });
 
 const db = useFirestore();
 
-// Fetching the corresponding Misebox user document based on chef.id
-const miseboxUserDocRef = doc(db, 'misebox-users', props.chef.id);
+const miseboxUserDocRef = computed(() =>
+  doc(db, "misebox-users", props.chef.id)
+);
 const { data: miseboxUser } = useDocument(miseboxUserDocRef);
 
-// Use interaction composable to determine if viewing own profile
-const { isViewingOwnRoute } = useInteraction();
+const { isInteractingWithSelf } = useInteraction();
+const interactingWithSelf = isInteractingWithSelf(props.chef.id);
 </script>
+
+<style scoped>
+/* Add specific styles for the chef cell */
+</style>

@@ -1,6 +1,7 @@
+<!-- components/Organisms/Chef/Card.vue -->
 <template>
-  <div class="card chef-card" v-if="chef && miseboxUser">
-    <!-- Link to the full chef profile -->
+  <div class="card chef-card" v-if="miseboxUser && chef">
+    <!-- Clickable Link to Chef Profile -->
     <NuxtLink :to="`/chefs/${chef.id}`" class="view-profile-link">
       <div class="card-header">
         <MoleculesAvatar :user="miseboxUser" size="small" />
@@ -12,28 +13,42 @@
       </div>
     </NuxtLink>
 
-    <!-- Expanded card with additional details -->
-    <div class="card-expanded">
+    <!-- Expand Button -->
+    <button class="expand-button" @click="toggleExpanded">
+      {{ expanded ? 'Show Less' : 'Show More' }}
+    </button>
+
+    <!-- Expanded Content -->
+    <div class="card-expanded" v-if="expanded">
       <p class="bio" v-if="chef.bio">{{ chef.bio }}</p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { useDocument } from 'vuefire';
-import { doc } from 'firebase/firestore';
-import { useFirestore } from 'vuefire';
-
-const props = defineProps({
-  chef: {
-    type: Object,
-    required: true,
-  },
-});
+import { ref } from "vue";
+import { useDocument, useCurrentUser } from "vuefire";
+import { doc } from "firebase/firestore";
+import { useFirestore } from "vuefire";
 
 const db = useFirestore();
+const currentUser = useCurrentUser();
 
-// Fetching the corresponding Misebox user document based on chef.id
-const miseboxUserDocRef = doc(db, 'misebox-users', props.chef.id);
+// State for expanding the card
+const expanded = ref(false);
+const toggleExpanded = () => {
+  expanded.value = !expanded.value;
+};
+
+// Fetch Firestore references
+const miseboxUserDocRef = computed(() =>
+  currentUser.value ? doc(db, "misebox-users", currentUser.value.uid) : null
+);
+const chefDocRef = computed(() =>
+  currentUser.value ? doc(db, "chefs", currentUser.value.uid) : null
+);
+
+// Fetch Firestore documents
 const { data: miseboxUser } = useDocument(miseboxUserDocRef);
+const { data: chef } = useDocument(chefDocRef);
 </script>

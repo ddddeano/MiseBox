@@ -1,4 +1,5 @@
 // ~/composables/utils/useChefFormattingAndValidation.js
+import { validateMinLength, validateMaxLength } from '~/composables/utils/shared/validations';
 
 // Formatting Functions
 export function formatKitchens(value) {
@@ -21,31 +22,55 @@ export function formatGallery(value) {
   return value; // Placeholder for formatting logic, if any
 }
 
+export function formatTeam(value) {
+  return value; // Placeholder for formatting logic, if any
+}
+
+export function formatSuppliers(value) {
+  return value; // Placeholder for formatting logic, if any
+}
+
 export function formatSpecialties(value) {
   return value; // Placeholder for formatting logic, if any
 }
 
 // Validation Functions
-export function validateKitchens(value) {
-  return ''; // Placeholder for validation logic, if any
+export function validateKitchens(value, optional = false) {
+  if (optional && (!value || value.trim() === '')) return '';
+  return validateMinLength(3)(value) || ''; // Example validation logic
 }
 
-export function validateAvailability(value) {
-  return ''; // Placeholder for validation logic, if any
+export function validateAvailability(value, optional = false) {
+  if (optional && (!value || value.length === 0)) return '';
+  return ''; // Example logic if needed later
 }
 
-export function validateRecipes(value) {
-  return ''; // Placeholder for validation logic, if any
+export function validateRecipes(value, optional = false) {
+  if (optional && (!value || value.length === 0)) return '';
+  return ''; // Placeholder
 }
 
-export function validateEvents(value) {
-  return ''; // Placeholder for validation logic, if any
+export function validateEvents(value, optional = false) {
+  if (optional && (!value || value.length === 0)) return '';
+  return ''; // Placeholder
 }
 
-export function validateGallery(value) {
-  return ''; // Placeholder for validation logic, if any
+export function validateGallery(value, optional = false) {
+  if (optional && (!value || value.length === 0)) return '';
+  return ''; // Placeholder
 }
 
-export function validateSpecialties(value) {
-  return ''; // Placeholder for validation logic, if any
+export function validateTeam(value, optional = false) {
+  if (optional && (!value || value.length === 0)) return '';
+  return ''; // Placeholder
+}
+
+export function validateSuppliers(value, optional = false) {
+  if (optional && (!value || value.length === 0)) return '';
+  return ''; // Placeholder
+}
+
+export function validateSpecialties(value, optional = false) {
+  if (optional && (!value || value.trim() === '')) return '';
+  return validateMinLength(3)(value) || validateMaxLength(50)(value) || '';
 }

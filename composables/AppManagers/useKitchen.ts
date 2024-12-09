@@ -1,98 +1,94 @@
-import { useFirestore } from 'vuefire';
-import { collection, doc, setDoc, deleteDoc } from 'firebase/firestore';
-import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { useCurrentUser } from 'vuefire';
+import { useFirestore } from "vuefire";
+import {
+  collection,
+  doc,
+  addDoc,
+  updateDoc,
+  arrayUnion,
+} from "firebase/firestore";
+import { useCurrentUser } from "vuefire";
 
 export function useKitchen() {
   const firestore = useFirestore();
   const currentUser = useCurrentUser();
-  const kitchensCollectionRef = collection(firestore, 'kitchens');
-  const storage = getStorage();
+  const kitchensCollectionRef = collection(firestore, "kitchens");
+  const { currentUserMini } = useMiseboxUser();
 
   // Utility: Generate a searchable phrase
   const generateSearchPhrase = (place_name, formatted_address) => {
-    const normalize = (str) => str.toLowerCase().replace(/'/g, '');
+    const normalize = (str) => str.toLowerCase().replace(/'/g, "");
     return `${normalize(place_name)} ${normalize(formatted_address)}`;
   };
 
-  // Utility: Upload image to Firebase Storage
-  const uploadImageToStorage = async (photoUrl, fileName) => {
-    try {
-      console.log(`[uploadImageToStorage] Fetching image from URL: ${photoUrl}`);
-      const response = await fetch(photoUrl);
-      if (!response.ok) throw new Error(`Failed to fetch image: ${response.statusText}`);
+  const createKitchen = async (selectedKitchen) => {
+    console.log("[createKitchen] Received selectedKitchen object:", selectedKitchen);
 
-      const blob = await response.blob();
-      const imageRef = storageRef(storage, `kitchen_images/${fileName}`);
-      await uploadBytes(imageRef, blob);
-      const downloadUrl = await getDownloadURL(imageRef);
-
-      console.log(`[uploadImageToStorage] Image uploaded successfully: ${downloadUrl}`);
-      return downloadUrl;
-    } catch (error) {
-      console.error('[uploadImageToStorage] Error:', error);
-      return null;
-    }
-  };
-
-  // Create a new kitchen
-  const createKitchen = async (kitchen) => {
-    if (!currentUser.value) {
-      alert('You must be logged in to create a kitchen.');
+    if (!currentUser.value || !currentUserMini.value) {
+      alert("You must be logged in to create a kitchen.");
       return null;
     }
 
     try {
-      const photoUrl = kitchen.photo_url
-        ? await uploadImageToStorage(kitchen.photo_url, `${kitchen.place_id}.jpg`)
-        : null;
+      let avatarUrls = { avatarUrl: null, miniAvatarUrl: null };
 
-      const kitchenDocRef = doc(kitchensCollectionRef, kitchen.place_id);
-      const kitchenData = {
-        ...kitchen,
-        photo_url: photoUrl || kitchen.photo_url,
+      if (selectedKitchen.photo_url) {
+        console.log("[createKitchen] Fetching and processing photo_url for avatar.");
+        avatarUrls = await processAndUploadAvatar(selectedKitchen.photo_url, selectedKitchen.place_id);
+      }
+
+      // Prepare the kitchen object for Firestore
+      const newKitchenData = {
+        google_places_id: selectedKitchen.place_id || "",
+        place_name: selectedKitchen.place_name || "",
+        formatted_address: selectedKitchen.formatted_address || "",
+        city: selectedKitchen.city || "",
+        region: selectedKitchen.region || "",
+        country: selectedKitchen.country || "",
+        avatar: avatarUrls.avatarUrl || "failed",
+        avatar_mini: avatarUrls.miniAvatarUrl || "failed",
         added_by: currentUser.value.uid,
-        team: [currentUser.value.uid],
-        search_phrase: generateSearchPhrase(kitchen.place_name, kitchen.formatted_address),
+        team: [currentUserMini.value],
+        search_phrase: generateSearchPhrase(
+          selectedKitchen.place_name || "",
+          selectedKitchen.formatted_address || ""
+        ),
+        created_at: new Date().toISOString(),
       };
 
-      console.log('[createKitchen] Adding kitchen to Firestore:', kitchenData);
+      console.log("[createKitchen] Saving new kitchen data:", newKitchenData);
 
-      await setDoc(kitchenDocRef, kitchenData);
-      return kitchen.place_id;
+      // Save to Firestore and get the auto-generated ID
+      const kitchenDocRef = await addDoc(kitchensCollectionRef, newKitchenData);
+      const kitchenId = kitchenDocRef.id;
+
+      console.log("[createKitchen] Kitchen created successfully with ID:", kitchenId);
+
+      // Add the Firestore ID to the newly created document
+      await updateDoc(kitchenDocRef, { kitchenId });
+
+      console.log("[createKitchen] Added Firestore ID to kitchen document.");
+
+      // Update the chef's kitchens array in Firestore
+      const chefDocRef = doc(firestore, "chefs", currentUser.value.uid);
+      await updateDoc(chefDocRef, {
+        kitchens: arrayUnion({
+          kitchenId,
+          place_name: selectedKitchen.place_name || "",
+          avatar_mini: avatarUrls.miniAvatarUrl || "failed",
+        }),
+      });
+
+      console.log("[createKitchen] Added kitchen ID to chef's profile.");
+
+      return kitchenId;
     } catch (error) {
-      console.error('[createKitchen] Error:', error);
-      alert('Failed to create kitchen. Please try again.');
+      console.error("[createKitchen] Error creating kitchen:", error);
+      alert("Failed to create kitchen. Please try again.");
       return null;
-    }
-  };
-
-  // Delete an existing kitchen
-  const deleteKitchen = async (kitchen) => {
-    if (!currentUser.value) {
-      alert('You must be logged in to delete a kitchen.');
-      return;
-    }
-
-    if (kitchen.added_by !== currentUser.value.uid) {
-      alert('Only the creator can delete this kitchen.');
-      return;
-    }
-
-    try {
-      console.log(`[deleteKitchen] Deleting kitchen: ${kitchen.place_name}`);
-      const kitchenDocRef = doc(kitchensCollectionRef, kitchen.place_id);
-      await deleteDoc(kitchenDocRef);
-
-      alert('Kitchen deleted successfully!');
-    } catch (error) {
-      console.error('[deleteKitchen] Error:', error);
-      alert('Failed to delete kitchen. Please try again.');
     }
   };
 
   return {
     createKitchen,
-    deleteKitchen,
   };
 }

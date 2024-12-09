@@ -1,38 +1,31 @@
-// useInteraction.js
-import { computed } from 'vue';
-import { useCurrentUser, useDocument, useFirestore } from 'vuefire';
-import { doc } from 'firebase/firestore';
-import { useRoute } from 'vue-router';
+import { computed } from "vue";
+import { useCurrentUser, useDocument, useFirestore } from "vuefire";
+import { doc } from "firebase/firestore";
 
 export const useInteraction = () => {
   const db = useFirestore();
   const vueFireUser = useCurrentUser();
-  const route = useRoute();
 
-  // Reference to the current Misebox user's document, only if vueFireUser is available
+  // Reference to the current Misebox user's document
   const miseboxUserDocRef = computed(() =>
-    vueFireUser.value ? doc(db, 'misebox-users', vueFireUser.value.uid) : null
+    vueFireUser.value ? doc(db, "misebox-users", vueFireUser.value.uid) : null
   );
 
-  // Fetch the current Misebox user data only if vueFireUser is available
-  const miseboxUserData = computed(() => 
-    vueFireUser.value ? useDocument(miseboxUserDocRef).data : null
-  );
+  // Fetch the current Misebox user data
+  const { data: currentUserData } = useDocument(miseboxUserDocRef);
 
-  // Determine if the current user is viewing their own route
-  const isViewingOwnRoute = computed(() =>
-    vueFireUser.value ? vueFireUser.value.uid === route.params.id : false
-  );
+  // Determine if the current user is interacting with their own entity
+  const isInteractingWithSelf = (entityId) =>
+    computed(() => vueFireUser.value?.uid === entityId);
 
   // Check if the current user is following a specific target user
-  const isFollowing = (targetEntityId) => computed(() =>
-    vueFireUser.value && miseboxUserData.value && targetEntityId
-      ? miseboxUserData.value.following.includes(targetEntityId)
-      : false
-  );
+  const isFollowing = (targetEntityId) =>
+    computed(() =>
+      currentUserData.value?.following?.includes(targetEntityId) ?? false
+    );
 
   return {
-    isViewingOwnRoute,
+    isInteractingWithSelf,
     isFollowing,
   };
 };

@@ -1,116 +1,65 @@
 <template>
   <client-only>
-    <div class="chef-dashboard index">
-      <h1 class="dashboard-title">Chef Dashboard</h1>
+    <div class="dashboard">
+      <div v-if="isViewingOwn && chef">
+        <h3>Chef Dashboard</h3>
 
-      <!-- Profile Section -->
-      <section class="profile-section">
-        <h2>Profile Management</h2>
-        <div class="profile-actions">
-          <NuxtLink :to="`/chefs/${chefId}/edit`" class="btn btn-primary btn-pill">
-            Edit Profile
-          </NuxtLink>
-          <NuxtLink :to="`/chefs/${chefId}/view`" class="btn btn-secondary btn-pill">
-            View Profile
-          </NuxtLink>
-        </div>
-      </section>
+        <!-- Header Component -->
+        <MoleculesMiseboxUserHeader :miseboxUser="miseboxUser" />
 
-      <!-- Kitchen Section -->
-      <section class="kitchen-section">
-        <h2>Kitchen Management</h2>
-        <div class="kitchen-actions">
-          <NuxtLink :to="`/kitchens/create-or-connect`" class="btn btn-primary btn-pill">
-            Create or Connect to a Kitchen
-          </NuxtLink>
-          <NuxtLink :to="`/kitchens/browse`" class="btn btn-secondary btn-pill">
-            Browse Kitchens
-          </NuxtLink>
-          <NuxtLink :to="`/chefs/${chefId}/my-kitchens`" class="btn btn-secondary btn-pill">
-            My Kitchens
-          </NuxtLink>
-        </div>
-      </section>
-
-      <!-- Recipe Section -->
-      <section class="recipe-section">
-        <h2>Recipe Management</h2>
-        <div class="recipe-actions">
-          <NuxtLink :to="`/chefs/${chefId}/recipe/create`" class="btn btn-primary btn-pill">
-            Add New Recipe
-          </NuxtLink>
-          <NuxtLink :to="`/chefs/${chefId}/recipe`" class="btn btn-secondary btn-pill">
-            My Recipes
-          </NuxtLink>
-        </div>
-      </section>
-
-      <!-- Network Section -->
-      <section class="network-section">
-        <h2>My Network</h2>
-        <div class="network-actions">
-          <NuxtLink to="/network/connect" class="btn btn-primary btn-pill">
-            Connect with Other Chefs
-          </NuxtLink>
-          <NuxtLink to="/network/my-connections" class="btn btn-secondary btn-pill">
-            My Connections
-          </NuxtLink>
-        </div>
-      </section>
-
-      <!-- Suppliers Section -->
-      <section class="suppliers-section">
-        <h2>My Suppliers</h2>
-        <div class="suppliers-actions">
-          <NuxtLink to="/suppliers/manage" class="btn btn-primary btn-pill">
-            Manage Suppliers
-          </NuxtLink>
-          <NuxtLink to="/suppliers/browse" class="btn btn-secondary btn-pill">
-            Browse Suppliers
-          </NuxtLink>
-        </div>
-      </section>
+        <!-- Dashboard Component -->
+        <OrganismsChefDashboard />
+      </div>
+      <div v-else>
+        <p class="access-denied-message">
+          Access Denied. You are not authorized to view this dashboard.
+        </p>
+      </div>
     </div>
   </client-only>
 </template>
 
 <script setup>
-import { useRoute } from 'vue-router';
+import { computed } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { useFirestore, useDocument, useCurrentUser } from "vuefire";
+import { doc } from "firebase/firestore";
 
+// Firestore and Routing Setup
+const router = useRouter();
 const route = useRoute();
-const chefId = route.params.id; // Get the current Chef ID from the route
+const db = useFirestore();
+const currentUser = useCurrentUser();
+
+// Fetch Misebox User Document
+const miseboxUserDocRef = computed(() =>
+  currentUser.value ? doc(db, "misebox-users", currentUser.value.uid) : null
+);
+
+const { data: miseboxUser } = useDocument(miseboxUserDocRef);
+
+// Fetch Chef Profile Document
+const chefDocRef = computed(() =>
+  currentUser.value ? doc(db, "chefs", route.params.id) : null
+);
+
+const { data: chef } = useDocument(chefDocRef);
+
+// Authorization Check
+const isViewingOwn = computed(() => currentUser.value?.uid === route.params.id);
 </script>
 
 <style scoped>
-.chef-dashboard {
+.dashboard {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: var(--spacing-m);
+  padding: var(--spacing-l);
 }
 
-.dashboard-title {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--text-primary);
-  margin-bottom: var(--spacing-l);
-}
-
-section {
-  margin-bottom: var(--spacing-l);
-  width: 100%;
-  max-width: 800px;
+.access-denied-message {
   text-align: center;
-}
-
-.profile-actions,
-.kitchen-actions,
-.recipe-actions,
-.network-actions,
-.suppliers-actions {
-  display: flex;
-  justify-content: center;
-  gap: var(--spacing-s);
+  color: var(--text-danger);
   margin-top: var(--spacing-m);
 }
 </style>

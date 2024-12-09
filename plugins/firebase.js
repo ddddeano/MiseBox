@@ -1,7 +1,6 @@
 import { defineNuxtPlugin } from '#app';
 import { initializeApp, getApps } from 'firebase/app';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { ref } from 'vue';
 
 export default defineNuxtPlugin((nuxtApp) => {
   if (!getApps().length) {

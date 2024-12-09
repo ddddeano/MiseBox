@@ -2,64 +2,40 @@
   <client-only>
     <div v-if="miseboxUser" class="shared-view-profile-index">
       <!-- User Header -->
-      <MoleculesMiseboxUserHeader :fetchedMiseboxUser="miseboxUser" />
+      <MoleculesMiseboxUserHeader :miseboxUser="miseboxUser" />
 
       <!-- User Profile View -->
-      <OrganismsMiseboxUserViewProfile :fetchedMiseboxUser="miseboxUser" />
+      <OrganismsMiseboxUserView :miseboxUser="miseboxUser" />
 
-      <!-- Universal Bubble for Related Profiles -->
-      <OrganismsUniversalBubble :id="miseboxUser.id" parent="misebox-users" />
-
-      <!-- Edit Profile Button (Visible only when viewing own route) -->
-      <NuxtLink
-        v-if="isViewingOwnRoute"
-        :to="`/misebox-users/${miseboxUser.id}/edit`"
-        class="btn btn-primary btn-pill"
-      >
-        Edit Profile
-      </NuxtLink>
+      <!-- Universal Bubble Navigation -->
+      <OrganismsUniversalBubble 
+        :id="miseboxUser.id" 
+        parent="misebox-users"
+        :userApps="miseboxUser.user_apps" 
+      />
     </div>
     <div v-else>
       <!-- Loading State -->
       <p class="shared-view-profile-loading">Loading...</p>
-      <!-- Redirect to Auth if not logged in -->
-      <NuxtLink v-if="!currentUser" to="/auth" class="btn btn-primary btn-pill">
-        Go to Auth
-      </NuxtLink>
     </div>
-    <!-- Sign Out Button (Visible only when viewing own route) -->
-    <button
-      v-if="isViewingOwnRoute"
-      @click="logout"
-      class="btn btn-secondary btn-pill sign-out-button"
-    >
-      Sign Out
-    </button>
   </client-only>
 </template>
 
 <script setup>
-import { useCurrentUser, useDocument, useFirestore } from 'vuefire';
-import { doc } from 'firebase/firestore';
-import { useRoute } from 'vue-router';
+import { useDocument, useFirestore, useCurrentUser } from "vuefire";
+import { doc } from "firebase/firestore";
+import { useRoute } from "vue-router";
 
+// VueFire and Firebase setup
 const currentUser = useCurrentUser();
 const route = useRoute();
 const db = useFirestore();
 
-// Fetch routed Misebox user profile from Firestore
+// Fetch Misebox User Document
 const miseboxUserDocRef = computed(() =>
-  currentUser.value ? doc(db, 'misebox-users', route.params.id) : undefined
+  currentUser.value ? doc(db, "misebox-users", route.params.id) : null
 );
-
 const { data: miseboxUser } = useDocument(miseboxUserDocRef);
-
-// Check if the current user is viewing their own profile
-const isViewingOwnRoute = computed(() => {
-  return currentUser.value?.uid === route.params.id;
-});
-
-const { logout } = useAuth();
 </script>
 
 <style scoped>
@@ -67,10 +43,6 @@ const { logout } = useAuth();
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.sign-out-button {
-  margin-top: var(--spacing-s);
 }
 
 .shared-view-profile-loading {

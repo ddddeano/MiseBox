@@ -49,5 +49,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 p {
+  width: 70%;
+  margin: 0 auto;
+  text-align: center;
+  line-height: 1.6;
+  margin-top: var(--spacing-s);
   margin-bottom: var(--spacing-s);
 }

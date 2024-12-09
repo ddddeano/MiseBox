@@ -1,48 +1,46 @@
 <template>
   <client-only>
     <div v-if="miseboxUser && professional" class="shared-view-profile-index">
-      <MoleculesMiseboxUserHeader :fetchedMiseboxUser="miseboxUser" />
-      <OrganismsProfessionalViewProfile :professional="professional" />
+      <!-- Header Component -->
+      <MoleculesMiseboxUserHeader :miseboxUser="miseboxUser" />
 
-      <OrganismsUniversalBubble :id="miseboxUser.id" parent="professionals" />
+      <!-- Professional View Component -->
+      <OrganismsProfessionalView :professional="professional" />
+
+      <!-- Universal Bubble Navigation -->
+      <OrganismsUniversalBubble 
+        :id="miseboxUser.id" 
+        :parent="'professionals'" 
+        :userApps="miseboxUser.user_apps" 
+      />
     </div>
     <div v-else>
+      <!-- Loading State -->
       <p class="shared-view-profile-loading">Loading...</p>
-      <NuxtLink v-if="!currentUser" to="/auth" class="btn btn-primary btn-pill">
-        Go to Auth
-      </NuxtLink>
     </div>
-    <button @click="logout" class="btn btn-secondary btn-pill sign-out-button">
-      Sign Out
-    </button>
   </client-only>
 </template>
 
 <script setup>
-import { useDocument, useFirestore, useCurrentUser } from 'vuefire';
-import { doc } from 'firebase/firestore';
-import { useRoute, useRouter } from 'vue-router';
+import { useDocument, useFirestore, useCurrentUser } from "vuefire";
+import { doc } from "firebase/firestore";
+import { useRoute } from "vue-router";
 
-const currentUser = useCurrentUser();
 const route = useRoute();
-const router = useRouter();
 const db = useFirestore();
+const currentUser = useCurrentUser();
 
-// Fetch the Misebox user based on the route ID
+// Fetch Misebox User Document
 const miseboxUserDocRef = computed(() =>
-  route.params.id ? doc(db, 'misebox-users', route.params.id) : undefined
+  currentUser.value ? doc(db, "misebox-users", route.params.id) : null
 );
 const { data: miseboxUser } = useDocument(miseboxUserDocRef);
 
-// Fetch the Professional profile based on the route ID
+// Fetch Professional Profile Document
 const professionalDocRef = computed(() =>
-  route.params.id ? doc(db, 'professionals', route.params.id) : undefined
+  currentUser.value ? doc(db, "professionals", route.params.id) : null
 );
 const { data: professional } = useDocument(professionalDocRef);
-
-const handleSignOut = () => {
-  logout();
-};
 </script>
 
 <style scoped>
@@ -50,10 +48,6 @@ const handleSignOut = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.sign-out-button {
-  margin-top: var(--spacing-s);
 }
 
 .shared-view-profile-loading {

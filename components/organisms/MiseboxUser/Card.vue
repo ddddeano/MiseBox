@@ -1,5 +1,7 @@
+<!-- components/Organisms/Misebox/Card.vue -->
 <template>
-  <div class="card misebox-user-card" v-if="miseboxUser">
+  <div class="card misebox-card" v-if="miseboxUser">
+    <!-- User Information -->
     <NuxtLink :to="`/misebox-users/${miseboxUser.id}`" class="view-profile-link">
       <div class="card-header">
         <MoleculesAvatar :user="miseboxUser" size="small" />
@@ -10,28 +12,23 @@
       </div>
     </NuxtLink>
 
-    <div class="card-expanded">
-      <p class="bio" v-if="miseboxUser.user_bio">{{ miseboxUser.user_bio }}</p>
-      <div class="user-apps" v-if="miseboxUser.user_apps?.length">
-        <MoleculesUserAppIcon
-          v-for="app in miseboxUser.user_apps"
-          :key="app"
-          :app="app"
-        />
-      </div>
+    <!-- Additional Information -->
+    <div v-if="miseboxUser.bio" class="card-expanded">
+      <p class="bio">{{ miseboxUser.bio }}</p>
     </div>
   </div>
 </template>
 
 <script setup>
-const props = defineProps({
-  miseboxUser: {
-    type: Object,
-    required: true,
-  },
-});
-</script>
+import { useDocument, useCurrentUser } from "vuefire";
+import { doc } from "firebase/firestore";
+import { useFirestore } from "vuefire";
 
-<style scoped>
-/* Only include unique styles for MiseboxUserCard if needed */
-</style>
+const db = useFirestore();
+const currentUser = useCurrentUser();
+
+const miseboxUserDocRef = computed(() =>
+  currentUser.value ? doc(db, "misebox-users", currentUser.value.uid) : null
+);
+const { data: miseboxUser } = useDocument(miseboxUserDocRef);
+</script>

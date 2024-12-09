@@ -2,13 +2,13 @@
 
 @import './shared';
 
-/* Use shared container */
+/* Shared container for profiles */
 .profile-forms {
   @extend .shared-container;
-  width: 100%
+  width: 100%;
 }
 
-/* Use shared input styles */
+/* Shared input styles */
 .editable-input {
   @extend .shared-input;
 }
@@ -17,28 +17,67 @@
   @extend .shared-textarea;
 }
 
-/* Specific styles for form */
+/* Specific styles for forms */
 .form-field {
   position: relative;
   color: var(--text-secondary);
   // padding: var(--spacing-xs); /* Use design token for spacing */
 }
+
 .form-field:nth-child(even) {
-  background-color: var(--background-2); 
-  color: var(--text-secondary); 
+  background-color: var(--background-2);
+  color: var(--text-secondary);
 }
+
 .top {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 var(--spacing-xs); /* Use design token for spacing */
 }
+
 label {
   color: var(--text-primary);
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-m);
 }
+
 .display {
   margin-bottom: var(--spacing-s);
   padding: 0 var(--spacing-s);
+}
+
+/* Form Wrapper */
+.form-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m); /* Consistent spacing between form elements */
+}
+
+/* Input-Button Container */
+.item-input-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-s); /* Gap between input and button */
+}
+
+/* Individual Input Styles */
+.item-input {
+  flex: 1; /* Input takes up remaining space */
+  padding: var(--spacing-s);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  color: var(--text-primary);
+  background-color: var(--background);
+
+  &::placeholder {
+    color: var(--text-secondary);
+  }
+
+  &:focus {
+    border-color: var(--primary);
+    outline: none;
+    background-color: var(--background-2);
+  }
 }

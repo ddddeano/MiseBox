@@ -1,40 +1,29 @@
 <template>
   <div class="profile-bubbles-container">
     <div
-      v-for="entity in filteredEntities"
-      :key="entity.collection"
+      v-for="app in filteredApps"
+      :key="app"
       class="profile-bubble"
     >
       <div class="bubble-content">
-        <p class="app-label">{{ entity.label }}</p>
+        <p class="app-label">{{ generateLabel(app) }}</p>
 
-        <!-- Display appropriate button or message -->
+        <!-- Navigation Links -->
         <NuxtLink
-          v-if="profileStates[entity.collection]"
-          :to="`/${entity.collection}/${id}`"
+          :to="`/${app}/${id}`"
           class="profile-link"
         >
-          View Profile
+          View {{ generateLabel(app) }}
         </NuxtLink>
-        <NuxtLink
-          v-else-if="isViewingOwnProfile"
-          :to="`/${entity.collection}/${id}/edit`"
-          class="profile-link"
-        >
-          Create/Edit Profile
-        </NuxtLink>
-        <p v-else>No Profile Found</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
-import { useCurrentUser, useDocument } from 'vuefire';
-import { doc } from 'firebase/firestore';
-import { useFirestore } from 'vuefire';
+import { computed } from "vue";
 
+// Props for ID, parent (current app), and user's apps
 const props = defineProps({
   id: {
     type: String,
@@ -42,61 +31,27 @@ const props = defineProps({
   },
   parent: {
     type: String,
-    default: null, // The parent collection to exclude
+    default: null, // Current app to exclude
+  },
+  userApps: {
+    type: Array,
+    default: () => [], // Provide a default empty array
   },
 });
 
-const db = useFirestore();
-const currentUser = useCurrentUser();
-
-// Define the entities to query
-const entities = [
-  {
-    collection: 'misebox-users',
-    label: 'Misebox User Profile',
-  },
-  {
-    collection: 'professionals',
-    label: 'Professional Profile',
-  },
-  {
-    collection: 'chefs',
-    label: 'Chef Profile',
-  },
-];
-
-// Exclude the parent entity from the list
-const filteredEntities = computed(() =>
-  entities.filter((entity) => entity.collection !== props.parent)
+// Filter out the current app (parent)
+const filteredApps = computed(() =>
+  props.userApps.filter((app) => app !== props.parent)
 );
 
-// Create reactive states for each entity
-const profileStates = ref(
-  entities.reduce((states, entity) => {
-    states[entity.collection] = false;
-    return states;
-  }, {})
-);
-
-// Fetch profiles for all entities
-filteredEntities.value.forEach((entity) => {
-  const docRef = doc(db, entity.collection, props.id);
-  const { data } = useDocument(docRef);
-
-  // Watch for changes in data and update profileStates
-  watch(
-    () => data.value,
-    (newValue) => {
-      profileStates.value[entity.collection] = !!newValue;
-    },
-    { immediate: true }
-  );
-});
-
-// Determine if the current user is viewing their own profile
-const isViewingOwnProfile = computed(() => {
-  return currentUser.value && currentUser.value.uid === props.id;
-});
+// Function to dynamically generate app labels
+const generateLabel = (app) => {
+  const titleCased = app
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+  return `${titleCased} Profile`;
+};
 </script>
 
 <style scoped>
@@ -142,10 +97,5 @@ const isViewingOwnProfile = computed(() => {
 
 .profile-link:hover {
   color: var(--hover);
-}
-
-p {
-  font-size: var(--font-size-s);
-  color: var(--text-secondary);
 }
 </style>

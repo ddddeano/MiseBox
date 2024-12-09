@@ -66,32 +66,3 @@ const addIngredient = async () => {
 };
 </script>
 
-<style scoped>
-.ingredients-index {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: var(--spacing-m);
-}
-
-.ingredient-item {
-  list-style: none;
-  margin-bottom: var(--spacing-s);
-}
-
-.ingredient-link {
-  text-decoration: none;
-  color: var(--primary);
-}
-
-.ingredient-input {
-  margin-right: var(--spacing-s);
-  padding: var(--spacing-xs);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-s);
-}
-
-.ingredient-input:focus {
-  outline: none;
-  border-color: var(--primary);
-}
-</style>

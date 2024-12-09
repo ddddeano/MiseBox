@@ -1,6 +1,4 @@
 // ~/composables/utils/useProfessionalFormattingAndValidation.js
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import { useFirestore } from 'vuefire';
 
 // Formatting Functions
 export function formatTitle(value) {
@@ -10,10 +8,6 @@ export function formatTitle(value) {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ')
     .trim();
-}
-
-export function formatBio(value) {
-  return value ? value.replace(/[ \t]{2,}/g, ' ').trim() : value;
 }
 
 export function formatKitchenExperience(value) {
@@ -50,12 +44,6 @@ export function validateTitle(value, optional = false) {
   if (value.length < 3) return 'Title must be at least 3 characters long.';
   const forbiddenCharacters = /[^a-zA-Z -]/;
   if (forbiddenCharacters.test(value)) return 'Title can only contain letters, spaces, and dashes.';
-  return '';
-}
-
-export function validateBio(value, optional = false) {
-  if (optional && (!value || value.trim() === '')) return '';
-  if (value.length < 10) return 'Bio must be at least 10 characters long.';
   return '';
 }
 

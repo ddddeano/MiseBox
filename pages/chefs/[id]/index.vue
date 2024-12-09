@@ -1,61 +1,47 @@
 <template>
   <client-only>
     <div v-if="miseboxUser && chef" class="shared-view-profile-index">
-      <MoleculesMiseboxUserHeader :fetchedMiseboxUser="miseboxUser" />
-      <OrganismsChefViewProfile :chef="chef" />
-      <OrganismsUniversalBubble :id="miseboxUser.id" parent="chefs" />
+      <!-- Header Component -->
+      <MoleculesMiseboxUserHeader :miseboxUser="miseboxUser" />
 
-      <!-- Segue to Dashboard for Own Profile -->
-      <NuxtLink
-        v-if="isViewingOwnRoute"
-        :to="`/chefs/${chef.id}/dashboard`"
-        class="btn btn-primary btn-pill"
-      >
-        Go to Dashboard
-      </NuxtLink>
+      <!-- Chef View Component -->
+      <OrganismsChefView :chef="chef" />
+
+      <!-- Universal Bubble Navigation -->
+      <OrganismsUniversalBubble 
+        :id="miseboxUser.id" 
+        :parent="'chefs'" 
+        :userApps="miseboxUser.user_apps" 
+      />
     </div>
     <div v-else>
+      <!-- Loading State -->
       <p class="shared-view-profile-loading">Loading...</p>
-      <NuxtLink v-if="!currentUser" to="/auth" class="btn btn-primary btn-pill">
-        Go to Auth
-      </NuxtLink>
     </div>
-    <button @click="logout" class="btn btn-secondary btn-pill">
-      Sign Out
-    </button>
   </client-only>
 </template>
 
 <script setup>
-import { useFirestore, useDocument, useCurrentUser } from 'vuefire';
-import { doc } from 'firebase/firestore';
-import { useRoute, useRouter } from 'vue-router';
+import { computed } from "vue";
+import { useDocument, useFirestore, useCurrentUser } from "vuefire";
+import { doc } from "firebase/firestore";
+import { useRoute } from "vue-router";
 
+const route = useRoute();
 const db = useFirestore();
 const currentUser = useCurrentUser();
-const route = useRoute();
-const router = useRouter();
 
-// Fetch the Misebox user data
+// Fetch Misebox User Document
 const miseboxUserDocRef = computed(() =>
-  currentUser.value ? doc(db, 'misebox-users', route.params.id) : undefined
+  currentUser.value ? doc(db, "misebox-users", route.params.id) : null
 );
-
 const { data: miseboxUser } = useDocument(miseboxUserDocRef);
 
-// Fetch the Chef profile data
+// Fetch Chef Profile Document
 const chefDocRef = computed(() =>
-  currentUser.value ? doc(db, 'chefs', route.params.id) : undefined
+  currentUser.value ? doc(db, "chefs", route.params.id) : null
 );
-
 const { data: chef } = useDocument(chefDocRef);
-
-// Check if the current user is viewing their own profile
-const isViewingOwnRoute = computed(() => {
-  return currentUser.value?.uid === route.params.id;
-});
-
-const { logout } = useAuth();
 </script>
 
 <style scoped>

@@ -1,8 +1,15 @@
-/* organisms/_shared.scss */
+/* _shared.scss */
 
 /* Container Styles */
-
 .index {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Vertically centers content */
+  align-items: center; /* Horizontally centers content */
+  width: 100%;
+  margin: 0 auto;
+  gap: var(--spacing-m); /* Space between sections */
+
   .missing-acc-message {
     text-align: center;
     font-size: var(--font-size-l);
@@ -10,93 +17,78 @@
     margin: var(--spacing-l) 0;
   }
 }
+
 .shared-container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    max-width: 800px;
-    margin: 0 auto;
-    // padding: var(--spacing-m);
-    color: var(--text-primary);
-  }
-  
-  /* Section Styles */
-  .shared-section {
-    margin-bottom: var(--spacing-l);
-  }
-  
-  /* Title Styles */
-  .shared-title {
-    font-weight: var(--font-weight-bold);
-    font-size: var(--font-size-xl);
-    letter-spacing: 0.05em;
-    margin-bottom: var(--spacing-m);
-  }
-  
-  /* Grid Styles */
-  .shared-grid {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  /* Item Styles */
-  .shared-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: var(--spacing-s);
-    transition: color 0.2s ease;
-  }
-  
-  /* Input and Textarea Styles */
-  .shared-input,
-  .shared-textarea {
-    width: 100%;
-    padding: var(--spacing-s);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-s);
-    font-size: var(--font-size-m);
-    color: var(--text-secondary);
-    background-color: var(--background);
-    margin-bottom: var(--spacing-m);
-  }
-  
-  .shared-input:focus,
-  .shared-textarea:focus {
-    outline: none;
-    border-color: var(--text-secondary);
-    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-  }
-  
-  .shared-textarea {
-    resize: vertical;
-    min-height: 150px;
-  }
-  
-  /* Button Styles */
-  .shared-button {
-    padding: var(--spacing-s) var(--spacing-m);
-    font-size: var(--font-size-m);
-    color: black;
-    background-color: var(--primary);
-    border: none;
-    border-radius: var(--radius-s);
-    cursor: pointer;
-    width: 100%;
-    max-width: 620px;
-  }
-  
-  .shared-button:hover {
-    background-color: var(--primary-hover);
-  }
-  
-  /* List Styles */
-  .shared-list {
-    padding: 0;
-    list-style: none;
-  }
-  
-  .shared-list-item {
-    margin-bottom: var(--spacing-s);
-  }
-  
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  color: var(--text-primary);
+}
+
+/* Section Styles */
+.shared-section {
+  margin-bottom: var(--spacing-l);
+}
+
+/* Title Styles */
+.shared-title {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xl);
+  letter-spacing: 0.05em;
+  margin-bottom: var(--spacing-m);
+}
+
+/* Grid Styles */
+.shared-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Item Styles */
+.shared-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-s);
+  transition: color 0.2s ease;
+}
+
+/* Input and Textarea Styles */
+.shared-input,
+.shared-textarea {
+  width: 100%;
+  padding: var(--spacing-s);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  font-size: var(--font-size-m);
+  color: var(--text-secondary);
+  background-color: var(--background);
+  margin-bottom: var(--spacing-m);
+}
+
+.shared-input:focus,
+.shared-textarea:focus {
+  outline: none;
+  border-color: var(--text-secondary);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.shared-textarea {
+  resize: vertical;
+  min-height: 150px;
+}
+
+/* List Styles */
+.shared-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+}
+
+.shared-list-item {
+  margin-bottom: var(--spacing-s);
+}

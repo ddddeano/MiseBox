@@ -1,0 +1,57 @@
+/* call-to-action.scss */
+
+/* Container Styles */
+.call-to-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+    width: 100%;
+    align-items: center;
+    gap: var(--spacing-l);
+    padding: var(--spacing-l);
+  }
+  
+  /* Message Box Styles */
+  .call-to-action-message {
+    width: 100%;
+    max-width: 800px;
+    padding: var(--spacing-m);
+    background: var(--background-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-m);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  /* Heading Styles */
+  .call-to-action-message h2 {
+    font-size: var(--font-size-xl);
+    font-weight: bold;
+    margin-bottom: var(--spacing-m);
+  }
+    
+  /* Button Styles */
+  .call-to-action-message .cta-button {
+    display: inline-block;
+    padding: var(--spacing-s) var(--spacing-l);
+    font-size: var(--font-size-m);
+    font-weight: bold;
+    background-color: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-s);
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .call-to-action-message .cta-button:hover {
+    background-color: var(--primary-hover);
+  }
+  

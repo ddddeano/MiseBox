@@ -1,5 +1,9 @@
+/* shared-card-cell.scss */
+
 /* Shared Card and Cell Styles */
-.card {
+.card, .cell {
+  width: 100%;
+  max-width: 600px;
   border: 1px solid var(--border);
   border-radius: var(--radius-s);
   padding: var(--spacing-s);
@@ -10,25 +14,33 @@
   flex-direction: column;
 }
 
-.cell {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-s);
-  padding: var(--spacing-s);
-  background-color: var(--background);
-  box-shadow: var(--shadow-xs);
-  margin-bottom: var(--spacing-m);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-s);
-}
-
 /* Shared Header Styles */
-.card-header, .cell-avatar, .cell-row {
+.card-header, .cell-header, .cell-avatar, .cell-row {
   display: flex;
   align-items: center;
   gap: var(--spacing-s);
   width: 100%;
   justify-content: space-between;
+}
+
+/* Metadata and Toggle */
+.cell-meta, .cell-toggle {
+  padding: var(--spacing-s);
+}
+
+.cell-toggle {
+  background: none;
+  border: none;
+  font-size: var(--font-size-m);
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  color: var(--text-primary);
+}
+
+.cell-toggle.highlight {
+  background-color: var(--primary);
+  color: var(--text-inverse);
 }
 
 /* Shared User Info */
@@ -38,38 +50,72 @@
   flex-direction: column;
 }
 
-/* Shared Display Name */
-.display-name {
+/* Text and Titles */
+.display-name, .cell-name {
   font-weight: bold;
   font-size: var(--font-size-m);
   margin: 0;
 }
 
-/* Shared Handle/Text Secondary */
-.handle, .title {
+.handle, .title, .cell-title {
   color: var(--text-secondary);
   font-size: var(--font-size-s);
   margin: 0;
 }
 
-/* Shared Follow Button Styles */
+/* Follow Button */
 .follow-button {
   margin-left: auto;
 }
 
-/* Shared Expanded Card */
-.card-expanded {
+/* Expanded Card Content */
+.card-expanded, .cell-expanded {
   margin-top: var(--spacing-s);
 }
 
-/* Shared Bio */
+/* Bio */
 .bio {
   color: var(--text-primary);
 }
 
-/* Shared List Styles */
-.user-apps {
+.list {
   display: flex;
-  gap: var(--spacing-xs);
+  flex-direction: column;
+  align-items: center; /* Centers items horizontally */
+  min-height: 100vh; /* Full height for vertical centering */
+  padding: 2rem; /* Adds spacing around the content */
+  width: 100%;
+  max-width: 600px;
+}
+/* List Item */
+.list-item {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: var(--spacing-m);
+}
+
+
+/* Edit Link Styles */
+.edit-link {
+  display: inline-block;
   margin-top: var(--spacing-s);
+  text-decoration: none;
+  color: var(--text-inverse);
+  background-color: var(--primary);
+  padding: var(--spacing-xs) var(--spacing-m);
+  border-radius: var(--radius-s);
+  transition: background-color 0.3s ease-in-out;
+}
+
+.edit-link:hover {
+  background-color: var(--primary-hover);
+}
+.loading-message,
+.end-of-list-message,
+.not-signed-in-message {
+  font-size: 1.2rem;
+  color: var(--text-secondary); /* Adjusts to your design system's secondary color */
+  margin-top: 1rem;
 }
