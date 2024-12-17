@@ -1,3 +1,4 @@
+<!-- components/organisms/Chef/Fields/Event.vue -->
 <template>
   <div class="event-form">
     <!-- Display Mode -->

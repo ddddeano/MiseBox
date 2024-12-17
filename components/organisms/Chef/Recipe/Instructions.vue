@@ -1,3 +1,4 @@
+<!-- components/organisms/Chef/Recipe/Instructions.vue -->
 <template>
   <div class="recipe-instructions">
     <h2>Instructions</h2>

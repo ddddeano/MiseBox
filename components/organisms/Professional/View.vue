@@ -1,3 +1,4 @@
+<!-- components/organisms/Professional/View.vue -->
 <template>
   <client-only>
     <div v-if="professional" class="professional-profile-container">

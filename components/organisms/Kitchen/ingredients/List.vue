@@ -42,7 +42,7 @@ const props = defineProps({
 
 // Compute reference to ingredients collection
 const ingredientsCollectionRef = computed(() =>
-  kitchenDocRef ? collection(kitchenDocRef, 'ingredients') : null
+  currentUser.value ? collection(kitchenDocRef, 'ingredients') : null
 );
 
 // Reactive data for ingredients

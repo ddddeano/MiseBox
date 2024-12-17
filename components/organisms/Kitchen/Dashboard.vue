@@ -1,3 +1,4 @@
+<!-- components/organisms/Kitchen/Dashboard.vue -->
 <!-- dashboard/Dashboard.vue -->
 <template>
   <div class="kitchen-dashboard">
@@ -59,9 +60,5 @@ const updateDebugIngredients = (ingredients) => {
 </script>
 
 <style scoped>
-.kitchen-dashboard {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-l);
-}
+
 </style>

@@ -1,3 +1,4 @@
+<!-- components/organisms/Chef/Fields/Supplier.vue -->
 <template>
   <div class="supplier-form">
     <div v-if="mode === 'display'">

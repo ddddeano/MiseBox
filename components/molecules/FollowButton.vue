@@ -1,3 +1,4 @@
+<!-- components/molecules/FollowButton.vue -->
 <template>
   <div>
     <!-- Follow Button with HeartIcon and click event -->

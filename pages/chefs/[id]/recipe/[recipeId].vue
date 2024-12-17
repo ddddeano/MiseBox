@@ -1,3 +1,4 @@
+<!-- pages/chefs/[id]/recipe/[recipeId].vue -->
 <template>
   <div class="recipe-details-page">
     <h1>{{ recipe.name }}</h1>

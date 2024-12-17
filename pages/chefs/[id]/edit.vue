@@ -1,15 +1,31 @@
+<!-- pages/chefs/[id]/edit.vue -->
 <template>
   <client-only>
-    <div class="profile-forms">
-      <!-- Authorization Check -->
+    <div class="edit-page">
       <div v-if="chef">
-        <h3>Edit your Chef Profile</h3>
-
-        <!-- Header Component -->
+        <!-- Header -->
         <MoleculesMiseboxUserHeader :miseboxUser="miseboxUser" />
 
-        <!-- Edit Form Component -->
-        <OrganismsChefEdit v-if="isViewingOwn" />
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <NuxtLink
+            v-if="isViewingOwn"
+            :to="`/chefs/${currentUser.uid}`"
+            class="btn"
+          >
+            View
+          </NuxtLink>
+          <button
+            v-if="isViewingOwn"
+            class="btn"
+            @click="deleteChef"
+          >
+            Delete
+          </button>
+        </div>
+
+        <!-- Edit Form -->
+        <OrganismsChefEdit v-if="isViewingOwn" :chef="chef" />
       </div>
       <div v-else>
         <p class="access-denied-message">
@@ -22,44 +38,25 @@
 
 <script setup>
 import { computed } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { useRoute } from "vue-router";
 import { useFirestore, useDocument, useCurrentUser } from "vuefire";
 import { doc } from "firebase/firestore";
 
-// Router and Firestore setup
-const router = useRouter();
+// Firestore and Route Setup
 const route = useRoute();
 const db = useFirestore();
 const currentUser = useCurrentUser();
 
-// Fetch Firestore documents
 const miseboxUserDocRef = computed(() =>
   currentUser.value ? doc(db, "misebox-users", currentUser.value.uid) : null
 );
 
 const chefDocRef = computed(() =>
-  currentUser.value ? doc(db, "chefs", currentUser.value.uid) : null
+  currentUser.value ? doc(db, "chefs", route.params.id) : null
 );
 
+const { data: chef, deleteChef } = useDocument(chefDocRef);
 const { data: miseboxUser } = useDocument(miseboxUserDocRef);
-const { data: chef } = useDocument(chefDocRef);
 
-// Authorization Check
-const isViewingOwn = computed(() => {
-  return currentUser.value?.uid === route.params.id;
-});
+const isViewingOwn = computed(() => currentUser.value?.uid === route.params.id);
 </script>
-
-<style scoped>
-.profile-forms {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.access-denied-message {
-  text-align: center;
-  color: var(--text-danger);
-  margin-top: var(--spacing-m);
-}
-</style>

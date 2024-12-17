@@ -1,8 +1,9 @@
+<!-- components/molecules/MiseboxUserHeader.vue -->
 <template>
   <div v-if="miseboxUser" class="profile-header">
     <!-- Avatar -->
     <div class="profile-photo-container">
-      <MoleculesAvatar :user="miseboxUser" size="large" />
+      <MoleculesAvatar altText="Avatar" :url="miseboxUser.avatar" size="large" />
     </div>
 
     <!-- User Details -->
@@ -38,6 +39,7 @@
     </div>
   </div>
 </template>
+
 <script setup>
 import { computed } from "vue";
 import { useRouter } from "vue-router";
@@ -75,7 +77,6 @@ const handleSignOut = async () => {
   }
 };
 </script>
-
 
 <style scoped>
 /* Profile Header Styling */

@@ -1,3 +1,4 @@
+<!-- components/molecules/ThemeToggle.vue -->
 <template>
   <div class="theme-toggle" @click="toggleTheme" :aria-label="currentTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'">
     <MoonIcon v-if="currentTheme === 'dark'" class="icon" aria-hidden="true" />

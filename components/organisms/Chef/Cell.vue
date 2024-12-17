@@ -1,44 +1,55 @@
-<!-- components/Organisms/Chef/Cell.vue -->
+<!-- components/organisms/Chef/Cell.vue -->
 <template>
-  <div class="cell chef-cell" v-if="chef && miseboxUser">
-    <NuxtLink :to="`/chefs/${chef.id}`" class="cell-avatar">
-      <MoleculesAvatar :user="miseboxUser" size="small" />
-      <div class="cell-info">
-        <div v-if="miseboxUser.display_name" class="display-name">{{ miseboxUser.display_name }}</div>
-        <div class="specialty">{{ chef.specialty }}</div>
+  <div class="cell chef-cell" v-if="miseboxUser && chef">
+    <!-- Header Section -->
+    <NuxtLink :to="`/chefs/${chef.id}`" class="cell-header">
+      <div class="cell-avatar">
+        <MoleculesAvatar 
+          :url="miseboxUser.avatar || '/images/default-avatar.jpg'" 
+          size="small" 
+          altText="Chef Avatar" 
+        />
+      </div>
+      <div class="header-content">
+        <div class="display-name" v-if="miseboxUser.display_name">
+          {{ miseboxUser.display_name }}
+        </div>
+        <div class="handle" v-if="miseboxUser.handle">
+          @{{ miseboxUser.handle }}
+        </div>
+        <div class="specialty" v-if="chef.specialty">
+          {{ chef.specialty }}
+        </div>
+      </div>
+      <div class="icon">
+        <ChevronRightIcon />
       </div>
     </NuxtLink>
-    <MoleculesFollowButton
-      v-if="!interactingWithSelf"
-      :user="miseboxUser"
-      class="follow-button"
-    />
+
+    <!-- Footer Section -->
+    <div class="cell-footer">
+      <div class="cell-interaction">
+        <div v-if="miseboxUser?.id !== currentUser?.uid" class="not-self">
+          <MoleculesFollowButton :user="miseboxUser" />
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { useDocument } from "vuefire";
-import { doc } from "firebase/firestore";
-import { useFirestore } from "vuefire";
+import { useCurrentUser } from "vuefire";
 
 const props = defineProps({
   chef: {
     type: Object,
-    required: true, 
+    required: true,
   },
 });
 
-const db = useFirestore();
+// Fetch Misebox User document
+const { document: miseboxUser } = useFetchDoc("misebox-users", props.chef.id);
 
-const miseboxUserDocRef = computed(() =>
-  doc(db, "misebox-users", props.chef.id)
-);
-const { data: miseboxUser } = useDocument(miseboxUserDocRef);
-
-const { isInteractingWithSelf } = useInteraction();
-const interactingWithSelf = isInteractingWithSelf(props.chef.id);
+// Get the current user
+const currentUser = useCurrentUser();
 </script>
-
-<style scoped>
-/* Add specific styles for the chef cell */
-</style>

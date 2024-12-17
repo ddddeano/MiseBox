@@ -1,31 +1,51 @@
-<!-- components/Organisms/MiseboxUser/Cell.vue -->
+<!-- components/organisms/MiseboxUser/Cell.vue -->
 <template>
-  <div class="cell misebox-user-cell" v-if="miseboxUser">
-    <NuxtLink :to="`/misebox-users/${miseboxUser.id}`" class="cell-avatar">
-      <MoleculesAvatar :user="miseboxUser" size="small" />
-      <div class="cell-info">
-        <div class="display-name">{{ miseboxUser.display_name }}</div>
-        <div class="handle">@{{ miseboxUser.handle }}</div>
+  <div class="cell user-cell" v-if="miseboxUser">
+    <!-- Header Section -->
+    <div class="cell-header">
+      <div class="cell-avatar">
+        <MoleculesAvatar
+          :url="miseboxUser.avatar || '/images/default-avatar.jpg'"
+          size="small"
+          altText="User Avatar"
+        />
       </div>
-    </NuxtLink>
-    <MoleculesFollowButton
-      v-if="!interactingWithSelf"
-      :user="miseboxUser"
-      class="follow-button"
-    />
+      <div class="header-content">
+        <span class="display-name" v-if="miseboxUser.display_name">
+          {{ miseboxUser.display_name }}
+        </span>
+        <div class="handle" v-if="miseboxUser.handle">
+          @{{ miseboxUser.handle }}
+        </div>
+      </div>
+      <div class="icon">
+        <ChevronRightIcon />
+      </div>
+    </div>
+
+    <!-- Footer Section -->
+    <div class="cell-footer">
+      <div class="cell-interaction">
+          <MoleculesFollowButton v-if="miseboxUser?.id !== currentUser?.uid" class="not-self" :user="miseboxUser" />
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
+import { useCurrentUser } from "vuefire";
 
 const props = defineProps({
   miseboxUser: {
     type: Object,
     required: true,
   },
+  isDisabled: {
+    type: Boolean,
+    default: false, // Default to enabled
+  },
 });
 
-// Determine if this entity is being interacted with by the current user
-const { isInteractingWithSelf } = useInteraction();
-const interactingWithSelf = isInteractingWithSelf(props.miseboxUser.id);
+// Get the current user
+const currentUser = useCurrentUser();
 </script>

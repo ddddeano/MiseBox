@@ -1,3 +1,4 @@
+<!-- pages/chefs/[id]/recipe/create.vue -->
 <template>
   <div class="create-recipe-container">
     <h1>Create a New Recipe</h1>

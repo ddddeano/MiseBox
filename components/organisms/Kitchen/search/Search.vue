@@ -1,3 +1,4 @@
+<!-- components/organisms/Kitchen/search/Search.vue -->
 <template>
   <div class="kitchen-search">
     <input
@@ -14,7 +15,8 @@
         @click="emitSelectedKitchen(result)"
         class="kitchen-cell-wrapper"
       >
-        <OrganismsKitchenCell :kitchen="result" />
+        <!-- Pass isDisabled as true to disable links in search results -->
+        <OrganismsKitchenCell :kitchen="result" :isDisabled="true" />
       </div>
     </div>
 
@@ -52,10 +54,6 @@ onMounted(fetchFirestorePlaceIds);
 
 <style scoped>
 .kitchen-search {
-  width: 100%;
-}
-
-.editable-input {
   width: 100%;
 }
 

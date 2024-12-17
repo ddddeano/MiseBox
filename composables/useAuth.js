@@ -1,3 +1,4 @@
+<!-- composables/useAuth.js -->
 // composables/useAuth.js
 import { ref } from 'vue';
 import { useRouter, useNuxtApp } from '#app';

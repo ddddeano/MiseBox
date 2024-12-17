@@ -1,3 +1,4 @@
+// api/google-photo.js
 export default defineEventHandler(async (event) => {
   const { photo_url } = getQuery(event);
 
@@ -24,7 +25,7 @@ export default defineEventHandler(async (event) => {
     const imageBuffer = await response.arrayBuffer();
 
     setHeader(event, 'Content-Type', response.headers.get('Content-Type') || 'image/jpeg');
-    setHeader(event, 'Cache-Control', 'public, max-age=3600');
+    setHeader(event, 'Cache-Control', 'public, max-age=3600');  // Cache for 1 hour
 
     return Buffer.from(imageBuffer);
   } catch (error) {

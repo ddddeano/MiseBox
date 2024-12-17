@@ -1,3 +1,4 @@
+<!-- components/organisms/Professional/Bubble.vue -->
 <template>
   <div class="profile-bubble">
     <NuxtLink :to="`/professionals/${id}`" class="profile-link">

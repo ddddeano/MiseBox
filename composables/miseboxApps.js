@@ -1,3 +1,4 @@
+<!-- composables/miseboxApps.js -->
 import appIcon from '@/assets/icons/appicon.jpg';
 
 const miseboxApps = [

@@ -1,3 +1,4 @@
+<!-- components/organisms/PlacesSearch.vue -->
 <!-- components/PlacesSearch.vue -->
 <template>
   <div class="places-search">

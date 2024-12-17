@@ -1,3 +1,4 @@
+<!-- components/organisms/Kitchen/ingredients/Manager.vue -->
 <template>
   <div class="manager">
     <h2>Ingredients Manager</h2>

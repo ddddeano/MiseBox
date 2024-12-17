@@ -1,18 +1,18 @@
+<!-- components/organisms/Kitchen/Header.vue -->
 <template>
   <div class="kitchen-header">
-    <!-- Kitchen Photo -->
+    <!-- Kitchen Avatar -->
     <div class="kitchen-photo-container">
-      <img
-        v-if="kitchen.photo_url"
-        :src="kitchen.photo_url"
-        alt="Kitchen Photo"
-        class="kitchen-photo"
+      <MoleculesAvatar
+        :url="kitchen.avatar || '/images/default-kitchen.jpg'"
+        altText="Kitchen Avatar"
+        size="large"
       />
     </div>
 
     <!-- Kitchen Details -->
     <div class="kitchen-details">
-      <h1 class="kitchen-name">{{ kitchen.place_name }}</h1>
+      <h1 class="kitchen-name">{{ kitchen.name }}</h1>
 
       <p class="kitchen-address" v-if="kitchen.formatted_address">
         {{ kitchen.formatted_address }}
@@ -63,14 +63,6 @@ const isViewingOwnKitchen = isInteractingWithSelf(props.kitchen.added_by);
 
 .kitchen-photo-container {
   margin-bottom: 1rem;
-}
-
-.kitchen-photo {
-  width: 120px;
-  height: 120px;
-  border-radius: var(--radius-full);
-  object-fit: cover;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .kitchen-name {

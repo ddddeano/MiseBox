@@ -1,3 +1,4 @@
+<!-- components/organisms/Supplier/Form.vue -->
 <!-- components/organisms/Suppliers/Form.vue -->
 <template>
   <form @submit.prevent="addSupplier" class="form-wrapper">

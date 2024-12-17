@@ -1,3 +1,4 @@
+<!-- components/organisms/UniversalBubble.vue -->
 <template>
   <div class="profile-bubbles-container">
     <div

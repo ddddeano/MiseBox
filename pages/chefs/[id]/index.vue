@@ -1,35 +1,37 @@
+<!-- pages/chefs/[id]/index.vue -->
+<!-- pages/chefs/[id].vue -->
 <template>
   <client-only>
-    <div v-if="miseboxUser && chef" class="shared-view-profile-index">
-      <!-- Header Component -->
+    <div v-if="miseboxUser && chef" class="profile">
+      <!-- User Header -->
       <MoleculesMiseboxUserHeader :miseboxUser="miseboxUser" />
 
-      <!-- Chef View Component -->
+      <!-- Chef Profile View -->
       <OrganismsChefView :chef="chef" />
 
       <!-- Universal Bubble Navigation -->
       <OrganismsUniversalBubble 
         :id="miseboxUser.id" 
-        :parent="'chefs'" 
+        parent="chefs"
         :userApps="miseboxUser.user_apps" 
       />
     </div>
     <div v-else>
       <!-- Loading State -->
-      <p class="shared-view-profile-loading">Loading...</p>
+      <p class="loading">Loading...</p>
     </div>
   </client-only>
 </template>
 
 <script setup>
-import { computed } from "vue";
 import { useDocument, useFirestore, useCurrentUser } from "vuefire";
 import { doc } from "firebase/firestore";
 import { useRoute } from "vue-router";
 
+// VueFire and Firebase setup
+const currentUser = useCurrentUser();
 const route = useRoute();
 const db = useFirestore();
-const currentUser = useCurrentUser();
 
 // Fetch Misebox User Document
 const miseboxUserDocRef = computed(() =>
@@ -43,17 +45,3 @@ const chefDocRef = computed(() =>
 );
 const { data: chef } = useDocument(chefDocRef);
 </script>
-
-<style scoped>
-.shared-view-profile-index {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.shared-view-profile-loading {
-  text-align: center;
-  color: var(--text-secondary);
-  margin-top: var(--spacing-m);
-}
-</style>

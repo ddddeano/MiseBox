@@ -14,6 +14,7 @@
   cursor: pointer;
   background-color: var(--background);
   transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+  margin-top: 1rem;
 }
 
 .btn:hover {
@@ -144,7 +145,36 @@
   background-color: var(--primary);
   color: var(--text-inverse);
 }
-
 .btn-tab:hover {
   background-color: var(--primary-hover);
+}
+.editable-input {
+  padding: 8px;
+  font-size: 1em;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  margin-bottom: 8px;
+  width: 100%;
+  color: var(--text-primary);
+  background-color: var(--background-2);
+}
+section {
+  align-items: flex-start; /* Horizontal centering */
+}
+
+label {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-m);
+}
+ 
+.display-name {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-m);
+  color: var(--text-primary);
+}
+
+.handle {
+  font-size: var(--font-size-s);
+  color: var(--text-secondary);
 }

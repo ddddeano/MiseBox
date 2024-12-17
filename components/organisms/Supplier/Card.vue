@@ -1,60 +1,53 @@
-<!-- components/Organisms/Supplier/Card.vue -->
+<!-- components/organisms/Supplier/Card.vue -->
 <template>
   <div class="card supplier-card" v-if="miseboxUser && supplier">
-    <!-- Clickable Link to Supplier Profile -->
-    <NuxtLink :to="`/suppliers/${supplier.id}`" class="view-profile-link">
-      <div class="card-header">
-        <MoleculesAvatar :user="miseboxUser" size="small" />
-        <div class="user-info">
-          <p class="display-name">{{ miseboxUser.display_name }}</p>
-          <p class="handle">{{ miseboxUser.handle }}</p>
-          <p class="industry">{{ supplier.industry }}</p>
+    <!-- Header Section -->
+    <NuxtLink :to="`/suppliers/${supplier.id}`" class="card-header">
+      <div class="card-avatar">
+        <MoleculesAvatar 
+          :url="miseboxUser.avatar || '/images/default-avatar.jpg'" 
+          size="medium" 
+          altText="Supplier Avatar" 
+        />
+      </div>
+      <div class="header-content">
+        <span class="display-name" v-if="miseboxUser.display_name">
+          {{ miseboxUser.display_name }}
+        </span>
+        <div class="handle" v-if="miseboxUser.handle">
+          @{{ miseboxUser.handle }}
         </div>
+        <div class="company" v-if="supplier.company">
+          {{ supplier.company }}
+        </div>
+      </div>
+      <div class="icon">
+        <ChevronRightIcon />
       </div>
     </NuxtLink>
 
-    <!-- Expand Button -->
-    <button class="expand-button" @click="toggleExpanded">
-      {{ expanded ? 'Show Less' : 'Show More' }}
-    </button>
+    <!-- Main Content Section -->
+    <div class="main-content">
+      <p v-if="supplier.bio" class="bio">{{ supplier.bio }}</p>
+    </div>
 
-    <!-- Expanded Content -->
-    <div class="card-expanded" v-if="expanded">
-      <p class="bio" v-if="supplier.description">{{ supplier.description }}</p>
-      <div v-if="supplier.products" class="products-list">
-        <h3>Products</h3>
-        <ul>
-          <li v-for="product in supplier.products" :key="product">{{ product }}</li>
-        </ul>
+    <!-- Footer Section -->
+    <div class="card-footer">
+      <div class="card-interaction">
+        <div v-if="miseboxUser?.id !== currentUser?.uid" class="not-self">
+          <MoleculesFollowButton :user="miseboxUser" />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useDocument, useCurrentUser } from "vuefire";
-import { doc } from "firebase/firestore";
-import { useFirestore } from "vuefire";
+import { useCurrentUser } from "vuefire";
 
-const db = useFirestore();
+const { currentMiseboxUser: miseboxUser } = useMiseboxUser();
+const { currentSupplier: supplier } = useSupplier();
+
+// Get the current user
 const currentUser = useCurrentUser();
-
-// State for expanding the card
-const expanded = ref(false);
-const toggleExpanded = () => {
-  expanded.value = !expanded.value;
-};
-
-// Fetch Firestore references
-const miseboxUserDocRef = computed(() =>
-  currentUser.value ? doc(db, "misebox-users", currentUser.value.uid) : null
-);
-const supplierDocRef = computed(() =>
-  currentUser.value ? doc(db, "suppliers", currentUser.value.uid) : null
-);
-
-// Fetch Firestore documents
-const { data: miseboxUser } = useDocument(miseboxUserDocRef);
-const { data: supplier } = useDocument(supplierDocRef);
 </script>

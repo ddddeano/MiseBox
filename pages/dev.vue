@@ -1,3 +1,4 @@
+<!-- pages/dev.vue -->
 <template>
   <client-only>
     <div class="development-area">

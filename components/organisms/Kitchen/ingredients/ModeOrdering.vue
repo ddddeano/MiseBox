@@ -1,3 +1,4 @@
+<!-- components/organisms/Kitchen/ingredients/ModeOrdering.vue -->
 <template>
   <div>
     <!-- Tab Menu -->

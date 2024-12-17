@@ -1,34 +1,48 @@
-<!-- components/Organisms/Misebox/Card.vue -->
+<!-- components/organisms/MiseboxUser/Card.vue -->
 <template>
-  <div class="card misebox-card" v-if="miseboxUser">
-    <!-- User Information -->
-    <NuxtLink :to="`/misebox-users/${miseboxUser.id}`" class="view-profile-link">
-      <div class="card-header">
-        <MoleculesAvatar :user="miseboxUser" size="small" />
-        <div class="user-info">
-          <p class="display-name">{{ miseboxUser.display_name }}</p>
-          <p class="handle">{{ miseboxUser.handle }}</p>
+  <div class="card user-card" v-if="miseboxUser">
+    <!-- Header Section -->
+    <NuxtLink :to="`/misebox-users/${miseboxUser.id}`" class="card-header">
+      <div class="card-avatar">
+        <MoleculesAvatar 
+          :url="miseboxUser.avatar || '/images/default-avatar.jpg'" 
+          size="medium" 
+          altText="User Avatar" 
+        />
+      </div>
+      <div class="header-content">
+        <span class="display-name" v-if="miseboxUser.display_name">
+          {{ miseboxUser.display_name }}
+        </span>
+        <div class="handle" v-if="miseboxUser.handle">
+          @{{ miseboxUser.handle }}
         </div>
+      </div>
+      <div class="icon">
+        <ChevronRightIcon />
       </div>
     </NuxtLink>
 
-    <!-- Additional Information -->
-    <div v-if="miseboxUser.bio" class="card-expanded">
-      <p class="bio">{{ miseboxUser.bio }}</p>
+    <!-- Main Content Section -->
+    <div class="main-content">
+      <p v-if="miseboxUser.bio" class="bio">{{ miseboxUser.bio }}</p>
+    </div>
+
+    <!-- Footer Section -->
+    <div class="card-footer">
+      <div class="card-interaction">
+        <div v-if="miseboxUser?.id !== currentUser?.uid" class="not-self">
+          <MoleculesFollowButton :user="miseboxUser" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { useDocument, useCurrentUser } from "vuefire";
-import { doc } from "firebase/firestore";
-import { useFirestore } from "vuefire";
+import { useCurrentUser } from "vuefire";
 
-const db = useFirestore();
+// Fetch current user
 const currentUser = useCurrentUser();
-
-const miseboxUserDocRef = computed(() =>
-  currentUser.value ? doc(db, "misebox-users", currentUser.value.uid) : null
-);
-const { data: miseboxUser } = useDocument(miseboxUserDocRef);
+const { currentMiseboxUser: miseboxUser } = useMiseboxUser();
 </script>

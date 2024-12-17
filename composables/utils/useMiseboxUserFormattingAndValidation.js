@@ -1,8 +1,5 @@
-import {
-  formatBio,
-  validateBio,
-} from "~/composables/utils/useSharedFormattingAndValidation";
-
+<!-- composables/utils/useMiseboxUserFormattingAndValidation.js -->
+//useMiseboxUserFormattingAndValidation
 // Entity-Specific Formatting
 export function formatDisplayName(value) {
   return value

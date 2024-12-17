@@ -1,54 +1,53 @@
-<!-- components/Organisms/Chef/Card.vue -->
+<!-- components/organisms/Chef/Card.vue -->
 <template>
   <div class="card chef-card" v-if="miseboxUser && chef">
-    <!-- Clickable Link to Chef Profile -->
-    <NuxtLink :to="`/chefs/${chef.id}`" class="view-profile-link">
-      <div class="card-header">
-        <MoleculesAvatar :user="miseboxUser" size="small" />
-        <div class="user-info">
-          <p class="display-name">{{ miseboxUser.display_name }}</p>
-          <p class="handle">{{ miseboxUser.handle }}</p>
-          <p class="specialty">{{ chef.specialty }}</p>
+    <!-- Header Section -->
+    <NuxtLink :to="`/chefs/${chef.id}`" class="card-header">
+      <div class="card-avatar">
+        <MoleculesAvatar 
+          :url="miseboxUser.avatar || '/images/default-avatar.jpg'" 
+          size="medium" 
+          altText="Chef Avatar"
+        />
+      </div>
+      <div class="header-content">
+        <span class="display-name" v-if="miseboxUser.display_name">
+          {{ miseboxUser.display_name }}
+        </span>
+        <div class="handle" v-if="miseboxUser.handle">
+          @{{ miseboxUser.handle }}
         </div>
+        <div class="specialty" v-if="chef.specialty">
+          {{ chef.specialty }}
+        </div>
+      </div>
+      <div class="icon">
+        <ChevronRightIcon />
       </div>
     </NuxtLink>
 
-    <!-- Expand Button -->
-    <button class="expand-button" @click="toggleExpanded">
-      {{ expanded ? 'Show Less' : 'Show More' }}
-    </button>
+    <!-- Main Content Section -->
+    <div class="main-content">
+      <p v-if="chef.bio" class="bio">{{ chef.bio }}</p>
+    </div>
 
-    <!-- Expanded Content -->
-    <div class="card-expanded" v-if="expanded">
-      <p class="bio" v-if="chef.bio">{{ chef.bio }}</p>
+    <!-- Footer Section -->
+    <div class="card-footer">
+      <div class="card-interaction">
+        <div v-if="miseboxUser?.id !== currentUser?.uid" class="not-self">
+          <MoleculesFollowButton :user="miseboxUser" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useDocument, useCurrentUser } from "vuefire";
-import { doc } from "firebase/firestore";
-import { useFirestore } from "vuefire";
+import { useCurrentUser } from "vuefire";
 
-const db = useFirestore();
+const { currentMiseboxUser: miseboxUser } = useMiseboxUser();
+const { currentChef: chef } = useChef();
+
+// Get the current user
 const currentUser = useCurrentUser();
-
-// State for expanding the card
-const expanded = ref(false);
-const toggleExpanded = () => {
-  expanded.value = !expanded.value;
-};
-
-// Fetch Firestore references
-const miseboxUserDocRef = computed(() =>
-  currentUser.value ? doc(db, "misebox-users", currentUser.value.uid) : null
-);
-const chefDocRef = computed(() =>
-  currentUser.value ? doc(db, "chefs", currentUser.value.uid) : null
-);
-
-// Fetch Firestore documents
-const { data: miseboxUser } = useDocument(miseboxUserDocRef);
-const { data: chef } = useDocument(chefDocRef);
 </script>

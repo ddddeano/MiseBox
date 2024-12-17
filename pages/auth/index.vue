@@ -1,3 +1,4 @@
+<!-- pages/auth/index.vue -->
 <template>
   <div class="auth-page">
     <div v-if="currentUser && !currentUser.isAnonymous">

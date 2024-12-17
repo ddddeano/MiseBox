@@ -1,3 +1,4 @@
+<!-- composables/subscriptions.js -->
 // Subscription structure, linking each role to the corresponding tiers
 const subscriptions = {
   miseboxUser: [

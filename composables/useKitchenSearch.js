@@ -1,3 +1,4 @@
+<!-- composables/useKitchenSearch.js -->
 import { ref, computed } from 'vue'
 import { useFirestore } from 'vuefire'
 import { collection, getDocs } from 'firebase/firestore'

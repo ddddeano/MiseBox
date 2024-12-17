@@ -1,3 +1,4 @@
+<!-- components/organisms/Chef/Recipe/Ingredients.vue -->
 <template>
   <div class="recipe-ingredients">
     <h2>Ingredients</h2>

@@ -1,3 +1,4 @@
+<!-- pages/[id].vue -->
 <template>
   <div class="profile-page">
     <!-- Profile Header Section -->

@@ -1,3 +1,4 @@
+<!-- components/molecules/YearSelector.vue -->
 <template>
   <select v-model="selectedYear" @change="emitUpdatedYear">
     <option value="" disabled>Select a year</option>

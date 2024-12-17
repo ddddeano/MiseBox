@@ -1,3 +1,4 @@
+<!-- components/organisms/Kitchen/tasks/List.vue -->
 <template>
   <div class="kitchen-tasks">
     <h2>Task List</h2>

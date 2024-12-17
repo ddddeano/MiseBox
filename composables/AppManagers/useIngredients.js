@@ -1,3 +1,4 @@
+<!-- composables/AppManagers/useIngredients.js -->
 // composables/useIngredients.js
 import { useFirestore } from 'vuefire';
 import { collection, doc, addDoc, deleteDoc, updateDoc } from 'firebase/firestore';

@@ -1,3 +1,4 @@
+<!-- composables/usePaginatedCollection.js -->
 import { ref, watch } from "vue";
 import { query, where, limit, startAfter, collection, getDocs } from "firebase/firestore";
 import { useFirestore } from "vuefire";

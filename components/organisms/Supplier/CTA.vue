@@ -1,3 +1,4 @@
+<!-- components/organisms/Supplier/CTA.vue -->
 <template>
   <div class="call-to-action">
     <OrganismsUserCTA />
@@ -12,7 +13,7 @@
         <li>🤝 Build strong partnerships with chefs and kitchen teams.</li>
         <li>📈 Leverage tools to optimize your workflows and boost efficiency.</li>
       </ul>
-      <button class="cta-button" @click="createSupplier">Get Started as a Supplier</button>
+      <button class="btn" @click="createSupplier">Get Started as a Supplier</button>
     </div>
 
     <div v-if="supplier" class="call-to-action-existing">
@@ -22,7 +23,6 @@
 </template>
 
 <script setup>
-import OrganismsUserCTA from "@/components/Organisms/CTA/UserCTA.vue";
 
 const { currentSupplier: supplier, createSupplier } = useSupplier();
 const { currentMiseboxUser: miseboxUser } = useMiseboxUser();

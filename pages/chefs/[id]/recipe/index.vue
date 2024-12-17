@@ -1,3 +1,4 @@
+<!-- pages/chefs/[id]/recipe/index.vue -->
 <template>
   <div class="recipe-index-page">
     <h1>Recipes</h1>

@@ -1,3 +1,4 @@
+<!-- components/organisms/Professional/CTA.vue -->
 <template>
   <div class="call-to-action">
     <!-- UserCTA for shared logic -->
@@ -14,7 +15,7 @@
         <li>🌟 Expand your network by connecting with top industry professionals.</li>
         <li>📈 Access tailored job opportunities that match your skills and goals.</li>
       </ul>
-      <button class="cta-button" @click="createProfessional">Join as a Professional</button>
+      <button class="btn" @click="createProfessional">Join as a Professional</button>
     </div>
 
     <!-- Professional already exists -->

@@ -1,41 +1,33 @@
+<!-- components/organisms/Professional/List.vue -->
 <template>
   <div class="list">
-    <!-- List of Professionals -->
-    <div
-      v-if="items.length"
-      v-for="professional in items"
-      :key="professional.id"
-      class="list-item"
-    >
-      <OrganismsProfessionalCell :professional="professional" />
+    <div v-if="professionals?.length">
+      <div
+        v-for="professional in filteredProfessionals"
+        :key="professional.id"
+        class="list-item"
+      >
+        <OrganismsProfessionalCell :professional="professional" />
+      </div>
     </div>
-
-    <!-- Loading Indicator -->
-    <p v-if="isLoading" class="loading-message">Loading...</p>
-
-    <!-- Load More Button -->
-    <button
-      v-if="hasMore && !isLoading"
-      @click="fetchItems"
-      class="btn"
-    >
-      Load More
-    </button>
-
-    <!-- End of List Message -->
-    <p v-if="!hasMore && items.length" class="end-of-list-message">
-      No more professionals to display.
-    </p>
+    <p v-else>Loading...</p>
   </div>
 </template>
 
 <script setup>
+import { computed } from "vue";
+import { collection } from "firebase/firestore";
+import { useCollection, useFirestore, useCurrentUser } from "vuefire";
 
-// Fetch paginated list of professionals, excluding the current user
-const { items, fetchItems, isLoading, hasMore } = usePaginatedCollection("professionals", 10, {
-  excludeCurrentUser: true,
-});
+const db = useFirestore();
+const currentUser = useCurrentUser();
 
-// Fetch the initial page of professionals
-fetchItems();
+const collectionRef = computed(() =>
+  currentUser.value ? collection(db, "professionals") : null
+);
+const { data: professionals } = useCollection(collectionRef);
+
+const filteredProfessionals = computed(() =>
+  professionals?.value?.filter((professional) => professional.id !== currentUser.value?.uid) || []
+);
 </script>

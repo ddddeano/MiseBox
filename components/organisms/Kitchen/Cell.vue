@@ -1,163 +1,106 @@
+<!-- components/organisms/Kitchen/Cell.vue -->
 <template>
-  <div class="cell kitchen-cell">
-    <!-- Debugging Kitchen Object -->
-    <pre v-if="debugMode">{{ kitchen }}</pre>
-    
-    <div class="cell-main">
-      <!-- Kitchen Image -->
+  <div class="cell kitchen-cell" v-if="kitchen">
+    <!-- Header Section -->
+    <NuxtLink
+      :to="isDisabled ? null : `/kitchens/${kitchen.kitchenId}`"
+      class="cell-header"
+      :class="{ disabled: isDisabled }"
+    >
       <div class="cell-avatar">
-        <template v-if="imageUrl">
-          <img
-            :src="imageUrl"
-            :alt="kitchen.place_name || 'Kitchen Image'"
-            class="kitchen-image"
-            loading="lazy"
-          />
-        </template>
-        <template v-else>
-          <div class="placeholder-avatar">No Image</div>
-        </template>
+        <MoleculesAvatar :url="imageUrl" size="small" altText="Kitchen Avatar" />
       </div>
-
-      <!-- Kitchen Information -->
-      <div class="cell-info">
-        <div class="display-name">{{ kitchen.place_name }}</div>
-        <div class="handle">{{ kitchen.formatted_address }}</div>
+      <div class="header-content">
+        <div class="name">{{ kitchenName }}</div>
+        <div class="location">{{ kitchen.formatted_address }}</div>
       </div>
-    </div>
+      <div class="icon">
+        <ChevronRightIcon />
+      </div>
+    </NuxtLink>
 
-    <!-- Team Members -->
-    <div v-if="hasTeam" class="team">
-      <div class="team-avatars">
-        <img
-          v-for="(member, index) in displayedTeam"
+    <!-- Special Section -->
+    <div class="special-section" v-if="kitchen.source === 'firestore' && kitchen.team?.length">
+      <div class="team">
+        <NuxtLink
+          v-for="(member, index) in kitchen.team.slice(0, 5)"
           :key="member.id || index"
-          :src="member.avatar"
-          :alt="member.display_name || 'Team Member'"
-          class="team-avatar"
-          loading="lazy"
-        />
-        <span v-if="additionalTeamCount > 0">+{{ additionalTeamCount }}</span>
+          :to="`/misebox-users/${member.id}`"
+          class="team-member"
+        >
+          <MoleculesAvatar
+            :url="member.avatar_mini || ''"
+            size="mini"
+            altText="Team Member Avatar"
+          />
+        </NuxtLink>
+        <span v-if="kitchen.team.length > 5">+{{ kitchen.team.length - 5 }}</span>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { defineProps, computed } from "vue";
+import { computed } from "vue";
 
-// Props
 const props = defineProps({
   kitchen: {
     type: Object,
-    required: false,
-    default: () => ({}),
+    required: true,
   },
-  debugMode: {
+  isDisabled: {
     type: Boolean,
-    default: false, // Set to `true` to enable debugging
+    default: false,
   },
 });
 
-// Computed Properties
+// Compute the correct image URL
 const imageUrl = computed(() => {
-  return props.kitchen.avatar || props.kitchen.avatar_mini || null;
+  if (props.kitchen.source === "google") {
+    return props.kitchen.photo_url || "/images/default-kitchen.jpg";
+  }
+  if (props.kitchen.source === "firestore") {
+    return props.kitchen.avatar || "/images/default-kitchen.jpg";
+  }
+  return "/images/default-kitchen.jpg";
 });
 
-const hasTeam = computed(() => Array.isArray(props.kitchen.team) && props.kitchen.team.length > 0);
-
-const displayedTeam = computed(() => {
-  return props.kitchen.team ? props.kitchen.team.slice(0, 3) : [];
-});
-
-const additionalTeamCount = computed(() => {
-  return props.kitchen.team ? Math.max(0, props.kitchen.team.length - 3) : 0;
+// Compute the correct kitchen name
+const kitchenName = computed(() => {
+  if (props.kitchen.source === "google") {
+    return props.kitchen.place_name || "Unnamed Kitchen";
+  }
+  if (props.kitchen.source === "firestore") {
+    return props.kitchen.name || "Unnamed Kitchen";
+  }
+  return "Unnamed Kitchen";
 });
 </script>
 
 <style scoped>
-.kitchen-cell {
-  display: flex;
-  flex-direction: column;
-  background: var(--background-secondary);
-  border-radius: var(--radius-s);
-  box-shadow: var(--shadow-xs);
-  padding: var(--spacing-m);
-  gap: var(--spacing-s);
-  transition: background-color 0.3s ease;
-  width: 100%;
-}
-
-.kitchen-cell:hover {
-  background-color: var(--background-hover);
-}
-
-.cell-main {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-m);
-}
-
-.cell-avatar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-full);
-  overflow: hidden;
-  background: var(--background-light);
-}
-
-.placeholder-avatar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: var(--font-size-s);
-  color: var(--text-secondary);
-  width: 100%;
-  height: 100%;
-}
-
-.kitchen-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.cell-info {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-}
-
-.display-name {
-  font-size: var(--font-size-m);
-  font-weight: bold;
-  color: var(--text-primary);
-}
-
-.handle {
-  font-size: var(--font-size-s);
-  color: var(--text-secondary);
-}
-
 .team {
   margin-top: var(--spacing-s);
-}
-
-.team-avatars {
   display: flex;
-  gap: var(--spacing-xs);
-  margin-top: var(--spacing-xs);
-  justify-content: flex-start;
+  flex-direction: row;
 }
 
-.team-avatar {
+.team-members {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  overflow-x: auto;
+  padding-bottom: var(--spacing-xxs);
+}
+
+.team-member {
+  border-radius: 50%;
+  overflow: hidden;
   width: 24px;
   height: 24px;
-  border-radius: 50%;
-  object-fit: cover;
-  box-shadow: var(--shadow-xs);
+}
+
+.team span {
+  font-size: var(--font-size-s);
+  color: var(--text-secondary);
 }
 </style>

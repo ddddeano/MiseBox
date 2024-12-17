@@ -1,3 +1,4 @@
+<!-- pages/index.vue -->
 <template>
   <ClientOnly>
     <div class="landing-page">
@@ -23,13 +24,23 @@
           <NuxtLink to="/auth" class="btn btn-pill btn-primary">Get Started Now</NuxtLink>
         </div>
       </section>
+  <!-- Recruiter Section -->
+  <section class="info-card section recruiter-section">
+        <div class="section-content">
+          <h2 class="section-title">Find a Solution to your recruitment needs</h2>
+          <div class="section-description">
+            Misebox hosts a databse of fixed and flexable professionals to connect with. Interact directly or post a postion out to the market.
+          </div>
+          <NuxtLink to="/professionals" class="btn btn-pill btn-primary">Create Recruitment Profile</NuxtLink>
 
+        </div>
+      </section>
       <!-- Digital Portfolio Section -->
       <section class="info-card section portfolio-section">
         <div class="section-content">
           <h2 class="section-title">Create a Professional Portfolio</h2>
           <div class="section-description">
-            Showcase your skills and achievements in one place, making it easy for new opportunities to find you.
+            Showcase your realtime rsume, skills and achievements in one place, making it easy for new opportunities to find you.  
           </div>
           <NuxtLink to="/professionals" class="btn btn-pill btn-primary">Start Your Portfolio</NuxtLink>
         </div>
@@ -51,22 +62,14 @@
         <div class="section-content">
           <h2 class="section-title">Organize Your Recipe Collection</h2>
           <div class="section-description">
-            Create and manage your recipe library, share with the team, and keep everything organized for easy access.
+            Notice no cookies - Chef designed recipes that are quick to use and easy to edit and organise.
+             Link them to our kitchen so our whole team can access and bolt on training
           </div>
           <NuxtLink to="/chefs/recipe" class="btn btn-pill btn-primary">Manage Recipes</NuxtLink>
         </div>
       </section>
 
-      <!-- Recruiter Section -->
-      <section class="info-card section recruiter-section">
-        <div class="section-content">
-          <h2 class="section-title">Efficiently Manage Your Team</h2>
-          <div class="section-description">
-            Post jobs, manage team recruitment, and find on-demand help for seasonal work or events.
-          </div>
-          <NuxtLink to="/recruiters" class="btn btn-pill btn-primary">Find Talent</NuxtLink>
-        </div>
-      </section>
+    
     </div>
   </ClientOnly>
 </template>
@@ -84,7 +87,8 @@ const miseboxUserDocRef = computed(() =>
 );
 const { data: miseboxUser } = useDocument(miseboxUserDocRef);
 
-const miseboxMessage = 'Manage your digital mise-en-place with Misebox. Access essential tools for kitchen tasks, recipes, POS, management, and compliance.';
+const miseboxMessage = 'Create your smart mise-en-place with Misebox. All the essential tools for managing your kitchens; recipes, recruitment, tasks, inventory, POS, complicence, networking and more.'
+
 </script>
 
 <style scoped>
@@ -156,11 +160,6 @@ const miseboxMessage = 'Manage your digital mise-en-place with Misebox. Access e
   width: 100%;
 }
 
-/* Buttons */
-.btn {
-  width: 100%;
-  max-width: 200px; /* Ensures a standard size on larger screens */
-}
 
 /* Responsive Adjustments */
 @media (min-width: 768px) {

@@ -1,3 +1,4 @@
+<!-- components/molecules/MonthSelector.vue -->
 <template>
   <select v-model="selectedMonth" @change="emitUpdatedDate">
     <option value="" disabled>Select a month</option>

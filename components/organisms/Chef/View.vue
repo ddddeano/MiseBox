@@ -1,3 +1,4 @@
+<!-- components/organisms/Chef/View.vue -->
 <template>
   <client-only>
     <div class="chef-profile-container">

@@ -1,3 +1,4 @@
+<!-- components/molecules/forms/ArrayOfStrings.vue -->
 <template>
   <div class="form-field">
     <div class="top">
@@ -11,15 +12,9 @@
 
     <!-- Display Mode -->
     <div v-if="!isEditing" class="display">
-      <ul v-if="Array.isArray(firebaseValue)">
-        <li
-          v-for="(item, index) in firebaseValue"
-          :key="index"
-          class="display-list-item-view"
-        >
-          <span>{{ item }}</span>
-        </li>
-      </ul>
+      <span v-if="Array.isArray(firebaseValue)">
+        {{ firebaseValue.join(" | ") }}
+      </span>
       <p v-else>No tags available</p>
     </div>
 
@@ -31,30 +26,35 @@
           :key="index"
           class="editing-list-item"
         >
-          <input
-            v-if="editingIndex === index"
-            v-model="viewModel[index]"
-            class="editable-input"
-          />
-          <span v-else>{{ item }}</span>
+          <div class="item-content">
+            <input
+              v-if="editingIndex === index"
+              v-model="viewModel[index]"
+              class="editable-input"
+            />
+            <span v-else>{{ item }}</span>
 
-          <div class="list-icons">
-            <PencilIcon
-              v-if="editingIndex !== index"
-              class="icon edit-icon"
-              @click="editItem(index)"
-            />
-            <CheckCircleIcon
-              v-if="editingIndex === index"
-              class="icon confirm-icon"
-              @click="overwriteItem(index)"
-            />
-            <MinusCircleIcon
-              v-if="editingIndex === index"
-              class="icon cancel-icon"
-              @click="cancelInlineEditing"
-            />
-            <XCircleIcon class="icon delete-icon" @click="removeItem(index)" />
+            <div class="list-icons">
+              <PencilIcon
+                v-if="editingIndex !== index"
+                class="icon edit-icon"
+                @click="editItem(index)"
+              />
+              <CheckCircleIcon
+                v-if="editingIndex === index"
+                class="icon confirm-icon"
+                @click="overwriteItem(index)"
+              />
+              <MinusCircleIcon
+                v-if="editingIndex === index"
+                class="icon cancel-icon"
+                @click="cancelInlineEditing"
+              />
+              <XCircleIcon
+                class="icon delete-icon"
+                @click="removeItem(index)"
+              />
+            </div>
           </div>
         </li>
       </ul>
@@ -67,12 +67,15 @@
           :placeholder="itemPlaceholder"
           class="editable-input"
         />
-        <div class="centred-icons">
+        <div class="list-icons-2">
           <CheckCircleIcon
             class="icon confirm-icon"
             @click="addItem"
           />
-          <XCircleIcon class="icon cancel-icon" @click="cancelEditing" />
+          <MinusCircleIcon
+            class="icon cancel-icon"
+            @click="cancelEditing"
+          />
         </div>
       </div>
 
@@ -85,9 +88,9 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
-import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
-import { useFirestore } from 'vuefire';
+import { ref, watch } from "vue";
+import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import { useFirestore } from "vuefire";
 
 const props = defineProps({
   label: String,
@@ -105,11 +108,11 @@ const props = defineProps({
 });
 
 const firestore = useFirestore();
-const errorMessage = ref('');
+const errorMessage = ref("");
 const isEditing = ref(false);
 const editingIndex = ref(null);
 const viewModel = ref([...props.firebaseValue]);
-const newItem = ref('');
+const newItem = ref("");
 
 // Sync viewModel with firebaseValue when it changes
 watch(
@@ -122,13 +125,13 @@ watch(
 // Start editing a specific item
 const editItem = (index) => {
   editingIndex.value = index;
-  errorMessage.value = '';
+  errorMessage.value = "";
 };
 
 // Cancel editing mode for the currently selected item
 const cancelInlineEditing = () => {
   editingIndex.value = null;
-  errorMessage.value = '';
+  errorMessage.value = "";
   viewModel.value = [...props.firebaseValue];
 };
 
@@ -154,14 +157,18 @@ const overwriteItem = async (index) => {
     const updatedArray = [...props.firebaseValue];
     updatedArray[index] = updatedItem;
 
-    const documentRef = doc(firestore, props.collectionName, props.documentID);
+    const documentRef = doc(
+      firestore,
+      props.collectionName,
+      props.documentID
+    );
     await updateDoc(documentRef, {
       [props.target]: updatedArray,
     });
 
     editingIndex.value = null;
   } catch (error) {
-    console.error('Error updating item in Firestore:', error);
+    console.error("Error updating item in Firestore:", error);
   }
 };
 
@@ -184,18 +191,22 @@ const addItem = async () => {
     }
 
     if (!newItemValue) {
-      errorMessage.value = 'Item cannot be empty.';
+      errorMessage.value = "Item cannot be empty.";
       return;
     }
 
-    const documentRef = doc(firestore, props.collectionName, props.documentID);
+    const documentRef = doc(
+      firestore,
+      props.collectionName,
+      props.documentID
+    );
     await updateDoc(documentRef, {
       [props.target]: arrayUnion(newItemValue),
     });
 
-    newItem.value = ''; // Clear input field
+    newItem.value = ""; // Clear input field
   } catch (error) {
-    console.error('Error adding new item to Firestore:', error);
+    console.error("Error adding new item to Firestore:", error);
   }
 };
 
@@ -204,61 +215,50 @@ const removeItem = async (index) => {
   try {
     const itemToRemove = props.firebaseValue[index];
 
-    const documentRef = doc(firestore, props.collectionName, props.documentID);
+    const documentRef = doc(
+      firestore,
+      props.collectionName,
+      props.documentID
+    );
     await updateDoc(documentRef, {
       [props.target]: arrayRemove(itemToRemove),
     });
   } catch (error) {
-    console.error('Error removing item from Firestore:', error);
+    console.error("Error removing item from Firestore:", error);
   }
 };
 
 // Start editing mode
 const startEditing = () => {
   isEditing.value = true;
-  errorMessage.value = '';
+  errorMessage.value = "";
 };
 
 // Cancel editing mode entirely
 const cancelEditing = () => {
   isEditing.value = false;
-  newItem.value = '';
-  errorMessage.value = '';
+  newItem.value = "";
+  errorMessage.value = "";
 };
 </script>
 
 <style scoped>
-.top {
+.item-content {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-}
-
-.display-list-item-view {
-  padding: 0.5rem;
-}
-
-.editing-item {
-  margin-top: 1rem;
-}
-
-.input-container {
-  margin-top: 1rem;
+  justify-content: space-between;
+  margin-bottom: 0.5rem; /* Add some spacing from the input */
 }
 
 .list-icons {
   display: flex;
   gap: 0.5rem;
+  margin-left: 0.5rem;
 }
 
-.centred-icons {
+.list-icons-2 {
   display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.error-message {
-  color: red;
-  margin-top: 0.5rem;
+  justify-content: center; /* Center icons */
+  gap: 0.5rem; /* Add spacing between icons */
 }
 </style>

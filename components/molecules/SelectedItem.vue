@@ -1,3 +1,4 @@
+<!-- components/molecules/SelectedItem.vue -->
 <template>
   <div class="selected-item">
     <span>{{ value }}</span>

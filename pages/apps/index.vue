@@ -1,3 +1,4 @@
+<!-- pages/apps/index.vue -->
 <template>
   <div class="apps-page">
     <h1>Manage Your Apps</h1>

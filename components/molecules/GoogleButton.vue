@@ -1,3 +1,4 @@
+<!-- components/molecules/GoogleButton.vue -->
 <template>
   <client-only>
     <div @click="$emit('click')" class="google-logo-wrapper">

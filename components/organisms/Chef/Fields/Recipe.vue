@@ -1,3 +1,4 @@
+<!-- components/organisms/Chef/Fields/Recipe.vue -->
 <template>
   <div class="recipe-form">
     <!-- Display Mode -->

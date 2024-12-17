@@ -37,7 +37,7 @@
   }
     
   /* Button Styles */
-  .call-to-action-message .cta-button {
+  .call-to-action-message {
     display: inline-block;
     padding: var(--spacing-s) var(--spacing-l);
     font-size: var(--font-size-m);
@@ -51,7 +51,7 @@
     transition: background-color 0.3s ease;
   }
   
-  .call-to-action-message .cta-button:hover {
+  .call-to-action-message {
     background-color: var(--primary-hover);
   }
   

@@ -1,3 +1,4 @@
+<!-- components/organisms/Chef/Recipe/MiseEnPlace.vue -->
 <template>
   <div class="recipe-mise-en-place">
     <h2>Mise en Place</h2>

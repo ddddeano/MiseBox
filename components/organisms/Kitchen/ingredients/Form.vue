@@ -1,3 +1,4 @@
+<!-- components/organisms/Kitchen/ingredients/Form.vue -->
 <!-- OrganismsKitchenIngredientsForm.vue -->
 <template>
   <form @submit.prevent="addIngredient" class="form-wrapper">

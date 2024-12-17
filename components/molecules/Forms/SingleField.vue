@@ -1,3 +1,4 @@
+<!-- components/molecules/forms/SingleField.vue -->
 <template>
   <div class="form-field">
     <div class="top">
@@ -5,21 +6,21 @@
       <div class="component-icons">
         <PencilIcon
           v-if="!isEditing"
-          class="icon field-icon edit-icon"
+          class="icon"
           @click="pencilButtonClicked"
         />
         <template v-else>
           <CheckCircleIcon
-            class="icon field-icon confirm-icon"
+            class="icon"
             @click="checkButtonClicked"
           />
           <MinusCircleIcon
-            class="icon field-icon cancel-icon"
+            class="icon"
             @click="minusButtonClicked"
           />
           <XCircleIcon
             v-if="vModel"
-            class="icon field-icon clear-icon"
+            class="icon"
             @click="deleteButtonClicked"
           />
         </template>
@@ -40,7 +41,7 @@
       />
     </div>
 
-    <!-- Error Message (always outside edit block for visibility) -->
+    <!-- Error Message -->
     <div v-if="errorMessage" class="error-message">
       {{ errorMessage }}
     </div>
@@ -48,7 +49,6 @@
 </template>
 
 <script setup>
-
 const props = defineProps({
   label: String,
   firebaseValue: String,
@@ -88,10 +88,6 @@ const deleteButtonClicked = async () => {
 };
 </script>
 
-<style lang="scss" scoped>
-.error-message {
-  color: var(--error);
-  font-size: 0.875em;
-  margin-top: 0.5em;
-}
+<style scoped>
+/* No local styles - all styles are moved to shared/global */
 </style>

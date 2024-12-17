@@ -1,3 +1,4 @@
+<!-- components/molecules/UserAppIcon.vue -->
 <template>
   <div :class="['app-icon', appTypeClass]">
     <span>{{ app[0].toUpperCase() }}</span>

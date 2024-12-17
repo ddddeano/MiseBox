@@ -1,17 +1,14 @@
+<!-- pages/suppliers/index.vue -->
 <template>
   <client-only>
     <div class="index">
       <OrganismsSupplierCTA />
-
-      <!-- Show the current user's supplier profile -->
-        <OrganismsSupplierCard v-if="supplier"/>
-
-      <!-- Show the list of all suppliers -->
+      <OrganismsSupplierCard v-if="supplier" />
       <OrganismsSupplierList />
     </div>
   </client-only>
 </template>
 
 <script setup>
-const { currentSupplier: supplier } = useSupplier();
+const { currentSupplier: supplier } = useSupplier()
 </script>

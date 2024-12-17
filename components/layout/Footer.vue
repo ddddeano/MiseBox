@@ -1,3 +1,4 @@
+<!-- components/layout/Footer.vue -->
 <template>
   <footer class="footer">
     <div class="footer-content">
@@ -5,7 +6,7 @@
       <AtomsLogo class="footer-logo" />
       <p>Device Type: {{ deviceType }}</p>
       <p>&copy; 2024 Misebox. All rights reserved.</p>
-      <p>Version 2.0.1</p>
+      <p>Version 2.0.2</p>
       <p>Contact us: support@misebox.com</p>
     </div>
   </footer>

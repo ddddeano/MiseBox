@@ -1,3 +1,4 @@
+<!-- composables/useCollection.js -->
 import { computed } from "vue";
 import { collection } from "firebase/firestore";
 import { useCollection, useFirestore, useCurrentUser } from "vuefire";

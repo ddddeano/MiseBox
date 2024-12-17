@@ -1,3 +1,4 @@
+<!-- components/organisms/Kitchen/ingredients/ModeBasic.vue -->
 <template>
   <ul v-if="ingredients.length" class="list">
     <OrganismsKitchenIngredientsCell

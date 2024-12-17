@@ -1,3 +1,4 @@
+<!-- components/molecules/BurgerMenuToggle.vue -->
 <template>
   <div>
     <div
@@ -20,13 +21,22 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 const isOpen = ref(false)
 
 const toggleMenu = () => {
   isOpen.value = !isOpen.value
 }
+
+// Lock and unlock scrolling
+watch(isOpen, (newVal) => {
+  if (newVal) {
+    document.body.style.overflow = 'hidden'
+  } else {
+    document.body.style.overflow = ''
+  }
+})
 </script>
 
 <style lang="scss">
@@ -37,7 +47,9 @@ const toggleMenu = () => {
 }
 
 .highest-z-index {
-  z-index: 1002; /* Ensure this is higher than other elements */
+  z-index: 9999 !important; /* Temporarily ensure it's on top */
+  position: relative; /* Positioning to ensure z-index takes effect */
+  display: inline-block; /* Ensures proper rendering */
 }
 
 .smaller {

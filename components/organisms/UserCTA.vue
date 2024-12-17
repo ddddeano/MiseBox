@@ -1,3 +1,4 @@
+<!-- components/organisms/UserCTA.vue -->
 <template>
   <div class="acc-to-action">
     <!-- Prompt to sign in -->

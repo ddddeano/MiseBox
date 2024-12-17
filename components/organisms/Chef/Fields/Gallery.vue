@@ -1,3 +1,4 @@
+<!-- components/organisms/Chef/Fields/Gallery.vue -->
 <template>
   <div class="gallery-item">
     <!-- Display Mode -->

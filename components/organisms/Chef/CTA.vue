@@ -1,3 +1,4 @@
+<!-- components/organisms/Chef/CTA.vue -->
 <template>
   <div class="call-to-action">
     <!-- UserCTA for shared logic -->
@@ -14,7 +15,7 @@
         <li>🍴 Manage recipes, kitchen tasks, and team coordination seamlessly.</li>
         <li>📊 Gain insights and tools to optimize your daily operations.</li>
       </ul>
-      <button class="cta-button" @click="createChef">Join as a Chef</button>
+      <button class="btn" @click="createChef">Join as a Chef</button>
     </div>
 
     <!-- Chef already exists -->

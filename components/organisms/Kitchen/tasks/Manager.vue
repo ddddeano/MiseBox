@@ -1,3 +1,4 @@
+<!-- components/organisms/Kitchen/tasks/Manager.vue -->
 <template>
   <div class="task-manager">
     <h2>Task Manager</h2>

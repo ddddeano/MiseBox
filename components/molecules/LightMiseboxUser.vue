@@ -1,3 +1,4 @@
+<!-- components/molecules/LightMiseboxUser.vue -->
 <template>
   <div v-if="miseboxUser" class="light-user-cell">
     <MoleculesAvatar :user="miseboxUser" size="small" />

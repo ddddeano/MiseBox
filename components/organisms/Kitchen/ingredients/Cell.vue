@@ -1,3 +1,4 @@
+<!-- components/organisms/Kitchen/ingredients/Cell.vue -->
 <template>
   <li class="cell">
     <!-- Header with toggle and basic info -->

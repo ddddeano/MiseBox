@@ -1,3 +1,4 @@
+<!-- components/molecules/forms/KitchenImageSelection.vue -->
 <template>
   <div class="form-field">
     <div class="image-container">
@@ -14,7 +15,6 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
 import { useCurrentUser, useFirestore } from 'vuefire';
 import { doc, updateDoc } from 'firebase/firestore';
 import {

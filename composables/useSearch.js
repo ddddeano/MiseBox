@@ -1,3 +1,4 @@
+<!-- composables/useSearch.js -->
 // composables/useSearch.js
 export function useGoogleMapsLoader() {
   const loadGoogleMapsScript = () => {

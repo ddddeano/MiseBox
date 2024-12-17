@@ -1,3 +1,4 @@
+<!-- components/organisms/Professional/Dashboard.vue -->
 <template>
   <client-only>
     <div class="dashboard">

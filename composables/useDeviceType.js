@@ -1,3 +1,4 @@
+<!-- composables/useDeviceType.js -->
 // composables/useDeviceType.js
 import { ref, onMounted, onUnmounted } from 'vue'
 

@@ -1,3 +1,4 @@
+<!-- components/organisms/Chef/Fields/Kitchen.vue -->
 <template>
   <div class="kitchen-form">
     <!-- Display Mode -->

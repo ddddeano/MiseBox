@@ -1,3 +1,4 @@
+<!-- pages/kitchens/create.vue -->
 <!-- pages/kitchens/create-or-connect -->
 <template>
   <client-only>

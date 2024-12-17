@@ -1,3 +1,4 @@
+<!-- composables/AppManagers/useInteraction.js -->
 import { computed } from "vue";
 import { useCurrentUser, useDocument, useFirestore } from "vuefire";
 import { doc } from "firebase/firestore";

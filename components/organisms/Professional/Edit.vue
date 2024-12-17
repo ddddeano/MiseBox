@@ -1,6 +1,9 @@
+<!-- components/organisms/Professional/Edit.vue -->
+<!-- ~/components/Organisms/Professional/Edit.vue -->
+
 <template>
   <client-only>
-    <div class="profile-forms">
+    <div class="edit-view">
       <div v-if="isViewingOwn && professional">
         <h3>Edit Your Professional Profile</h3>
 
@@ -243,39 +246,17 @@ import {
 
 import { formatBio, validateBio } from "~/composables/utils/useSharedFormattingAndValidation";
 
-const route = useRoute();
-const db = useFirestore();
+// Props for the Chef data
+const props = defineProps({
+  professional: {
+    type: Object,
+    required: true,
+    default: () => ({}), // Default empty object
+  },
+});
+
 const currentUser = useCurrentUser();
-
-// Fetch professional data
-const professionalDocRef = computed(() =>
-  currentUser.value ? doc(db, "professionals", route.params.id) : null
-);
-
-const { data: professional } = useDocument(professionalDocRef);
-
-// Authorization check
-const isViewingOwn = computed(() => currentUser.value?.uid === route.params.id);
 </script>
 
-<style scoped>
-.profile-forms {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  max-width: 800px;
-  margin: auto;
-}
 
-h3 {
-  margin-bottom: var(--spacing-m);
-  color: var(--text-primary);
-  font-size: var(--font-size-xl);
-}
 
-.access-denied-message {
-  text-align: center;
-  margin-top: var(--spacing-m);
-  color: var(--text-danger);
-}
-</style>

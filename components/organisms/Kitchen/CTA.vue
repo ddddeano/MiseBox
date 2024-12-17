@@ -1,3 +1,4 @@
+<!-- components/organisms/Kitchen/CTA.vue -->
 <template>
   <div class="call-to-action">
     <OrganismsUserCTA />
@@ -8,7 +9,7 @@
       <p>
         To create and manage kitchens, you need to have a Chef profile. Set up your Chef account to get started.
       </p>
-      <button class="cta-button" @click="redirectToChefCTA">Create Chef Profile</button>
+      <button class="btn" @click="redirectToChefCTA">Create Chef Profile</button>
     </div>
 
     <!-- Kitchen Wizard -->

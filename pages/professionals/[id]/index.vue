@@ -1,22 +1,23 @@
+<!-- pages/professionals/[id]/index.vue -->
 <template>
   <client-only>
-    <div v-if="miseboxUser && professional" class="shared-view-profile-index">
-      <!-- Header Component -->
+    <div v-if="miseboxUser && professional" class="profile">
+      <!-- User Header -->
       <MoleculesMiseboxUserHeader :miseboxUser="miseboxUser" />
 
-      <!-- Professional View Component -->
+      <!-- Professional Profile View -->
       <OrganismsProfessionalView :professional="professional" />
 
       <!-- Universal Bubble Navigation -->
       <OrganismsUniversalBubble 
         :id="miseboxUser.id" 
-        :parent="'professionals'" 
+        parent="professionals"
         :userApps="miseboxUser.user_apps" 
       />
     </div>
     <div v-else>
       <!-- Loading State -->
-      <p class="shared-view-profile-loading">Loading...</p>
+      <p class="loading">Loading...</p>
     </div>
   </client-only>
 </template>
@@ -26,9 +27,10 @@ import { useDocument, useFirestore, useCurrentUser } from "vuefire";
 import { doc } from "firebase/firestore";
 import { useRoute } from "vue-router";
 
+// VueFire and Firebase setup
+const currentUser = useCurrentUser();
 const route = useRoute();
 const db = useFirestore();
-const currentUser = useCurrentUser();
 
 // Fetch Misebox User Document
 const miseboxUserDocRef = computed(() =>
@@ -43,16 +45,15 @@ const professionalDocRef = computed(() =>
 const { data: professional } = useDocument(professionalDocRef);
 </script>
 
-<style scoped>
-.shared-view-profile-index {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+<style>
+.edit-page {
+  width: 100%; /* Default to full width for mobile */
+  margin: 0 auto; /* Center the container on larger screens */
 }
 
-.shared-view-profile-loading {
-  text-align: center;
-  color: var(--text-secondary);
-  margin-top: var(--spacing-m);
+@media (min-width: 768px) { /* Adjust breakpoint as needed */
+  .edit-page {
+    width: 80%; /* Restrict width on larger screens */
+  }
 }
 </style>

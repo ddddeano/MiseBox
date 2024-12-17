@@ -1,15 +1,26 @@
+<!-- components/organisms/Kitchen/search/Wizard.vue -->
 <template>
   <div class="kitchen-wizard">
     <!-- Kitchen Search -->
     <OrganismsKitchenSearch @select-kitchen="handleSelectKitchen" />
     <!-- Selected Kitchen -->
     <div v-if="selectedKitchen" class="selected-kitchen">
-      <OrganismsKitchenCell :kitchen="selectedKitchen" />
+      <!-- Pass isDisabled as true to disable links -->
+      <OrganismsKitchenCell :kitchen="selectedKitchen" :isDisabled="true" />
 
       <!-- Action Buttons -->
       <div class="action-buttons">
-        <button class="btn btn-primary" @click="confirmKitchen">Confirm Kitchen</button>
-        <button class="btn btn-secondary" @click="resetSelection">Cancel</button>
+        <!-- Render Inspect button only if source is firestore -->
+        <NuxtLink
+          v-if="selectedKitchen.source === 'firestore'"
+          :to="`/kitchens/${selectedKitchen.kitchenId}`"
+          class="btn"
+        >
+          Inspect
+        </NuxtLink>
+
+        <button class="btn" @click="confirmKitchen">Confirm Kitchen</button>
+        <button class="btn" @click="resetSelection">Cancel</button>
       </div>
     </div>
   </div>

@@ -1,3 +1,4 @@
+<!-- components/molecules/Flyout.vue -->
 <template>
   <div class="flyout">
     <ul>

@@ -1,3 +1,4 @@
+<!-- composables/useFunctions.js -->
 import { computed } from 'vue';
 import { useCollection, useCurrentUser } from 'vuefire';
 

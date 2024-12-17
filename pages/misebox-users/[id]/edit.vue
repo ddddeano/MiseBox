@@ -1,15 +1,34 @@
+<!-- pages/misebox-users/[id]/edit.vue -->
+<!-- ~/pages/misebox-users/[id]/edit.vue -->
 <template>
   <client-only>
-    <div class="profile-forms">
-      <!-- Authorization Check -->
+    <div class="edit-page">
       <div v-if="miseboxUser">
-        <h3>Edit Your Profile</h3>
-
-        <!-- Header -->
         <MoleculesMiseboxUserHeader :miseboxUser="miseboxUser" />
+        <div class="action-buttons">
+          <NuxtLink
+            v-if="isViewingOwn"
+            :to="`/misebox-users/${currentUser.uid}`"
+            class="btn"
+          >
+            View
+          </NuxtLink>
+
+          <!-- Delete Button -->
+          <button
+            v-if="isViewingOwn"
+            class="btn"
+            @click="deleteMiseboxUser"
+          >
+            Delete
+          </button>
+        </div>
 
         <!-- Edit Form -->
-        <OrganismsMiseboxUserEdit v-if="isViewingOwn" />
+        <OrganismsMiseboxUserEdit
+          v-if="isViewingOwn"
+          :miseboxUser="miseboxUser"
+        />
       </div>
       <div v-else>
         <p class="access-denied-message">
@@ -21,7 +40,6 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
 import { useRoute } from "vue-router";
 import { useFirestore, useDocument, useCurrentUser } from "vuefire";
 import { doc } from "firebase/firestore";
@@ -33,27 +51,9 @@ const currentUser = useCurrentUser();
 
 // Fetch the user's Misebox profile document
 const miseboxUserDocRef = computed(() =>
-  currentUser.value ? doc(db, "misebox-users", currentUser.value.uid) : null
+  currentUser.value ? doc(db, "misebox-users", route.params.id) : null
 );
 
-const { data: miseboxUser } = useDocument(miseboxUserDocRef);
-
-// Check if the current user owns the profile
-const isViewingOwn = computed(() => {
-  return currentUser.value?.uid === route.params.id;
-});
+const { data: miseboxUser, deleteMiseboxUser } = useDocument(miseboxUserDocRef);
+const isViewingOwn = computed(() => currentUser.value?.uid === route.params.id);
 </script>
-
-<style scoped>
-.profile-forms {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.access-denied-message {
-  text-align: center;
-  color: var(--text-danger);
-  margin-top: var(--spacing-m);
-}
-</style>

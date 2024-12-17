@@ -1,3 +1,4 @@
+<!-- composables/useTheme.js -->
 import { ref, onMounted } from 'vue';
 
 const currentTheme = ref('light'); // Default to 'light' until client-side detection

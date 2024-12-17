@@ -1,3 +1,4 @@
+<!-- components/organisms/MiseboxUser/CTA.vue -->
 <template>
   <div class="call-to-action">
     <!-- Base UserCTA for shared logic -->
@@ -15,7 +16,7 @@
         <li>📊 Use smart tools to track your progress and stay ahead.</li>
       </ul>
       <p>Join today and unlock the full potential of Misebox!</p>
-      <NuxtLink to="/auth" class="cta-button">Sign Up Now</NuxtLink>
+      <NuxtLink to="/auth" class="btn">Sign Up Now</NuxtLink>
     </div>
   </div>
 </template>

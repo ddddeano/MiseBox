@@ -1,3 +1,4 @@
+<!-- components/organisms/Chef/Fields/Workflow.vue -->
 <template>
   <div class="workflow-form">
     <div v-if="mode === 'display'">

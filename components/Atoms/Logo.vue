@@ -1,3 +1,4 @@
+<!-- components/atoms/Logo.vue -->
 <!-- atoms/logo -->
 <template>
   <NuxtLink to="/" class="logo-link">

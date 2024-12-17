@@ -1,44 +1,55 @@
-<!-- components/Organisms/Professional/Cell.vue -->
+<!-- components/organisms/Professional/Cell.vue -->
 <template>
-  <div class="cell professional-cell" v-if="professional && miseboxUser">
-    <NuxtLink :to="`/professionals/${professional.id}`" class="cell-avatar">
-      <MoleculesAvatar :user="miseboxUser" size="small" />
-      <div class="cell-info">
-        <div v-if="miseboxUser.display_name" class="display-name">{{ miseboxUser.display_name }}</div>
-        <div class="title">{{ professional.title }}</div>
+  <div class="cell professional-cell" v-if="miseboxUser && professional">
+    <!-- Header Section -->
+    <NuxtLink :to="`/professionals/${professional.id}`" class="cell-header">
+      <div class="cell-avatar">
+        <MoleculesAvatar 
+          :url="miseboxUser.avatar || '/images/default-avatar.jpg'" 
+          size="small" 
+          altText="Professional Avatar" 
+        />
+      </div>
+      <div class="header-content">
+        <div class="display-name" v-if="miseboxUser.display_name">
+          {{ miseboxUser.display_name }}
+        </div>
+        <div class="handle" v-if="miseboxUser.handle">
+          @{{ miseboxUser.handle }}
+        </div>
+        <div class="title" v-if="professional.title">
+          {{ professional.title }}
+        </div>
+      </div>
+      <div class="icon">
+        <ChevronRightIcon />
       </div>
     </NuxtLink>
-    <MoleculesFollowButton
-      v-if="!interactingWithSelf"
-      :user="miseboxUser"
-      class="follow-button"
-    />
+
+    <!-- Footer Section -->
+    <div class="cell-footer">
+      <div class="cell-interaction">
+        <div v-if="miseboxUser?.id !== currentUser?.uid" class="not-self">
+          <MoleculesFollowButton :user="miseboxUser" />
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { useDocument } from "vuefire";
-import { doc } from "firebase/firestore";
-import { useFirestore } from "vuefire";
+import { useCurrentUser } from "vuefire";
 
 const props = defineProps({
   professional: {
     type: Object,
-    required: true, 
+    required: true,
   },
 });
 
-const db = useFirestore();
+// Fetch Misebox User document
+const { document: miseboxUser } = useFetchDoc("misebox-users", props.professional.id);
 
-const miseboxUserDocRef = computed(() =>
-  doc(db, "misebox-users", props.professional.id)
-);
-const { data: miseboxUser } = useDocument(miseboxUserDocRef);
-
-const { isInteractingWithSelf } = useInteraction();
-const interactingWithSelf = isInteractingWithSelf(props.professional.id);
+// Get the current user
+const currentUser = useCurrentUser();
 </script>
-
-<style scoped>
-/* Add specific styles for the professional cell */
-</style>

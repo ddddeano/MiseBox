@@ -1,3 +1,4 @@
+<!-- components/layout/Header.vue -->
 <template>
   <client-only>
     <header class="header">
@@ -11,21 +12,27 @@
       <div class="header-right">
         <!-- Authentication Link (if not on the auth page and not logged in) -->
         <NuxtLink
-          v-if="!isAuthPage"
+          v-if="!isAuthPage && !miseboxUser"
           to="/auth"
           class="btn btn-pill btn-secondary small-btn"
         >
           <PlusIcon class="icon small-icon" />
           <span v-if="!isMobile" class="btn-text">Create</span>
         </NuxtLink>
-        
+
         <!-- Profile Link (if logged in) -->
         <NuxtLink
           v-if="miseboxUser"
           :to="`/misebox-users/${miseboxUser.id}`"
           class="view-profile-link"
         >
-          <MoleculesAvatar :user="miseboxUser" size="small" />
+          <MoleculesAvatar 
+          collectionName="misebox-users"
+            :id=miseboxUser.id
+            :url="miseboxUser.avatar || 'assets/images/default-avatar.jpg'" 
+            altText="User Avatar" 
+            size="small" 
+          />
         </NuxtLink>
 
         <!-- Burger Menu Toggle for Mobile Screens -->
@@ -36,19 +43,19 @@
 </template>
 
 <script setup>
-import { useRoute } from 'vue-router'
-import { useWindowSize } from '@vueuse/core'
-import { computed } from 'vue'
+import { useRoute } from 'vue-router';
+import { useWindowSize } from '@vueuse/core';
+import { computed } from 'vue';
 
-const route = useRoute()
-const isAuthPage = computed(() => route.path === '/auth')
+const route = useRoute();
+const isAuthPage = computed(() => route.path === '/auth');
 
 // Screen width to toggle mobile view
-const { width } = useWindowSize()
-const isMobile = computed(() => width.value < 768)
+const { width } = useWindowSize();
+const isMobile = computed(() => width.value < 768);
 
 // Fetch `miseboxUser` and `createMiseboxUser` from the composable
-const { currentMiseboxUser: miseboxUser, createMiseboxUser } = useMiseboxUser()
+const { currentMiseboxUser: miseboxUser } = useMiseboxUser();
 </script>
 
 <style scoped>
@@ -86,6 +93,11 @@ const { currentMiseboxUser: miseboxUser, createMiseboxUser } = useMiseboxUser()
 
 .btn-text {
   font-size: var(--font-size-xs);
+}
+
+.view-profile-link {
+  display: flex;
+  align-items: center;
 }
 
 .navigation-links {

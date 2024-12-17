@@ -1,19 +1,35 @@
+<!-- pages/professionals/[id]/edit.vue -->
 <template>
   <client-only>
-    <div class="profile-forms">
-      <!-- Authorisation Check -->
+    <div class="edit-page">
       <div v-if="professional">
-        <h3>Edit your Professional Profile</h3>
-
-        <!-- Header Component -->
+        <!-- Header -->
         <MoleculesMiseboxUserHeader :miseboxUser="miseboxUser" />
 
-        <!-- Edit Form Component -->
-        <OrganismsProfessionalEdit v-if="isViewingOwn"/>
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <NuxtLink
+            v-if="isViewingOwn"
+            :to="`/professionals/${currentUser.uid}`"
+            class="btn"
+          >
+            View
+          </NuxtLink>
+          <button
+            v-if="isViewingOwn"
+            class="btn"
+            @click="deleteProfessional"
+          >
+            Delete
+          </button>
+        </div>
+
+        <!-- Edit Form -->
+        <OrganismsProfessionalEdit v-if="isViewingOwn" :professional="professional" />
       </div>
       <div v-else>
         <p class="access-denied-message">
-          Access Denied. You are not authorised to edit this profile.
+          Access Denied. You are not authorized to edit this profile.
         </p>
       </div>
     </div>
@@ -22,44 +38,25 @@
 
 <script setup>
 import { computed } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { useRoute } from "vue-router";
 import { useFirestore, useDocument, useCurrentUser } from "vuefire";
 import { doc } from "firebase/firestore";
 
-// Router and Firestore setup
-const router = useRouter();
+// Firestore and Route Setup
 const route = useRoute();
 const db = useFirestore();
 const currentUser = useCurrentUser();
 
-// Fetch Firestore documents
 const miseboxUserDocRef = computed(() =>
   currentUser.value ? doc(db, "misebox-users", currentUser.value.uid) : null
 );
 
 const professionalDocRef = computed(() =>
-  currentUser.value ? doc(db, "professionals", currentUser.value.uid) : null
+  currentUser.value ? doc(db, "professionals", route.params.id) : null
 );
 
-const { data: miseboxUser } = useDocument(miseboxUserDocRef);
+const { data: miseboxUser, deleteProfessional } = useDocument(miseboxUserDocRef);
 const { data: professional } = useDocument(professionalDocRef);
 
-// Authorization Check
-const isViewingOwn = computed(() => {
-  return currentUser.value?.uid === route.params.id;
-});
+const isViewingOwn = computed(() => currentUser.value?.uid === route.params.id);
 </script>
-
-<style scoped>
-.profile-forms {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.access-denied-message {
-  text-align: center;
-  color: var(--text-danger);
-  margin-top: var(--spacing-m);
-}
-</style>

@@ -1,6 +1,8 @@
+<!-- components/organisms/MiseboxUser/View.vue -->
+<!-- ~/components/Organisms/MiseboxUser/View.vue -->
 <template>
   <client-only>
-    <div class="misebox-user-profile-container">
+    <div class="profile-view">
       <!-- Display Name -->
       <section v-if="miseboxUser.full_name?.firstName && miseboxUser.full_name?.lastName">
         <h2 class="view-profile-title">Name</h2>
@@ -92,27 +94,20 @@ const maskPhone = (phone) => {
 </script>
 
 <style scoped>
-.misebox-user-profile-container {
-  padding: var(--spacing-m);
-  background: var(--background-secondary);
-  border-radius: var(--radius-m);
-  box-shadow: var(--shadow-m);
-  max-width: 800px;
-  width: 100%;
+.profile-view {
+  @apply view; /* Shared layout styles for views */
 }
 
 .view-profile-title {
-  font-size: var(--font-size-l);
+  font-size: var(--font-size-m);
+  font-weight: var(--font-weight-bold);
   margin-bottom: var(--spacing-s);
   color: var(--text-primary);
 }
 
-section {
-  margin-bottom: var(--spacing-m);
-}
-
 p {
-  margin: 0.2rem 0;
+  margin: 0;
   color: var(--text-secondary);
+  line-height: 1.5;
 }
 </style>

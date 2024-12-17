@@ -1,3 +1,4 @@
+<!-- pages/chefs/[id]/recipe/edit.vue -->
 <template>
   <div class="detailed-recipe-edit">
     <h1>Edit Recipe: {{ recipe.name }}</h1>
@@ -105,13 +106,4 @@ const saveRecipeDetails = async () => {
   padding: 20px;
 }
 
-.editable-textarea,
-.editable-input {
-  width: 100%;
-  margin-bottom: 10px;
-}
-
-.btn {
-  margin-top: 10px;
-}
 </style>

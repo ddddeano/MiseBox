@@ -1,8 +1,8 @@
+<!-- components/organisms/Auth.vue -->
 <template>
   <div class="auth-content">
-    <h1 class="app-slogan">Your Smart Mise en Place!</h1>
     <div class="auth-title">{{ isSignup ? 'Create' : 'Welcome back' }}</div>
-    <!-- Google Sign-In button -->
+    <p class="app-slogan">Your Smart Mise en Place!</p>
     <hr class="divider" />
     <MoleculesGoogleButton @click="googleSignIn" :isSignup="isSignup" />
     <hr class="divider" />
@@ -87,6 +87,7 @@ const toggleAuthMode = () => {
   font-weight: var(--font-weight-bold);
   color: var(--text-primary);
   text-align: center;
+  margin-bottom: 8px;
 }
 
 .error-message {
@@ -112,7 +113,10 @@ const toggleAuthMode = () => {
   text-align: center;
 }
 
-.editable-input {
-  border-color: var(--text-primary);
+.btn {
+  margin-top: 8px;
+}
+h1 {
+  margin-bottom: 0px;
 }
 </style>

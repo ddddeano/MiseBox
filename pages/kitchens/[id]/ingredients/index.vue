@@ -1,3 +1,4 @@
+<!-- pages/kitchens/[id]/ingredients/index.vue -->
 <template>
   <client-only>
     <div class="ingredients-index">

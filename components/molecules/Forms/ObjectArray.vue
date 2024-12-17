@@ -1,3 +1,4 @@
+<!-- components/molecules/forms/ObjectArray.vue -->
 <template>
   <div class="form-field">
     <div class="top" :class="{ 'unfolded': !isFolded }">

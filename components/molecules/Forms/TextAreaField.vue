@@ -1,3 +1,4 @@
+<!-- components/molecules/forms/TextAreaField.vue -->
 <template>
   <div class="form-field">
     <div class="top">
@@ -109,7 +110,5 @@ const deleteButtonClicked = async () => {
 </script>
 
 <style scoped>
-.bio-text {
-  white-space: pre-wrap; /* Ensures that spaces and line breaks are preserved */
-}
+
 </style>

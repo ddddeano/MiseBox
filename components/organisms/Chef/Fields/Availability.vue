@@ -1,3 +1,4 @@
+<!-- components/organisms/Chef/Fields/Availability.vue -->
 <template>
   <div class="availability-form">
     <!-- Display Mode -->

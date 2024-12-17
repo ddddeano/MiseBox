@@ -1,3 +1,4 @@
+<!-- components/molecules/CustomDialog.vue -->
 <template>
   <div v-if="visible" class="custom-dialog-overlay">
     <div class="custom-dialog-content">

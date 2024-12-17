@@ -1,3 +1,4 @@
+<!-- components/molecules/ChevronButton.vue -->
 <template>
   <div class="chevron-button icon" @click="handleClick">
     <ChevronUpIcon :class="chevronDirectionClass" />

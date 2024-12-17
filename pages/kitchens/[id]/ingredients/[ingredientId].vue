@@ -1,3 +1,4 @@
+<!-- pages/kitchens/[id]/ingredients/[ingredientId].vue -->
 <!-- components/organisms/Kitchen/ingredients/[ingredientId].vue -->
 <template>
   <div class="ingredient-edit">

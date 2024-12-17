@@ -1,3 +1,4 @@
+<!-- components/organisms/Supplier/Manager.vue -->
 <!-- components/organisms/Suppliers/Manager.vue -->
 <template>
   <div class="supplier-manager">

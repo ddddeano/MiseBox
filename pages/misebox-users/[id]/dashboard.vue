@@ -1,3 +1,4 @@
+<!-- pages/misebox-users/[id]/dashboard.vue -->
 <template>
   <client-only>
     <div class="dashboard">

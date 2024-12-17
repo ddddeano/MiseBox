@@ -1,3 +1,4 @@
+<!-- components/molecules/BasicInfoNavigation.vue -->
 <template>
   <div class="navigation-buttons">
     <NuxtLink :to="`/${profileType}/${userId}/edit`" class="btn btn-primary btn-pill">

@@ -1,8 +1,13 @@
+<!-- components/molecules/forms/AvatarSelection.vue -->
 <template>
   <div class="form-field">
     <div class="avatar-container">
-      <!-- Display the user's avatar -->
-      <MoleculesAvatar :user="user" size="large" />
+      <!-- Display the user's or kitchen's avatar -->
+      <MoleculesAvatar
+        :url="item.avatar || '/images/default-avatar.jpg'"
+        size="large"
+        altText="User Avatar"
+      />
 
       <!-- Camera icon overlay -->
       <label class="camera">
@@ -14,13 +19,17 @@
 </template>
 
 <script setup>
-import { defineProps } from "vue";
 import { useFirestore } from "vuefire";
 import { doc, updateDoc } from "firebase/firestore";
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 
+// Props: collection name and item (user or kitchen object)
 const props = defineProps({
-  user: {
+  collectionName: {
+    type: String,
+    required: true,
+  },
+  item: {
     type: Object,
     required: true,
   },
@@ -29,60 +38,70 @@ const props = defineProps({
 const firestore = useFirestore();
 const storage = getStorage();
 
-// Handle file input change for updating the user's avatar image
+/**
+ * Handles the file input change event to upload and update the avatar.
+ * @param {Event} event - The file input change event.
+ */
 const handleFileChange = async (event) => {
   const file = event.target.files[0];
-  if (file) {
-    try {
-      const userId = props.user.id; // Ensure 'id' exists on 'props.user'
-      const avatarPath = `${userId}/images/avatar.jpg`;
-      const avatarMiniPath = `${userId}/images/avatar-mini.jpg`;
+  if (!file) return;
 
-      // Resize and optimize the images
-      const standardAvatar = await resizeImage(file, 200, 200); // Standard size: 200x200
-      const miniAvatar = await resizeImage(file, 50, 50); // Mini size: 50x50
+  try {
+    // Paths for avatar images in Firebase Storage
+    const itemId = props.item.id;
+    const avatarPath = `${props.collectionName}/${itemId}/avatar.jpg`;
+    const avatarMiniPath = `${props.collectionName}/${itemId}/avatar-mini.jpg`;
 
-      // Upload standard avatar to Firebase Storage
-      const avatarRef = storageRef(storage, avatarPath);
-      await uploadBytes(avatarRef, standardAvatar);
-      const avatarUrl = await getDownloadURL(avatarRef);
+    // Resize and upload both standard and mini avatars
+    const [standardAvatar, miniAvatar] = await Promise.all([
+      resizeImage(file, 200, 200),
+      resizeImage(file, 50, 50),
+    ]);
 
-      // Upload mini avatar to Firebase Storage
-      const miniAvatarRef = storageRef(storage, avatarMiniPath);
-      await uploadBytes(miniAvatarRef, miniAvatar);
-      const avatarMiniUrl = await getDownloadURL(miniAvatarRef);
+    const [avatarUrl, avatarMiniUrl] = await Promise.all([
+      uploadFileAndGetURL(avatarPath, standardAvatar),
+      uploadFileAndGetURL(avatarMiniPath, miniAvatar),
+    ]);
 
-      // Update the user's avatar in Firestore
-      const userDocRef = doc(firestore, "misebox-users", userId);
-      await updateDoc(userDocRef, {
-        avatar: avatarUrl,
-        avatar_mini: avatarMiniUrl, // Corrected key for mini avatar
-      });
+    // Update Firestore document with new avatar URLs
+    const docRef = doc(firestore, props.collectionName, itemId);
+    await updateDoc(docRef, { avatar: avatarUrl, avatar_mini: avatarMiniUrl });
 
-      console.log("Avatar and avatar_mini updated successfully:", {
-        avatar: avatarUrl,
-        avatar_mini: avatarMiniUrl,
-      });
+    console.log("Avatar updated successfully:", { avatarUrl, avatarMiniUrl });
 
-      // Optionally update the local user object to reflect the new avatar immediately
-      props.user.avatar = avatarUrl;
-      props.user.avatar_mini = avatarMiniUrl;
-    } catch (error) {
-      console.error("Error uploading avatar:", error);
-      // Handle the error (e.g., display a notification to the user)
-    }
+    // Optionally update the local item to reflect changes immediately
+    props.item.avatar = avatarUrl;
+    props.item.avatar_mini = avatarMiniUrl;
+  } catch (error) {
+    console.error("Error updating avatar:", error);
   }
 };
 
-// Utility: Resize and compress the image before uploading
+/**
+ * Uploads a file to Firebase Storage and retrieves its download URL.
+ * @param {string} path - The storage path for the file.
+ * @param {Blob} file - The file to upload.
+ * @returns {Promise<string>} The download URL of the uploaded file.
+ */
+const uploadFileAndGetURL = async (path, file) => {
+  const avatarRef = storageRef(storage, path);
+  await uploadBytes(avatarRef, file);
+  return await getDownloadURL(avatarRef);
+};
+
+/**
+ * Resizes and compresses an image to a specific width and height.
+ * @param {File} file - The original image file.
+ * @param {number} maxWidth - The maximum width of the resized image.
+ * @param {number} maxHeight - The maximum height of the resized image.
+ * @returns {Promise<Blob>} The resized and compressed image as a Blob.
+ */
 const resizeImage = (file, maxWidth, maxHeight) => {
   return new Promise((resolve, reject) => {
     const img = new Image();
     const reader = new FileReader();
 
-    reader.onload = (e) => {
-      img.src = e.target.result;
-    };
+    reader.onload = (e) => (img.src = e.target.result);
     reader.onerror = reject;
 
     reader.readAsDataURL(file);
@@ -91,7 +110,6 @@ const resizeImage = (file, maxWidth, maxHeight) => {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
 
-      // Calculate new dimensions
       const scaleFactor = Math.min(maxWidth / img.width, maxHeight / img.height);
       const width = img.width * scaleFactor;
       const height = img.height * scaleFactor;
@@ -101,13 +119,7 @@ const resizeImage = (file, maxWidth, maxHeight) => {
 
       ctx.drawImage(img, 0, 0, width, height);
 
-      canvas.toBlob(
-        (blob) => {
-          resolve(blob);
-        },
-        "image/jpeg",
-        0.7 // Adjust the quality to reduce file size
-      );
+      canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.7);
     };
   });
 };

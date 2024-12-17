@@ -1,43 +1,49 @@
-<!-- kitchens/[id]/index.vue -->
+<!-- pages/kitchens/[id]/index.vue -->
 <template>
   <client-only>
-    {{ kitchen }}
-    <div v-if="kitchen" class="index">
-      <!-- Kitchen Header -->
-      <OrganismsKitchenHeader :kitchen="kitchen" />
+    <div v-if="kitchen" class="profile">
+      <OrganismsKitchenCard :kitchen="kitchen" />
 
-      <!-- Dashboard or team access check -->
-      <div v-if="isInKitchenTeam">
-        <OrganismsKitchenDashboard :kitchen="kitchen" />
-      </div>
-      <div v-else>
-        <p>You are not in this kitchen team.</p>
-      </div>
+      <OrganismsKitchenDashboard v-if="isInTeam" :kitchen="kitchen" />
+
+      <button v-else class="btn" @click="joinKitchen">
+        Join Kitchen
+      </button>
     </div>
   </client-only>
 </template>
 
 <script setup>
 import { useRoute } from "vue-router";
-import { useCurrentUser, useDocument } from "vuefire";
+import { useDocument, useFirestore, useCurrentUser } from "vuefire";
 import { doc } from "firebase/firestore";
-import { useFirestore } from "vuefire";
 
+
+// References to the current user and route
 const currentUser = useCurrentUser();
 const route = useRoute();
 const db = useFirestore();
 
-// Fetch the kitchen document based on route params
 const kitchenDocRef = computed(() =>
-  currentUser.value ? doc(db, "kitchens", route.params.id)
-    : null
+  currentUser.value ? doc(db, "kitchens", route.params.id) : null
 );
 
 const { data: kitchen } = useDocument(kitchenDocRef);
 
-// Check if the current user is part of the kitchen team
-const isInKitchenTeam = computed(() => {
-  if (!kitchen.value || !currentUser.value) return false;
-  return kitchen.value.team.includes(currentUser.value.uid);
+const isInTeam = computed(() => {
+  if (!kitchen.value || !kitchen.value.team) return false;
+  return kitchen.value.team.some((member) => member.id === currentUser.value?.uid);
 });
+
+const { addUserToKitchenTeam } = useKitchen();
+
+const joinKitchen = async () => {
+  if (!kitchen.value?.kitchenId) return;
+  if (!currentUser.value?.uid) return;
+
+  const userId = currentUser.value.uid;
+
+  await addUserToKitchenTeam(kitchen.value.kitchenId, userId);
+  console.log(`[joinKitchen] User ${userId} joined the kitchen successfully.`);
+};
 </script>

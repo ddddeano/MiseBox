@@ -1,121 +1,52 @@
-/* shared-card-cell.scss */
+/* Global Card and Cell Styles */
 
-/* Shared Card and Cell Styles */
 .card, .cell {
   width: 100%;
   max-width: 600px;
   border: 1px solid var(--border);
   border-radius: var(--radius-s);
-  padding: var(--spacing-s);
-  background-color: var(--background);
   box-shadow: var(--shadow-xs);
-  margin-bottom: var(--spacing-m);
-  display: flex;
-  flex-direction: column;
+  padding: var(--spacing-xs);
 }
 
-/* Shared Header Styles */
-.card-header, .cell-header, .cell-avatar, .cell-row {
+.card {
+  background-color: var(--background-strong);
+}
+
+.cell {
+  background-color: var(--background);
+}
+
+.card-header, .cell-header {
   display: flex;
   align-items: center;
-  gap: var(--spacing-s);
-  width: 100%;
   justify-content: space-between;
+  gap: var(--spacing-s);
 }
 
-/* Metadata and Toggle */
-.cell-meta, .cell-toggle {
-  padding: var(--spacing-s);
-}
-
-.cell-toggle {
-  background: none;
-  border: none;
-  font-size: var(--font-size-m);
-  text-align: left;
-  cursor: pointer;
-  width: 100%;
-  color: var(--text-primary);
-}
-
-.cell-toggle.highlight {
-  background-color: var(--primary);
-  color: var(--text-inverse);
-}
-
-/* Shared User Info */
-.user-info, .cell-info {
+.header-content {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-/* Text and Titles */
-.display-name, .cell-name {
-  font-weight: bold;
-  font-size: var(--font-size-m);
-  margin: 0;
-}
-
-.handle, .title, .cell-title {
-  color: var(--text-secondary);
-  font-size: var(--font-size-s);
-  margin: 0;
-}
-
-/* Follow Button */
-.follow-button {
-  margin-left: auto;
-}
-
-/* Expanded Card Content */
-.card-expanded, .cell-expanded {
-  margin-top: var(--spacing-s);
-}
-
-/* Bio */
-.bio {
-  color: var(--text-primary);
-}
-
-.list {
+.cell-footer {
   display: flex;
-  flex-direction: column;
-  align-items: center; /* Centers items horizontally */
-  min-height: 100vh; /* Full height for vertical centering */
-  padding: 2rem; /* Adds spacing around the content */
-  width: 100%;
-  max-width: 600px;
+  justify-content: flex-end;
 }
-/* List Item */
-.list-item {
-  width: 100%;
-  max-width: 600px;
+
+.cell-interaction .not-self, .card-interaction .not-self {
   display: flex;
-  flex-direction: column;
-  margin-bottom: var(--spacing-m);
+  align-items: center;
 }
 
+.special-section {
+  margin-top: var(--spacing-xs);
+}
 
-/* Edit Link Styles */
-.edit-link {
-  display: inline-block;
-  margin-top: var(--spacing-s);
-  text-decoration: none;
-  color: var(--text-inverse);
-  background-color: var(--primary);
-  padding: var(--spacing-xs) var(--spacing-m);
+.card-expanded {
+  padding: var(--spacing-s);
+  background-color: var(--background-light);
   border-radius: var(--radius-s);
-  transition: background-color 0.3s ease-in-out;
-}
-
-.edit-link:hover {
-  background-color: var(--primary-hover);
-}
-.loading-message,
-.end-of-list-message,
-.not-signed-in-message {
-  font-size: 1.2rem;
-  color: var(--text-secondary); /* Adjusts to your design system's secondary color */
-  margin-top: 1rem;
+  margin-top: var(--spacing-s);
 }

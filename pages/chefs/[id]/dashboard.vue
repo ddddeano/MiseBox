@@ -1,3 +1,4 @@
+<!-- pages/chefs/[id]/dashboard.vue -->
 <template>
   <client-only>
     <div class="dashboard">

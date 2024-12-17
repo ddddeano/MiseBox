@@ -1,3 +1,4 @@
+<!-- components/organisms/Kitchen/tasks/Cell.vue -->
 <template>
   <li class="task-item">
     <button

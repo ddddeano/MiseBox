@@ -1,3 +1,4 @@
+<!-- components/molecules/MonthAndYearSelector.vue -->
 <template>
   <div class="month-year-selector">
     <div class="selectors">

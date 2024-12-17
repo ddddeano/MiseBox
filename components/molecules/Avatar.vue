@@ -1,35 +1,29 @@
-<!-- avatar -->
+<!-- components/molecules/Avatar.vue -->
 <template>
   <div class="avatar" :class="`avatar--${size}`">
-    <!-- Display avatar image if the URL exists and is not empty -->
-    <template v-if="user.avatar && user.avatar !== ''">
-      <img :src="user.avatar" alt="Avatar" class="avatar-image" />
-    </template>
-
-    <!-- Show initials if the avatar URL is empty and initials exist -->
-    <template v-else-if="user.initials && user.initials !== ''">
-      <span class="avatar-initials">{{ user.initials.toUpperCase() }}</span>
-    </template>
-
-    <!-- Display UserCircleIcon as fallback -->
-    <template v-else>
-      <UserCircleIcon class="avatar-icon" />
+    <template v-if="url">
+      <img :src="url" :alt="altText" class="avatar-image" />
     </template>
   </div>
 </template>
 
 <script setup>
 const props = defineProps({
+  url: {
+    type: String,
+    required: false, // Optional if fallback is used
+  },
   size: {
     type: String,
-    default: 'small',
-    validator: (value) => ['small', 'medium', 'large'].includes(value),
+    default: "mini",
+    validator: (value) => ["mini", "small", "medium", "large"].includes(value),
   },
-  user: {
-    type: Object,
-    default: () => ({}),
+  altText: {
+    type: String,
+    default: "Avatar", // Alt text for accessibility
   },
 });
+
 </script>
 
 <style scoped>
@@ -43,35 +37,29 @@ const props = defineProps({
   background-color: var(--background);
 }
 
+.avatar--mini {
+  width: var(--avatar-mini, 32px);
+  height: var(--avatar-mini, 32px);
+}
+
 .avatar--small {
-  width: var(--avatar-small);
-  height: var(--avatar-small);
+  width: var(--avatar-small, 40px);
+  height: var(--avatar-small, 40px);
 }
 
 .avatar--medium {
-  width: var(--avatar-medium);
-  height: var(--avatar-medium);
+  width: var(--avatar-medium, 48px);
+  height: var(--avatar-medium, 48px);
 }
 
 .avatar--large {
-  width: var(--avatar-large);
-  height: var(--avatar-large);
+  width: var(--avatar-large, 100px);
+  height: var(--avatar-large, 100px);
 }
 
 .avatar-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.avatar-initials {
-  font-size: 1.2rem;
-  color: var(--text-primary);
-}
-
-.avatar-icon {
-  width: 100%;
-  height: 100%;
-  color: var(--text-secondary); /* Adjust the color to your design */
 }
 </style>

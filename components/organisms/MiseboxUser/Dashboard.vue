@@ -1,3 +1,4 @@
+<!-- components/organisms/MiseboxUser/Dashboard.vue -->
 <template>
   <div class="dashboard">
     <!-- Profile Management -->

@@ -1,3 +1,4 @@
+<!-- components/organisms/Professional/Fields/Location.vue -->
 <!-- components/organisms/Professional/Edit/LocationForm.vue -->
 <template>
   <div class="location-form">
@@ -67,17 +68,3 @@ const selectPlace = (place) => {
 };
 </script>
 
-<style scoped>
-.location-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.editable-input {
-  padding: 8px;
-  font-size: 1em;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-s);
-}
-</style>
