@@ -1,6 +1,6 @@
 import { defineNuxtPlugin } from '#app';
 import { initializeApp, getApps } from 'firebase/app';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, signInAnonymously } from 'firebase/auth';
 
 export default defineNuxtPlugin((nuxtApp) => {
   if (!getApps().length) {
@@ -19,12 +19,18 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   // Reactively track the authentication state
   if (import.meta.client) {
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       console.log('Auth state changed.');
       if (user) {
         console.log(`User ID: ${user.uid}`);
       } else {
-        console.log('No user currently signed in.');
+        console.log('No user currently signed in. Signing in anonymously...');
+        try {
+          await signInAnonymously(auth);
+          console.log('Signed in anonymously');
+        } catch (error) {
+          console.error('Error signing in anonymously:', error.message);
+        }
       }
     });
   }

@@ -1,31 +1,35 @@
 <!-- components/organisms/Professional/CTA.vue -->
 <template>
-  <div class="call-to-action">
-    <!-- UserCTA for shared logic -->
-    <OrganismsUserCTA />
+  <!-- Professional-specific CTA -->
+  <OrganismsMiseboxUserCTA v-if="!currentUser || !miseboxUser" />
 
-    <!-- Professional-specific content -->
-    <div v-if="miseboxUser && !professional" class="call-to-action-message">
-      <h2>Advance Your Professional Path</h2>
-      <p>
-        Misebox helps you stand out in the job market with a digital portfolio that showcases your achievements and connects you to top opportunities.
-      </p>
-      <ul>
-        <li>💼 Build a live portfolio that impresses recruiters and employers.</li>
-        <li>🌟 Expand your network by connecting with top industry professionals.</li>
-        <li>📈 Access tailored job opportunities that match your skills and goals.</li>
-      </ul>
-      <button class="btn" @click="createProfessional">Join as a Professional</button>
-    </div>
+  <!-- Redirect to create page if no Professional profile exists -->
+  <div v-if="currentUser && miseboxUser && !professional" class="call-to-action-message">
+    <h2>Advance Your Professional Path</h2>
+    <p>
+      Misebox helps you stand out in the job market with a digital portfolio that showcases your achievements and connects you to top opportunities.
+    </p>
+    <button class="btn" @click="redirectToCreate">Create Professional Profile</button>
+  </div>
 
-    <!-- Professional already exists -->
-    <div v-if="professional" class="call-to-action-existing">
-      <p>Your Professional profile is live. Start exploring opportunities now!</p>
-    </div>
+  <!-- Profile card for users with a Professional profile -->
+  <div v-if="currentUser && miseboxUser && professional" class="call-to-action-existing">
+    <p>Your Professional profile is live. Start exploring opportunities now!</p>
+    <OrganismsProfessionalCard />
   </div>
 </template>
 
 <script setup>
-const { currentProfessional: professional, createProfessional } = useProfessional();
+import { useCurrentUser } from "vuefire";
+import { useRouter } from "vue-router";
+
+const currentUser = useCurrentUser();
+const router = useRouter();
 const { currentMiseboxUser: miseboxUser } = useMiseboxUser();
+const { currentProfessional: professional } = useProfessional();
+
+// Redirect to create page
+const redirectToCreate = () => {
+  router.push("/professionals/create");
+};
 </script>

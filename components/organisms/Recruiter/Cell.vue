@@ -1,32 +1,19 @@
 <!-- components/organisms/Recruiter/Cell.vue -->
 <template>
   <div class="cell recruiter-cell" v-if="miseboxUser && recruiter">
-    <!-- Header Section -->
     <NuxtLink :to="`/recruiters/${recruiter.id}`" class="cell-header">
       <div class="cell-avatar">
-        <MoleculesAvatar 
-          :url="miseboxUser.avatar || '/images/default-avatar.jpg'" 
-          size="small" 
-          altText="Recruiter Avatar" 
-        />
+        <MoleculesAvatar :url="miseboxUser.avatar" size="small" altText="Recruiter Avatar" />
       </div>
       <div class="header-content">
-        <div class="display-name" v-if="miseboxUser.display_name">
-          {{ miseboxUser.display_name }}
-        </div>
-        <div class="handle" v-if="miseboxUser.handle">
-          @{{ miseboxUser.handle }}
-        </div>
-        <div class="company" v-if="recruiter.company">
-          {{ recruiter.company }}
-        </div>
+        <div class="display-name" v-if="miseboxUser.display_name">{{ miseboxUser.display_name }}</div>
+        <div class="handle" v-if="miseboxUser.handle">@{{ miseboxUser.handle }}</div>
+        <div v-if="recruiter.company" class="highlight">{{ recruiter.company }}</div>
       </div>
       <div class="icon">
         <ChevronRightIcon />
       </div>
     </NuxtLink>
-
-    <!-- Footer Section -->
     <div class="cell-footer">
       <div class="cell-interaction">
         <div v-if="miseboxUser?.id !== currentUser?.uid" class="not-self">
@@ -39,6 +26,7 @@
 
 <script setup>
 import { useCurrentUser } from "vuefire";
+const currentUser = useCurrentUser();
 
 const props = defineProps({
   recruiter: {
@@ -47,9 +35,6 @@ const props = defineProps({
   },
 });
 
-// Fetch Misebox User document
-const { document: miseboxUser } = useFetchDoc("misebox-users", props.recruiter.id);
-
-// Get the current user
-const currentUser = useCurrentUser();
+const { fetchMiseboxUser } = useMiseboxUser();
+const miseboxUser = fetchMiseboxUser(props.recruiter.id);
 </script>

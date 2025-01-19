@@ -42,7 +42,7 @@ const handleFileChange = async (event) => {
       // Resize and optimize the image before uploading
       const resizedImage = await resizeImage(file, 800, 600); // Resize to 800x600 (adjust as needed)
 
-      const kitchenId = props.kitchen.place_id; // Kitchen's unique identifier
+      const kitchenId = props.kitchen.id; // Kitchen's unique identifier
       const path = `kitchens/${kitchenId}/images/${file.name}`;
 
       // Upload the resized image to Firebase Storage

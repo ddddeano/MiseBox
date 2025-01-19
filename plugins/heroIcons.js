@@ -1,5 +1,6 @@
 import { defineNuxtPlugin } from '#app'
 import {
+  CheckBadgeIcon,
   ArrowUpCircleIcon,
   ArrowUpOnSquareIcon,
   AtSymbolIcon,
@@ -35,11 +36,16 @@ import {
   BriefcaseIcon,
   DocumentPlusIcon,
   DocumentMagnifyingGlassIcon,
-  PlusIcon
+  PlusIcon,
+  TrashIcon,
+  RectangleGroupIcon,
+  Cog6ToothIcon,
+  BuildingLibraryIcon,
 } from '@heroicons/vue/24/solid'
 
 export default defineNuxtPlugin((nuxtApp) => {
   const icons = {
+    BuildingLibraryIcon,
     DocumentMagnifyingGlassIcon,
     PlusIcon,
     DocumentPlusIcon,
@@ -76,6 +82,10 @@ export default defineNuxtPlugin((nuxtApp) => {
     XMarkIcon,
     CakeIcon,
     ArrowRightEndOnRectangleIcon,
+    TrashIcon,
+    RectangleGroupIcon,
+    Cog6ToothIcon,
+    CheckBadgeIcon,
   }
 
   Object.entries(icons).forEach(([name, component]) => {

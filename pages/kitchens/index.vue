@@ -2,15 +2,20 @@
 <template>
   <client-only>
     <div class="index">
-      <OrganismsKitchenCTA />
-      <!-- Show Chef's Kitchens -->
-      <OrganismsKitchenList mode="chefsKitchens" />
-      <!-- Show All Kitchens -->
-      <OrganismsKitchenList mode="allKitchens" />
+      <!-- Wrap KitchenCTA inside MiseboxUserCTA -->
+      <OrganismsMiseboxUserCTA>
+        <OrganismsKitchenCTA />
+      </OrganismsMiseboxUserCTA>
+
+      <!-- General kitchen list accessible to all users -->
+      <OrganismsKitchenList :kitchens="kitchens" title="All Kitchens" />
     </div>
   </client-only>
 </template>
 
 <script setup>
-const { currentChef: chef } = useChef();
+const { kitchensCollection } = useKitchen();
+
+// Fetch all kitchens
+const kitchens = kitchensCollection();
 </script>

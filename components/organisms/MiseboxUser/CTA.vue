@@ -1,28 +1,46 @@
 <!-- components/organisms/MiseboxUser/CTA.vue -->
 <template>
-  <div class="call-to-action">
-    <!-- Base UserCTA for shared logic -->
-    <OrganismsUserCTA />
+  <!-- Prompt to sign in for anonymous or unauthenticated users -->
+  <div v-if="!currentUser || isAnonymous" class="call-to-action-message">
+    <h2>Welcome to Misebox</h2>
+    <p>You need an account to interact with the ecosystem.</p>
+    <button class="btn" @click="redirectToSignIn">Sign In or Create Account</button>
+  </div>
 
-    <!-- Display additional info if the Misebox user does NOT exist -->
-    <div v-if="!miseboxUser && currentUser" class="call-to-action-message">
-      <h2>Welcome to Misebox</h2>
-      <p>
-        Create your Misebox account and access an ecosystem of tools to manage your kitchens, teams, workflows, and career opportunities.
-      </p>
-      <ul>
-        <li>💼 Build a live professional dossier that recruiters can access anytime.</li>
-        <li>🤝 Collaborate with industry leaders and peers seamlessly.</li>
-        <li>📊 Use smart tools to track your progress and stay ahead.</li>
-      </ul>
-      <p>Join today and unlock the full potential of Misebox!</p>
-      <NuxtLink to="/auth" class="btn">Sign Up Now</NuxtLink>
-    </div>
+  <!-- Redirect to create page if no Misebox User profile exists -->
+  <div v-if="currentUser && !miseboxUser" class="call-to-action-message">
+    <h2>Join the Misebox Ecosystem</h2>
+    <p>
+      Create your Misebox account to access tools for managing kitchens, workflows, and more.
+    </p>
+    <button class="btn" @click="redirectToCreate">Create Misebox User Profile</button>
+  </div>
+
+  <!-- Profile card for users with a Misebox User profile -->
+  <div v-if="currentUser && miseboxUser" class="call-to-action-existing">
+    <p>Your Misebox User profile is active. Explore and connect with others!</p>
+    <OrganismsMiseboxUserCard />
   </div>
 </template>
 
 <script setup>
-import { useFirestore, useCurrentUser, useCollection } from "vuefire";
+import { useCurrentUser } from "vuefire";
+import { useRouter } from "vue-router";
+
 const currentUser = useCurrentUser();
+const router = useRouter();
 const { currentMiseboxUser: miseboxUser } = useMiseboxUser();
+
+// Check if the current user is anonymous
+const isAnonymous = computed(() => currentUser?.value?.isAnonymous);
+
+// Redirect to the sign-in page
+const redirectToSignIn = () => {
+  router.push("/auth");
+};
+
+// Redirect to create page
+const redirectToCreate = () => {
+  router.push("/misebox-users/create");
+};
 </script>

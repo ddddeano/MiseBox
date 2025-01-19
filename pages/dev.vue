@@ -1,74 +1,48 @@
 <!-- pages/dev.vue -->
 <template>
   <client-only>
-    <div class="development-area">
-      <h1>Icon Testing Area</h1>
+    <div class="test">
+      <div>
+        <h2>All Misebox Users</h2>
+        <ul>
+          <li v-for="user in allUsers" :key="user.id">
+            {{ user.display_name || "Unnamed User" }}
+          </li>
+        </ul>
+      </div>
 
-      <!-- Render all icons to test the current setup -->
-      <div class="icons-grid">
-        <ArrowUpCircleIcon class="icon" />
-        <ArrowUpOnSquareIcon class="icon" />
-        <AtSymbolIcon class="icon" />
-        <Bars3Icon class="icon" />
-        <CalendarIcon class="icon" />
-        <CameraIcon class="icon" />
-        <CheckCircleIcon class="icon" />
-        <ChevronDownIcon class="icon" />
-        <ChevronRightIcon class="icon" />
-        <ChevronUpIcon class="icon" />
-        <DevicePhoneMobileIcon class="icon" />
-        <DocumentTextIcon class="icon" />
-        <EnvelopeIcon class="icon" />
-        <EyeIcon class="icon" />
-        <HeartIcon class="icon" />
-        <IdentificationIcon class="icon" />
-        <MinusCircleIcon class="icon" />
-        <MoonIcon class="icon" />
-        <PaperClipIcon class="icon" />
-        <PencilIcon class="icon" />
-        <PencilSquareIcon class="icon" />
-        <PlusCircleIcon class="icon" />
-        <QrCodeIcon class="icon" />
-        <RocketLaunchIcon class="icon" />
-        <SunIcon class="icon" />
-        <SparklesIcon class="icon" />
-        <UserCircleIcon class="icon" />
-        <XCircleIcon class="icon" />
-        <XMarkIcon class="icon" />
-        <CakeIcon class="icon" />
-        <ArrowRightEndOnRectangleIcon class="icon" />
-        <BriefcaseIcon class="icon" />
-        <DocumentPlusIcon class="icon" />
-        <DocumentMagnifyingGlassIcon class="icon" />
-        <PlusIcon class="icon" />
+      <div>
+        <h2>Specific Misebox User</h2>
+        <p>{{ specificUser?.display_name || "No user found or not fetched yet" }}</p>
+      </div>
+
+      <div>
+        <h2>Current Misebox User</h2>
+        <p>{{ currentUser?.display_name || "No current user found" }}</p>
       </div>
     </div>
   </client-only>
 </template>
 
 <script setup>
-// No additional imports needed since we are testing the plugin registration.
+import { useMiseboxUser } from "@/composables/EntityManagers/miseboxUser/useMiseboxUser";
+
+// Extract methods and reactive data from `useMiseboxUser`
+const { miseboxUsersCollection, fetchMiseboxUser, currentMiseboxUser } = useMiseboxUser();
+
+// Fetch all users
+const allUsers = miseboxUsersCollection();
+
+// Fetch specific user by ID
+const specificUserId = "xgYJZAc5Awcs0amhrBb8J4nEeO72"; // Example ID
+const specificUser = fetchMiseboxUser(specificUserId);
+
+// Current user (already reactive)
+const currentUser = currentMiseboxUser;
 </script>
 
 <style scoped>
-.development-area {
-  padding: 20px;
-}
-
-h1 {
-  margin-bottom: 20px;
-}
-
-.icons-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
-  gap: 20px;
-}
-
-.icon {
-  width: 40px;
-  height: 40px;
-  color: var(--text-primary);
-  margin: auto;
+.test {
+  width: 800px;
 }
 </style>

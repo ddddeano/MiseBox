@@ -1,5 +1,5 @@
 /* Shared General Layout Styles */
-.index, .view, .edit {
+.index, .view, .edit, .page {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -17,6 +17,7 @@
   .list {
     display: flex;
     flex-direction: column;
+    align-items: center; /* Center align the list content */
     padding: var(--spacing-xs);
     width: 100%;
     max-width: 600px;
@@ -25,12 +26,76 @@
   .list-item {
     width: 100%;
     max-width: 600px;
-    display: flex;
-    flex-direction: column;
-    margin-bottom: var(--spacing-m);
+    margin: 0 auto;
+    border-radius: var(--radius-s); /* Rounded corners */
+    box-shadow: var(--shadow-sm); /* Subtle shadow for depth */
+    margin-bottom: var(--spacing-m); /* Add spacing between items */
   }
-  
-  .list-item:nth-child(even) {
-    background-color: var(--background-2); /* Alternating row background */
-  }
-  
+  /* ============================
+   Wizard and Child Styles
+============================ */
+/* components/shared/wizard.css */
+.wizard {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: var(--spacing-l);
+  background-color: var(--background-strong);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-l);
+  align-items: center;
+  text-align: center;
+}
+
+.wizard-search {
+  width: 100%;
+}
+
+.wizard-cell-display {
+  width: 100%;
+  margin-top: var(--spacing-l);
+}
+
+.wizard-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-s);
+  margin-top: var(--spacing-l);
+  margin-bottom: var(--spacing-l);
+
+}
+
+.wizard-divider-line {
+  flex-grow: 1;
+  height: 1px;
+  background-color: var(--border);
+}
+
+.wizard-divider-text {
+  font-size: var(--font-size-m);
+  color: var(--text-secondary);
+}
+
+.wizard-actions {
+  display: flex;
+  gap: var(--spacing-s);
+  justify-content: center;
+}
+
+.wizard-btn {
+  padding: var(--spacing-s) var(--spacing-m);
+  font-size: var(--font-size-m);
+  cursor: pointer;
+  border: none;
+  border-radius: var(--radius-s);
+  background-color: var(--primary);
+  color: #fff;
+  transition: background-color 0.2s ease;
+}
+
+.wizard-btn:hover {
+  background-color: var(--hover);
+}

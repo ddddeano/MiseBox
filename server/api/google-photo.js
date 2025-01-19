@@ -1,4 +1,7 @@
 // api/google-photo.js
+import { defineEventHandler, getQuery, createError, setHeader } from 'h3';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+
 export default defineEventHandler(async (event) => {
   const { photo_url } = getQuery(event);
 
@@ -24,15 +27,24 @@ export default defineEventHandler(async (event) => {
 
     const imageBuffer = await response.arrayBuffer();
 
-    setHeader(event, 'Content-Type', response.headers.get('Content-Type') || 'image/jpeg');
-    setHeader(event, 'Cache-Control', 'public, max-age=3600');  // Cache for 1 hour
+    const storage = getStorage();
+    const filename = `kitchens/${Date.now()}-photo.jpg`;
+    const storageRef = ref(storage, filename);
 
-    return Buffer.from(imageBuffer);
+    await uploadBytes(storageRef, Buffer.from(imageBuffer), {
+      contentType: response.headers.get("Content-Type") || "image/jpeg",
+    });
+
+    const firebaseUrl = await getDownloadURL(storageRef);
+
+    console.log('[Google Photo Proxy] Photo successfully uploaded to Firebase:', firebaseUrl);
+
+    return { firebaseUrl };
   } catch (error) {
     console.error('[Google Photo Proxy Error]', error);
     throw createError({
       statusCode: 500,
-      statusMessage: 'Failed to fetch image from the provided photo_url.',
+      statusMessage: 'Failed to fetch or process image from Google Photo URL.',
     });
   }
 });

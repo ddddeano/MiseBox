@@ -29,7 +29,7 @@
           <MoleculesAvatar 
           collectionName="misebox-users"
             :id=miseboxUser.id
-            :url="miseboxUser.avatar || 'assets/images/default-avatar.jpg'" 
+            :url="miseboxUser.avatar"
             altText="User Avatar" 
             size="small" 
           />
@@ -45,7 +45,6 @@
 <script setup>
 import { useRoute } from 'vue-router';
 import { useWindowSize } from '@vueuse/core';
-import { computed } from 'vue';
 
 const route = useRoute();
 const isAuthPage = computed(() => route.path === '/auth');

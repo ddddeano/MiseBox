@@ -1,42 +1,65 @@
 <!-- pages/kitchens/[id]/edit.vue -->
 <template>
   <client-only>
-<pre>chef{{ chef }}</pre>
-    <div class="profile-forms">
-      <div v-if="kitchen">
-        <h3>Edit Kitchen</h3>
-        <!-- Edit Form -->
-        <OrganismsKitchenEdit v-if="isViewingCreator" />
+    <div v-if="kitchen && isCurrentChefInTeam" class="page edit-page">
+      <h1>Edit Kitchen: {{ kitchen.name }}</h1>
+
+      <!-- Kitchen Edit Form -->
+      <OrganismsKitchenEdit :kitchen="kitchen" />
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <NuxtLink class="icon-btn" :to="`/kitchens/${kitchen.id}/dashboard`">
+          <BuildingLibraryIcon class="icon" />
+          <span>Dashboard</span>
+        </NuxtLink>
+        <button class="icon-btn delete-btn" @click="confirmDeleteKitchen">
+          <TrashIcon class="icon" />
+          <span>Delete Kitchen</span>
+        </button>
       </div>
-      <div v-else>
-        <p class="access-denied-message">
-          Access Denied. You are not authorized to edit this kitchen.
-        </p>
-      </div>
+    </div>
+    <div v-else-if="kitchen">
+      <p class="access-denied-message">
+        You do not have permission to edit or delete this kitchen.
+      </p>
+    </div>
+    <div v-else>
+      <p class="loading">Loading kitchen data...</p>
     </div>
   </client-only>
 </template>
 
 <script setup>
-import { computed } from "vue";
-import { useRoute } from "vue-router";
-import { useFirestore, useDocument, useCurrentUser } from "vuefire";
-import { doc } from "firebase/firestore";
+import { useRoute, useRouter } from "vue-router";
 
-// Firestore and Route Setup
 const route = useRoute();
-const db = useFirestore();
-const currentUser = useCurrentUser();
+const router = useRouter();
+const { fetchKitchen, deleteKitchen } = useKitchen();
+const { currentChef } = useChef();
 
-// Fetch the kitchen document
-const kitchenDocRef = computed(() =>
-  currentUser.value ? doc(db, "kitchens", route.params.id) : null
+const kitchen = fetchKitchen(route.params.id);
+
+// Check if the current chef is part of the kitchen team
+const isCurrentChefInTeam = computed(() =>
+  kitchen.value?.current_team?.some((member) => member.id === currentChef.value?.id)
 );
 
-const { data: kitchen } = useDocument(kitchenDocRef);
+const confirmDeleteKitchen = async () => {
+  if (!kitchen.value) {
+    console.error("[Edit Page] No kitchen loaded.");
+    return;
+  }
 
-// Check if the current user is the creator of the kitchen
-const isViewingCreator = computed(() => {
-  return kitchen?.value?.added_by === currentUser.value?.uid;
-});
+  const confirmed = confirm("Are you sure you want to delete this kitchen?");
+  if (!confirmed) return;
+
+  try {
+    await deleteKitchen(kitchen.value);
+    router.push("/kitchens");
+  } catch (error) {
+    console.error("[Edit Page] Error deleting kitchen:", error);
+    alert("Failed to delete kitchen. Please try again.");
+  }
+};
 </script>

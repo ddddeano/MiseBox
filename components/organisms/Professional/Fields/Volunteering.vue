@@ -6,101 +6,171 @@
       <div><strong>{{ volunteering.role }}</strong></div>
       <div>{{ volunteering.organization }}</div>
       <div>
-        {{ volunteering.from_year }} - 
+        {{ volunteering.from_year }} -
         <span v-if="volunteering.ongoing">Present</span>
         <span v-else>{{ volunteering.to_year }}</span>
       </div>
       <div>{{ volunteering.description }}</div>
-      <a v-if="volunteering.document_url" :href="volunteering.document_url" target="_blank">View Document</a>
     </div>
 
-    <!-- Create/Edit Mode -->
-    <div v-else>
-      <label for="organization">Organization</label>
-      <input
-        type="text"
-        id="organization"
-        v-model="volunteering.organization"
-        placeholder="Enter organization"
-        class="editable-input"
-      />
-
-      <label for="role">Role</label>
-      <input
-        type="text"
-        id="role"
-        v-model="volunteering.role"
-        placeholder="Enter role"
-        class="editable-input"
-      />
-
-      <label for="from-year">From Year</label>
-      <MoleculesYearSelector
-        v-model="volunteering.from_year"
-        :startYear="1950"
-        :endYear="new Date().getFullYear()"
-        inputId="from-year-select"
-      />
-
-      <!-- Ongoing Checkbox -->
-      <label>
-        <input type="checkbox" v-model="volunteering.ongoing" /> Ongoing
-      </label>
-
-      <!-- To Year Field (disabled if ongoing is true) -->
-      <div :class="{ 'disabled': volunteering.ongoing }">
-        <label for="to-year">To Year</label>
-        <MoleculesYearSelector
-          v-model="volunteering.to_year"
-          :startYear="1950"
-          :endYear="new Date().getFullYear()"
-          inputId="to-year-select"
-          :disabled="volunteering.ongoing"
+    <!-- Create Mode -->
+    <div v-else-if="mode === 'create'" class="create-mode">
+      <div class="form-group">
+        <label for="organization" class="label">Organization</label>
+        <input
+          type="text"
+          id="organization"
+          v-model="localData.organization"
+          placeholder="Enter organization"
+          class="editable-input"
         />
       </div>
 
-      <label for="description">Description</label>
-      <textarea
-        id="description"
-        v-model="volunteering.description"
-        placeholder="Describe volunteering responsibilities"
-        class="editable-textarea"
-      ></textarea>
+      <div class="form-group">
+        <label for="role" class="label">Role</label>
+        <input
+          type="text"
+          id="role"
+          v-model="localData.role"
+          placeholder="Enter role"
+          class="editable-input"
+        />
+      </div>
 
-      <!-- Document Upload -->
-      <label for="document">Document (Optional)</label>
-      <input type="file" @change="onFileChange" />
+      <div class="form-group">
+        <label for="from-year" class="label">From Year</label>
+        <MoleculesYearSelector v-model="localData.from_year" />
+      </div>
 
-      <a v-if="volunteering.document_url" :href="volunteering.document_url" target="_blank">View Document</a>
+      <div class="form-group">
+        <label>
+          <input type="checkbox" v-model="localData.ongoing" /> Ongoing
+        </label>
+      </div>
+
+      <div v-if="!localData.ongoing" class="form-group">
+        <label for="to-year" class="label">To Year</label>
+        <MoleculesYearSelector v-model="localData.to_year" />
+      </div>
+
+      <div class="form-group">
+        <label for="description" class="label">Description</label>
+        <textarea
+          id="description"
+          v-model="localData.description"
+          placeholder="Enter description"
+          class="editable-textarea"
+        ></textarea>
+      </div>
+
+      <div class="icon-group">
+        <CheckCircleIcon class="icon" @click="submitCreate" />
+      </div>
+    </div>
+
+    <!-- Edit Mode -->
+    <div v-else-if="mode === 'edit'" class="edit-mode">
+      <div class="form-group">
+        <label for="organization" class="label">Organization</label>
+        <input
+          type="text"
+          id="organization"
+          v-model="localData.organization"
+          placeholder="Enter organization"
+          class="editable-input"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="role" class="label">Role</label>
+        <input
+          type="text"
+          id="role"
+          v-model="localData.role"
+          placeholder="Enter role"
+          class="editable-input"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="from-year" class="label">From Year</label>
+        <MoleculesYearSelector v-model="localData.from_year" />
+      </div>
+
+      <div class="form-group">
+        <label>
+          <input type="checkbox" v-model="localData.ongoing" /> Ongoing
+        </label>
+      </div>
+
+      <div v-if="!localData.ongoing" class="form-group">
+        <label for="to-year" class="label">To Year</label>
+        <MoleculesYearSelector v-model="localData.to_year" />
+      </div>
+
+      <div class="form-group">
+        <label for="description" class="label">Description</label>
+        <textarea
+          id="description"
+          v-model="localData.description"
+          placeholder="Enter description"
+          class="editable-textarea"
+        ></textarea>
+      </div>
+
+      <div class="icon-group">
+        <CheckCircleIcon class="icon" @click="submitEdit" />
+        <TrashIcon class="icon" @click="deleteVolunteering" />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
+
+const { addProfessionalArrayItem, updateProfessionalArrayItem, removeProfessionalArrayItem } =
+  useProfessional();
+
 const props = defineProps({
-  volunteering: {
+  voluntering: {
     type: Object,
-    required: true,
+    required: false,
+    default: () => ({}),
   },
   mode: {
     type: String,
     required: true,
-    validator: value => ['display', 'edit', 'create'].includes(value),
+    validator: (value) => ["display", "edit", "create"].includes(value),
   },
 });
 
-// Handle document upload
-const onFileChange = (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    emit('upload-document', { file, id: props.volunteering.id });
-  }
-};
+const localData = ref({ ...props.volunteering });
+
+// Submit Create
+async function submitCreate() {
+ await addProfessionalArrayItem("volunteering", localData.value);
+}
+
+// Submit Edit
+async function submitEdit() {
+await updateProfessionalArrayItem(
+    "something",
+    "something",
+    props.volunteering,
+    localData.value
+  );
+}
+
+// Delete Volunteering
+async function submitDelete() {
+await removeProfessionalArrayItem(
+    "something",
+    "somthing",
+    props.vol.institution
+  );
+}
 </script>
 
 <style scoped>
-.disabled {
-  opacity: 0.5;
-  pointer-events: none;
-}
+/* Add styles if needed */
 </style>

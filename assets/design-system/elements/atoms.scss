@@ -1,4 +1,4 @@
-/* assets/design-system/elements/atoms.scss */
+/* === assets/design-system/elements/atoms.scss === */
 
 /* Icon styles */
 .icon {
@@ -6,12 +6,8 @@
   color: var(--text-primary);
   width: 24px;
   height: 24px;
-  transition: color 0.3s ease;
-}
-
-.icon--small {
-  width: 24px;
-  height: 24px;
+  // transition: color 0.3s ease;
+  transition: transform 0.2s ease, color 0.3s ease;
 }
 
 .icon--medium {
@@ -26,13 +22,14 @@
 
 .icon:hover {
   color: var(--hover);
+  transform: scale(1.1);
 }
 
 /* Text and links */
 a {
   text-decoration: none;
   color: var(--text-primary);
-  transition: color 0.3s ease, background-color 0.3s ease;
+  transition: color 0.3s ease;
 }
 
 /* Error messages */
@@ -49,9 +46,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 p {
-  margin: 0 auto;
   text-align: center;
   line-height: 1.6;
-  margin-top: var(--spacing-s);
-  margin-bottom: var(--spacing-s);
+  margin: var(--spacing-s) auto;
 }

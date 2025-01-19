@@ -11,7 +11,7 @@ export default defineNuxtRouteMiddleware((to) => {
     let appConfig = defaultAppConfig; // Set default configuration initially
 
     // Find the app configuration based on the route
-    if (to.path.startsWith('/misebox-user')) {
+    if (to.path.startsWith('/misebox-users')) {
       appConfig = miseboxApps.find(app => app.doc === 'misebox-user');
     } else if (to.path.startsWith('/professional')) {
       appConfig = miseboxApps.find(app => app.doc === 'professional');

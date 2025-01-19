@@ -1,49 +1,93 @@
 <!-- pages/kitchens/[id]/index.vue -->
 <template>
   <client-only>
-    <div v-if="kitchen" class="profile">
-      <OrganismsKitchenCard :kitchen="kitchen" />
+    <div v-if="kitchen" class="page profile">
+      <!-- Kitchen Header -->
+      <header class="kitchen-header">
+       <MoleculesAvatar :url="kitchen.avatar" size="large"/>
+        <h1>{{ kitchen.name }}</h1>
+        <p>{{ kitchen.formatted_address }}</p>
+      </header>
 
-      <OrganismsKitchenDashboard v-if="isInTeam" :kitchen="kitchen" />
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <NuxtLink
+          v-if="isKitchenLinked"
+          class="icon-btn"
+          :to="`/kitchens/${kitchen.id}/edit`"
+        >
+          <Cog6ToothIcon class="icon" />
+          <span>Edit</span>
+        </NuxtLink>
+        <NuxtLink
+          v-if="isKitchenLinked"
+          class="icon-btn"
+          :to="`/kitchens/${kitchen.id}/dashboard`"
+        >
+          <BuildingLibraryIcon class="icon" />
+          <span>Dashboard</span>
+        </NuxtLink>
+        <button
+          v-if="!isKitchenLinked"
+          class="icon-btn"
+          @click="clickAddKitchenToChef"
+        >
+          <PlusIcon class="icon" />
+          <span>Add to My Kitchens</span>
+        </button>
+      </div>
 
-      <button v-else class="btn" @click="joinKitchen">
-        Join Kitchen
-      </button>
+      <!-- Team Section -->
+      <section class="team-section">
+        <h2>Team</h2>
+        <div v-if="kitchen.current_team?.length" class="team-list">
+          <OrganismsChefPill
+            v-for="member in kitchen.current_team"
+            :key="member.id"
+            :chef="member"
+          />
+        </div>
+        <p v-else>No team members yet.</p>
+      </section>
+
+      <!-- Kitchen View -->
+      <OrganismsKitchenView :kitchen="kitchen" />
+    </div>
+    <div v-else>
+      <p>Loading...</p>
     </div>
   </client-only>
 </template>
 
 <script setup>
 import { useRoute } from "vue-router";
-import { useDocument, useFirestore, useCurrentUser } from "vuefire";
-import { doc } from "firebase/firestore";
 
-
-// References to the current user and route
-const currentUser = useCurrentUser();
 const route = useRoute();
-const db = useFirestore();
+const { fetchKitchen, addChefToKitchen } = useKitchen();
+const { currentChef, addKitchenToChef } = useChef();
 
-const kitchenDocRef = computed(() =>
-  currentUser.value ? doc(db, "kitchens", route.params.id) : null
+const kitchen = fetchKitchen(route.params.id);
+
+const isKitchenLinked = computed(() =>
+  (currentChef.value?.kitchens || []).some(
+    (linkedKitchen) => linkedKitchen.id === route.params.id
+  )
 );
 
-const { data: kitchen } = useDocument(kitchenDocRef);
+// Add chef to kitchen and vice versa
+const clickAddKitchenToChef = async () => {
+  try {
+    if (kitchen.value && currentChef.value) {
+      const kitchenData = { id: kitchen.value.id };
+      const chefData = { id: currentChef.value.id };
 
-const isInTeam = computed(() => {
-  if (!kitchen.value || !kitchen.value.team) return false;
-  return kitchen.value.team.some((member) => member.id === currentUser.value?.uid);
-});
+      await addChefToKitchen(kitchen.value.id, chefData);
+      await addKitchenToChef(currentChef.value.id, kitchenData);
 
-const { addUserToKitchenTeam } = useKitchen();
-
-const joinKitchen = async () => {
-  if (!kitchen.value?.kitchenId) return;
-  if (!currentUser.value?.uid) return;
-
-  const userId = currentUser.value.uid;
-
-  await addUserToKitchenTeam(kitchen.value.kitchenId, userId);
-  console.log(`[joinKitchen] User ${userId} joined the kitchen successfully.`);
+      console.log("Chef added to kitchen and kitchen added to chef");
+    }
+  } catch (error) {
+    console.error("Error adding chef and kitchen:", error);
+  }
 };
 </script>

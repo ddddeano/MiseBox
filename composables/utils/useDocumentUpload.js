@@ -1,5 +1,5 @@
-<!-- composables/utils/useDocumentUpload.js -->
-// composables/useDocumentUpload.js
+// composables/Utils/useDocumentUpload.js
+// composables/utils/useDocumentUpload.js
 import { ref } from 'vue';
 import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { updateDoc, doc } from 'firebase/firestore';

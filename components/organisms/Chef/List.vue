@@ -8,30 +8,19 @@
         :chef="chef"
       />
     </div>
-    <p v-else class="list-empty">No chefs found.</p>
+    <p v-else>No chefs found.</p>
   </div>
 </template>
 
 <script setup>
-import { collection } from "firebase/firestore";
-import { useCollection, useFirestore, useCurrentUser } from "vuefire";
-import { computed } from "vue";
-
-const db = useFirestore();
+import { useCurrentUser } from "vuefire";
 const currentUser = useCurrentUser();
 
-// Fetch all chefs
-const collectionRef = computed(() =>
-  currentUser.value ? collection(db, "chefs") : null
-);
-const { data: chefs } = useCollection(collectionRef);
+const { chefsCollection } = useChef();
 
-// Filter out the current user's chef profile
+const chefs = chefsCollection();
+
 const filteredChefs = computed(() =>
-chefs.value?.filter((chef) => chef.id !== currentUser.value.uid) || []
+  chefs?.value?.filter((chef) => chef.id !== currentUser.value?.uid) || []
 );
 </script>
-
-<style scoped>
-/* Same styles as MiseboxUserList */
-</style>

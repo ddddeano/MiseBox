@@ -19,20 +19,28 @@ async function processFiles(directory) {
     // Check if it's a directory
     if (fs.statSync(fullPath).isDirectory()) {
       await processFiles(fullPath);
-    } else if (file.endsWith('.vue') || file.endsWith('.js')) {
+    } else if (
+      file.endsWith('.vue') || 
+      file.endsWith('.js') || 
+      file.endsWith('.ts')
+    ) {
       // Read the file
       let content = fs.readFileSync(fullPath, 'utf-8');
 
       // Extract relative path as a comment
       const relativePath = path.relative(process.cwd(), fullPath);
-      const comment = `<!-- ${relativePath} -->`;
+      const comment =
+        file.endsWith('.vue') ? `<!-- ${relativePath} -->` : `// ${relativePath}`;
+
+      // Check if the file already starts with the correct comment
+      const firstLine = content.split('\n')[0].trim();
+      if (firstLine === comment) {
+        continue;
+      }
 
       // Add the comment if not already present
-      if (!content.startsWith(comment)) {
-        content = `${comment}\n${content}`;
-        fs.writeFileSync(fullPath, content, 'utf-8');
-        console.log(`Updated: ${relativePath}`);
-      }
+      content = `${comment}\n${content}`;
+      fs.writeFileSync(fullPath, content, 'utf-8');
     }
   }
 }
@@ -42,5 +50,4 @@ async function processFiles(directory) {
   for (const dir of baseDirs) {
     await processFiles(dir);
   }
-  console.log('All files updated successfully!');
 })();

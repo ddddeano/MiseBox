@@ -1,31 +1,24 @@
 <!-- components/organisms/Recruiter/List.vue -->
 <template>
   <div class="list">
-    <div v-if="recruiters?.length">
-      <div
+    <div v-if="filteredRecruiters?.length">
+      <OrganismsRecruiterCell
         v-for="recruiter in filteredRecruiters"
         :key="recruiter.id"
-        class="list-item"
-      >
-        <OrganismsRecruiterCell :recruiter="recruiter" />
-      </div>
+        :recruiter="recruiter"
+      />
     </div>
-    <p v-else>Loading...</p>
+    <p v-else>No recruiters found.</p>
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue";
-import { collection } from "firebase/firestore";
-import { useCollection, useFirestore, useCurrentUser } from "vuefire";
-
-const db = useFirestore();
+import { useCurrentUser } from "vuefire";
 const currentUser = useCurrentUser();
 
-const collectionRef = computed(() =>
-  currentUser.value ? collection(db, "recruiters") : null
-);
-const { data: recruiters } = useCollection(collectionRef);
+const { recruitersCollection } = useRecruiter();
+
+const recruiters = recruitersCollection();
 
 const filteredRecruiters = computed(() =>
   recruiters?.value?.filter((recruiter) => recruiter.id !== currentUser.value?.uid) || []

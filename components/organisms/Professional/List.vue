@@ -1,31 +1,24 @@
 <!-- components/organisms/Professional/List.vue -->
 <template>
   <div class="list">
-    <div v-if="professionals?.length">
-      <div
+    <div v-if="filteredProfessionals?.length">
+      <OrganismsProfessionalCell
         v-for="professional in filteredProfessionals"
         :key="professional.id"
-        class="list-item"
-      >
-        <OrganismsProfessionalCell :professional="professional" />
-      </div>
+        :professional="professional"
+      />
     </div>
-    <p v-else>Loading...</p>
+    <p v-else>No professionals found.</p>
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue";
-import { collection } from "firebase/firestore";
-import { useCollection, useFirestore, useCurrentUser } from "vuefire";
-
-const db = useFirestore();
+import { useCurrentUser } from "vuefire";
 const currentUser = useCurrentUser();
 
-const collectionRef = computed(() =>
-  currentUser.value ? collection(db, "professionals") : null
-);
-const { data: professionals } = useCollection(collectionRef);
+const { professionalsCollection } = useProfessional();
+
+const professionals = professionalsCollection();
 
 const filteredProfessionals = computed(() =>
   professionals?.value?.filter((professional) => professional.id !== currentUser.value?.uid) || []

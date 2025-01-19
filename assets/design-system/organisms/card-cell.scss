@@ -1,52 +1,110 @@
-/* Global Card and Cell Styles */
-
-.card, .cell {
+/* === Card, Cell, and Pill Shared Styles === */
+.card, .cell, .pill {
   width: 100%;
   max-width: 600px;
   border: 1px solid var(--border);
   border-radius: var(--radius-s);
   box-shadow: var(--shadow-xs);
   padding: var(--spacing-xs);
+  background-color: var(--background);
+}
+
+.cell {
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    background-color: var(--background-2);
+    box-shadow: var(--shadow-sm);
+  }
 }
 
 .card {
   background-color: var(--background-strong);
 }
 
-.cell {
-  background-color: var(--background);
+.pill {
+  border-radius: var(--radius-xl);
+
+  max-width: 250px; /* Constrain maximum width */
+
+
+  .pill-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s); /* Spacing between avatar and text */
+  }
+
+  .pill-avatar {
+    flex-shrink: 0; /* Prevent avatar from shrinking */
+  }
+
+  .pill-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left;
+    overflow: hidden; /* Truncate long text */
+    text-overflow: ellipsis;
+
+    .title {
+      font-size: var(--font-size-m);
+      font-weight: var(--font-weight-bold);
+      color: var(--text-primary);
+    }
+
+    .subtitle {
+      font-size: var(--font-size-s);
+      color: var(--text-secondary);
+      margin-top: 0; /* Remove unnecessary spacing */
+    }
+  }
 }
 
-.card-header, .cell-header {
+/* Header Styles */
+.cell-header, .card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--spacing-s);
 }
 
+.cell-header {
+  padding: var(--spacing-s) var(--spacing-m);
+  text-decoration: none;
+  color: inherit;
+
+  &.disabled {
+    pointer-events: none;
+    opacity: 0.6;
+  }
+}
+
 .header-content {
   flex: 1;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  text-align: left;
 }
 
-.cell-footer {
-  display: flex;
-  justify-content: flex-end;
+.title {
+  font-size: var(--font-size-m);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
 }
 
-.cell-interaction .not-self, .card-interaction .not-self {
+.subtitle {
+  font-size: var(--font-size-s);
+  color: var(--text-secondary);
+  margin-top: var(--spacing-xxs);
+}
+
+/* Interaction Styles */
+.cell-interaction, .card-interaction {
   display: flex;
   align-items: center;
-}
 
-.special-section {
-  margin-top: var(--spacing-xs);
-}
-
-.card-expanded {
-  padding: var(--spacing-s);
-  background-color: var(--background-light);
-  border-radius: var(--radius-s);
-  margin-top: var(--spacing-s);
+  &.not-self {
+    justify-content: flex-end;
+  }
 }

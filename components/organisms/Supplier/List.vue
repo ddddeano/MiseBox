@@ -1,30 +1,24 @@
 <!-- components/organisms/Supplier/List.vue -->
 <template>
   <div class="list">
-    <div v-if="suppliers?.length">
-      <div
+    <div v-if="filteredSuppliers?.length">
+      <OrganismsSupplierCell
         v-for="supplier in filteredSuppliers"
         :key="supplier.id"
-        class="list-item"
-      >
-        <OrganismsSupplierCell :supplier="supplier" />
-      </div>
+        :supplier="supplier"
+      />
     </div>
-    <p v-else>Loading...</p>
+    <p v-else>No suppliers found.</p>
   </div>
 </template>
 
 <script setup>
-import { collection } from "firebase/firestore";
-import { useCollection, useFirestore, useCurrentUser } from "vuefire";
-
-const db = useFirestore();
+import { useCurrentUser } from "vuefire";
 const currentUser = useCurrentUser();
 
-const collectionRef = computed(() =>
-  currentUser.value ? collection(db, "suppliers") : null
-);
-const { data: suppliers } = useCollection(collectionRef);
+const { suppliersCollection } = useSupplier();
+
+const suppliers = suppliersCollection();
 
 const filteredSuppliers = computed(() =>
   suppliers?.value?.filter((supplier) => supplier.id !== currentUser.value?.uid) || []

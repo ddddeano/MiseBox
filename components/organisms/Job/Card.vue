@@ -1,66 +1,66 @@
 <!-- components/organisms/Job/Card.vue -->
 <template>
   <div class="card job-card" v-if="job">
-    <!-- Clickable Link to Job Profile -->
-    <NuxtLink :to="`/jobs/${job.id}`" class="view-job-link">
-      <div class="card-header">
-        <div class="job-info">
-          <p class="title">{{ job.title }}</p>
-          <p class="location">{{ job.location }}</p>
-        </div>
+    <!-- Header Section -->
+    <div class="card-header">
+      <div class="job-info">
+        <h2 class="title">{{ job.title }}</h2>
+        <p class="location">{{ job.location || "No location specified" }}</p>
       </div>
-    </NuxtLink>
+    </div>
 
-    <!-- Expanded Content -->
-    <div class="card-expanded">
-      <p class="description" v-if="job.description">{{ job.description }}</p>
-      <p class="recruiter" v-if="job.recruiterId">
-        Posted by: <NuxtLink :to="`/recruiters/${job.recruiterId}`">Recruiter</NuxtLink>
+    <!-- Additional Info Section -->
+    <div class="card-info">
+      <p><strong>Description:</strong> {{ job.description || "No description available" }}</p>
+      <p v-if="job.recruiterId">
+        <strong>Recruiter:</strong> 
+        <NuxtLink :to="`/recruiters/${job.recruiterId}`">View Recruiter</NuxtLink>
       </p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue";
-import { useDocument, useCurrentUser } from "vuefire";
-import { doc } from "firebase/firestore";
-import { useFirestore } from "vuefire";
-
-// Prop for job ID
 const props = defineProps({
-  jobId: {
-    type: String,
+  job: {
+    type: Object,
     required: true,
   },
 });
-
-const db = useFirestore();
-const currentUser = useCurrentUser();
-
-// Fetch job document
-const jobDocRef = computed(() =>
-  currentUser.value ? doc(db, "jobs", props.jobId) : null
-);
-
-const { data: job } = useDocument(jobDocRef);
 </script>
 
 <style scoped>
-.job-info .title {
+.job-card {
+  border-radius: var(--radius-m);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: var(--spacing-m);
+  overflow: hidden;
+  background-color: var(--background-1);
+  padding: var(--spacing-s);
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-s);
+}
+
+.job-info {
+  flex: 1;
+}
+
+.title {
+  font-size: var(--font-size-m);
   font-weight: bold;
-  font-size: var(--font-size-m);
-  margin-bottom: 0.5rem;
 }
 
-.job-info .location {
-  color: var(--text-secondary);
+.location {
   font-size: var(--font-size-s);
+  color: var(--text-secondary);
 }
 
-.card-expanded .description {
-  margin-top: 1rem;
-  color: var(--text-primary);
-  font-size: var(--font-size-m);
+.card-info {
+  margin-top: var(--spacing-s);
+  font-size: var(--font-size-s);
 }
 </style>

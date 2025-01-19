@@ -30,6 +30,10 @@
     </li>
     <div class="divider"></div>
     <li>
+      <NuxtLink to="/ingredients" active-class="active-link">Ingredients</NuxtLink>
+    </li>
+    <div class="divider"></div>
+    <li>
       <NuxtLink to="/subscribe" active-class="active-link">Subscribe</NuxtLink>
     </li>
   </ul>

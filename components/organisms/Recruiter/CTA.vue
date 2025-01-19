@@ -1,30 +1,33 @@
 <!-- components/organisms/Recruiter/CTA.vue -->
 <template>
-  <div class="call-to-action">
-    <OrganismsUserCTA />
+  <!-- Recruiter-specific CTA -->
+  <OrganismsMiseboxUserCTA v-if="!currentUser || !miseboxUser" />
 
-    <!-- Recruiter-specific content -->
-    <div v-if="miseboxUser && !recruiter" class="call-to-action-message">
-      <h2>Streamline Your Hiring Process</h2>
-      <p>
-        Misebox makes it easy to find top talent for your kitchen or hospitality team.
-      </p>
-      <ul>
-        <li>🔍 Discover and connect with skilled professionals and chefs.</li>
-        <li>📄 Manage job postings and applications seamlessly.</li>
-        <li>🤝 Build long-lasting relationships with industry talent.</li>
-      </ul>
-      <button class="btn" @click="createRecruiter">Join as a Recruiter</button>
-    </div>
+  <!-- Redirect to create page if no Recruiter profile exists -->
+  <div v-if="currentUser && miseboxUser && !recruiter" class="call-to-action-message">
+    <h2>Join as a Recruiter</h2>
+    <p>
+      Misebox helps recruiters find top talent, post jobs, and connect with industry professionals.
+    </p>
+    <button class="btn" @click="redirectToCreate">Create Recruiter Profile</button>
+  </div>
 
-    <!-- Recruiter already exists -->
-    <div v-if="recruiter" class="call-to-action-existing">
-      <p>Your Recruiter profile is live. Start posting jobs and connecting with talent now!</p>
-    </div>
+  <!-- Profile card for users with a Recruiter profile -->
+  <div v-if="currentUser && miseboxUser && recruiter" class="call-to-action-existing">
+    <OrganismsRecruiterCard />
   </div>
 </template>
 
 <script setup>
-const { currentRecruiter: recruiter, createRecruiter } = useRecruiter();
+import { useCurrentUser } from "vuefire";
+import { useRouter } from "vue-router";
+
+const currentUser = useCurrentUser();
+const router = useRouter();
 const { currentMiseboxUser: miseboxUser } = useMiseboxUser();
+const { currentRecruiter: recruiter } = useRecruiter();
+
+const redirectToCreate = () => {
+  router.push("/recruiters/create");
+};
 </script>

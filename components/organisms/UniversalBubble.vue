@@ -1,23 +1,16 @@
 <!-- components/organisms/UniversalBubble.vue -->
 <template>
   <div class="profile-bubbles-container">
-    <div
+    <NuxtLink
       v-for="app in filteredApps"
       :key="app"
+      :to="`/${app}/${id}`"
       class="profile-bubble"
     >
       <div class="bubble-content">
         <p class="app-label">{{ generateLabel(app) }}</p>
-
-        <!-- Navigation Links -->
-        <NuxtLink
-          :to="`/${app}/${id}`"
-          class="profile-link"
-        >
-          View {{ generateLabel(app) }}
-        </NuxtLink>
       </div>
-    </div>
+    </NuxtLink>
   </div>
 </template>
 
@@ -76,10 +69,13 @@ const generateLabel = (app) => {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
   transition: transform 0.2s ease;
+  text-decoration: none;
+  color: var(--text-primary);
 }
 
 .profile-bubble:hover {
   transform: scale(1.05);
+  background-color: var(--hover-background);
 }
 
 .bubble-content {
@@ -89,14 +85,5 @@ const generateLabel = (app) => {
 .app-label {
   font-size: var(--font-size-m);
   font-weight: bold;
-}
-
-.profile-link {
-  text-decoration: none;
-  color: var(--text-primary);
-}
-
-.profile-link:hover {
-  color: var(--hover);
 }
 </style>

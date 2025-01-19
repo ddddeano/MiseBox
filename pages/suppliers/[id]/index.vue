@@ -1,47 +1,51 @@
 <!-- pages/suppliers/[id]/index.vue -->
-<!-- pages/suppliers/[id].vue -->
 <template>
   <client-only>
     <div v-if="miseboxUser && supplier" class="profile">
-      <!-- User Header -->
       <MoleculesMiseboxUserHeader :miseboxUser="miseboxUser" />
 
-      <!-- Supplier Profile View -->
+      <div class="action-buttons">
+        <NuxtLink
+          v-if="currentUser?.uid === $route.params.id"
+          :to="`/suppliers/${currentUser.uid}/edit`"
+          class="icon-btn"
+        >
+          <Cog6ToothIcon class="icon" />
+          <span>Edit</span>
+        </NuxtLink>
+        <button
+          v-if="currentUser?.uid !== $route.params.id"
+          class="icon-btn"
+        >
+          <EnvelopeIcon class="icon" />
+          <span>Message</span>
+        </button>
+      </div>
+
       <OrganismsSupplierView :supplier="supplier" />
 
-      <!-- Universal Bubble Navigation -->
-      <OrganismsUniversalBubble 
-        :id="miseboxUser.id" 
+      <OrganismsUniversalBubble
+        :id="miseboxUser.id"
         parent="suppliers"
-        :userApps="miseboxUser.user_apps" 
+        :userApps="miseboxUser.user_apps"
       />
     </div>
     <div v-else>
-      <!-- Loading State -->
       <p class="loading">Loading...</p>
     </div>
   </client-only>
 </template>
 
 <script setup>
-import { useDocument, useFirestore, useCurrentUser } from "vuefire";
-import { doc } from "firebase/firestore";
 import { useRoute } from "vue-router";
+import { useCurrentUser } from "vuefire";
 
-// VueFire and Firebase setup
-const currentUser = useCurrentUser();
 const route = useRoute();
-const db = useFirestore();
+const currentUser = useCurrentUser();
 
-// Fetch Misebox User Document
-const miseboxUserDocRef = computed(() =>
-  currentUser.value ? doc(db, "misebox-users", route.params.id) : null
-);
-const { data: miseboxUser } = useDocument(miseboxUserDocRef);
+const { fetchMiseboxUser } = useMiseboxUser();
+const { fetchSupplier } = useSupplier();
 
-// Fetch Supplier Profile Document
-const supplierDocRef = computed(() =>
-  currentUser.value ? doc(db, "suppliers", route.params.id) : null
-);
-const { data: supplier } = useDocument(supplierDocRef);
+const miseboxUser = fetchMiseboxUser(route.params.id);
+const supplier = fetchSupplier(route.params.id);
 </script>

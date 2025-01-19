@@ -1,4 +1,4 @@
-/* molecules.scss */
+/* === assets/design-system/elements/molecules.scss === */
 
 /* General Button Styles */
 .btn {
@@ -11,58 +11,67 @@
   font-size: var(--font-size-m);
   font-weight: var(--font-weight-medium);
   color: var(--text-primary);
-  cursor: pointer;
   background-color: var(--background);
+  cursor: pointer;
   transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
-  margin-top: 1rem;
+
+  &:hover {
+    transform: translateY(-2px);
+    background-color: var(--primary-dark);
+  }
+
+  &:disabled {
+    background-color: var(--background-strong);
+    color: var(--text-secondary);
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
 }
 
-.btn:hover {
-  text-decoration: none;
-  transform: translateY(-2px);
-  background-color: var(--primary-dark); /* Darker shade on hover */
+/* Icon Button */
+.icon-btn {
+  @extend .btn;
+  gap: var(--spacing-xs);
+  align-items: center
 }
-
-.btn:disabled {
-  background-color: var(--background-strong);
-  color: var(--text-secondary);
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
 
 /* Primary Button */
 .btn-primary {
+  @extend .btn;
   background-color: var(--primary);
-}
 
-.btn-primary:hover {
-  background-color: var(--primary-dark);
+  &:hover {
+    background-color: var(--primary-dark);
+  }
 }
 
 /* Secondary Button */
 .btn-secondary {
+  @extend .btn;
   background-color: var(--secondary);
   color: var(--text);
+
+  &:hover {
+    background-color: var(--secondary-dark);
+  }
 }
 
-.btn-secondary:hover {
-  background-color: var(--secondary-dark);
+/* Outline Button */
+.btn-outline {
+  @extend .btn;
+  background-color: transparent;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+
+  &:hover {
+    background-color: var(--primary);
+    color: var(--text-inverse);
+  }
 }
 
-/* Icon Button */
-.btn-icon {
-  display: inline-flex;
-  align-items: center;
-}
-
-.btn-icon .icon {
-  margin-right: var(--spacing-xs);
-}
-
-/* Pill Buttons */
+/* Pill Button */
 .btn-pill {
-  padding: var(--spacing-xs) var(--spacing-m);
+  @extend .btn;
   border-radius: var(--radius-full);
 }
 
@@ -72,53 +81,49 @@
   height: 40px;
   background-color: var(--background-2);
   color: var(--text-secondary);
-}
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  cursor: pointer;
 
-.btn-toggle.active {
-  background-color: var(--primary);
-  color: var(--text-inverse);
+  &.active {
+    background-color: var(--primary);
+    color: var(--text-inverse);
+  }
 }
 
 /* Full-Width Button */
 .btn-full {
+  @extend .btn;
   width: 100%;
 }
 
-/* Outline Button */
-.btn-outline {
-  background-color: transparent;
-  border: 1px solid var(--primary);
-  color: var(--primary);
-}
-
-.btn-outline:hover {
-  background-color: var(--primary);
-  color: var(--text-inverse);
-}
-
-/* Button with Shadow */
+/* Button Shadow */
 .btn-shadow {
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
+  @extend .btn;
+  box-shadow: var(--shadow-xs);
 
-.btn-shadow:hover {
-  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
+  &:hover {
+    box-shadow: var(--shadow-m);
+  }
 }
 
 /* Rounded Button */
 .btn-rounded {
+  @extend .btn;
   border-radius: 50%;
   padding: var(--spacing-s);
 }
 
 /* Small Button */
 .btn-small {
+  @extend .btn;
   font-size: var(--font-size-s);
   padding: var(--spacing-xxs) var(--spacing-s);
 }
 
 /* Large Button */
 .btn-large {
+  @extend .btn;
   font-size: var(--font-size-l);
   padding: var(--spacing-m) var(--spacing-xl);
 }
@@ -132,42 +137,44 @@
 }
 
 .btn-tab {
+  @extend .btn;
   background-color: var(--background-2);
-  color: var(--text-primary);
   border: 1px solid var(--border);
-  border-radius: var(--radius-s);
-  font-size: var(--font-size-m);
-  padding: var(--spacing-s) var(--spacing-m);
-  transition: background-color 0.3s ease, color 0.3s ease;
+
+  &.active {
+    background-color: var(--primary);
+    color: var(--text-inverse);
+  }
+
+  &:hover {
+    background-color: var(--primary-hover);
+  }
 }
 
-.btn-tab.active {
-  background-color: var(--primary);
-  color: var(--text-inverse);
-}
-.btn-tab:hover {
-  background-color: var(--primary-hover);
-}
+/* Editable Input */
 .editable-input {
-  padding: 8px;
-  font-size: 1em;
+  width: 100%;
+  padding: var(--spacing-xs);
+  margin-bottom: var(--spacing-xs);
   border: 1px solid var(--border);
   border-radius: var(--radius-m);
-  margin-bottom: 8px;
-  width: 100%;
+  font-size: var(--font-size-m);
   color: var(--text-primary);
   background-color: var(--background-2);
 }
+
+/* Section Alignment */
 section {
-  align-items: flex-start; /* Horizontal centering */
+  align-items: flex-start;
 }
 
+/* Typography */
 label {
   color: var(--text-primary);
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-m);
 }
- 
+
 .display-name {
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-m);
@@ -177,4 +184,34 @@ label {
 .handle {
   font-size: var(--font-size-s);
   color: var(--text-secondary);
+}
+/* Global Dropdown Styles */
+.dropdown {
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  box-shadow: var(--shadow-md);
+  overflow-y: auto;
+  padding: var(--spacing-s);
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.icon-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-m);
+  padding: var(--spacing-m);
 }

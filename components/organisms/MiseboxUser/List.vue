@@ -1,6 +1,11 @@
 <!-- components/organisms/MiseboxUser/List.vue -->
+<!-- ============================
+components/organisms/MiseboxUser/List.vue
+============================ -->
+
 <template>
   <div class="list">
+  
     <template v-if="miseboxUsers?.length">
       <div
         v-for="user in filteredMiseboxUsers"
@@ -15,19 +20,13 @@
 </template>
 
 <script setup>
-import { collection } from "firebase/firestore";
-import { useCollection, useFirestore, useCurrentUser } from "vuefire";
-
-const db = useFirestore();
+import { useCurrentUser } from "vuefire";
 const currentUser = useCurrentUser();
 
-// Fetch all Misebox Users from Firestore
-const collectionRef = computed(() =>
-  currentUser.value ? collection(db, "misebox-users") : null
-);
-const { data: miseboxUsers } = useCollection(collectionRef);
+const { miseboxUsersCollection } = useMiseboxUser();
 
-// Filter out the current user's own profile
+const miseboxUsers = miseboxUsersCollection();
+
 const filteredMiseboxUsers = computed(() =>
   miseboxUsers?.value?.filter((user) => user.id !== currentUser.value?.uid) || []
 );

@@ -1,12 +1,11 @@
 <!-- components/organisms/Job/List.vue -->
 <template>
   <div class="list">
-    <!-- Show filtered jobs based on the mode -->
-    <p>{{ mode === 'recruiterJobs' ? 'Your Jobs' : mode === 'professionalApplications' ? 'Your Applications' : 'All Jobs' }}</p>
+    <p>{{ mode === 'myJobs' ? 'My Jobs' : 'All Jobs (excluding my jobs)' }}</p>
 
-    <div v-if="filteredJobs.length">
+    <div v-if="jobsToDisplay.length">
       <div
-        v-for="job in filteredJobs"
+        v-for="job in jobsToDisplay"
         :key="job.id"
         class="list-item"
       >
@@ -14,64 +13,40 @@
       </div>
     </div>
 
-    <!-- Fallback loading message -->
-    <p v-else>Loading...</p>
+    <p v-else>No jobs found.</p>
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue";
-import { useFirestore, useCollection } from "vuefire";
-import { collection } from "firebase/firestore";
+import { computed } from 'vue';
 
-// Get the current recruiter or professional data
-const { currentRecruiter: recruiter } = useRecruiter();
+const { jobsCollection } = useJob();
 const { currentProfessional: professional } = useProfessional();
+const { currentRecruiter: recruiter } = useRecruiter();
 
-// Get the mode for which jobs to display
 const props = defineProps({
   mode: {
     type: String,
-    default: "all", // Default is to show all jobs
-    validator(value) {
-      // The valid values for mode are 'recruiterJobs', 'professionalApplications', or 'all'
-      return ['recruiterJobs', 'professionalApplications', 'all'].includes(value);
-    },
+    default: '',
   },
 });
 
-// Firestore instance
-const db = useFirestore();
-const currentUser = useCurrentUser();
+// Extract job IDs for "My Jobs"
+const myJobIds = computed(() => {
+  const professionalJobs = professional?.value?.jobs || [];
+  const recruiterJobs = recruiter?.value?.jobs || [];
+  return [...professionalJobs, ...recruiterJobs].map(job => job.id);
+});
 
-// Fetch jobs collection only if currentUser is available
-const jobsCollectionRef = computed(() =>
-  currentUser.value ? collection(db, "jobs") : null
-);
-
-const { data: jobs } = useCollection(jobsCollectionRef);
-
-// Filter jobs based on the mode
-const filteredJobs = computed(() => {
-  let filtered = jobs.value || [];
-
-  if (props.mode === 'recruiterJobs' && recruiter) {
-    // Show only the jobs posted by the recruiter
-    filtered = filtered.filter(job => job.recruiterId === recruiter.id);
-  } else if (props.mode === 'professionalApplications' && professional) {
-    // Show only the jobs applied to by the professional
-    filtered = filtered.filter(job => job.applications.includes(professional.id));
+// Filter jobs based on mode
+const jobsToDisplay = computed(() => {
+  const allJobs = jobsCollection?.value || [];
+  if (props.mode === 'myJobs') {
+    // Display only "My Jobs"
+    return allJobs.filter(job => myJobIds.value.includes(job.id));
+  } else {
+    // Exclude "My Jobs" from "All Jobs"
+    return allJobs.filter(job => !myJobIds.value.includes(job.id));
   }
-
-  // If currentRecruiter or currentProfessional exists, exclude their job IDs
-  if (recruiter) {
-    filtered = filtered.filter(job => job.recruiterId !== recruiter.id);
-  }
-
-  if (professional) {
-    filtered = filtered.filter(job => !job.applications.includes(professional.id));
-  }
-
-  return filtered;
 });
 </script>

@@ -1,24 +1,29 @@
 <!-- pages/misebox-users/[id]/index.vue -->
-<!-- ~/pages/misebox-users/[id]/index.vue -->
 <template>
   <client-only>
     <div v-if="miseboxUser" class="profile">
-      <!-- User Header -->
       <MoleculesMiseboxUserHeader :miseboxUser="miseboxUser" />
 
-      <!-- Edit Button -->
-      <NuxtLink
-        v-if="isViewingOwn"
-        :to="`/misebox-users/${currentUser.uid}/edit`"
-        class="btn"
-      >
-        Edit
-      </NuxtLink>
+      <div class="action-buttons">
+        <NuxtLink
+          v-if="currentUser?.uid === $route.params.id"
+          :to="`/misebox-users/${currentUser.uid}/edit`"
+          class="icon-btn"
+        >
+          <Cog6ToothIcon class="icon" />
+          <span>Edit</span>
+        </NuxtLink>
+        <button
+          v-if="currentUser?.uid !== $route.params.id"
+          class="icon-btn"
+        >
+          <EnvelopeIcon class="icon" />
+          <span>Message</span>
+        </button>
+      </div>
 
-      <!-- User Profile View -->
       <OrganismsMiseboxUserView :miseboxUser="miseboxUser" />
 
-      <!-- Universal Bubble Navigation -->
       <OrganismsUniversalBubble
         :id="miseboxUser.id"
         parent="misebox-users"
@@ -32,23 +37,12 @@
 </template>
 
 <script setup>
-import { useDocument, useFirestore, useCurrentUser } from "vuefire";
-import { doc } from "firebase/firestore";
-import { useRoute } from "vue-router";
+import { useRoute } from 'vue-router';
+import { useCurrentUser } from 'vuefire';
 
-// VueFire and Firebase setup
-const currentUser = useCurrentUser();
 const route = useRoute();
-const db = useFirestore();
+const currentUser = useCurrentUser();
+const { fetchMiseboxUser } = useMiseboxUser();
 
-// Fetch Misebox User Document
-const miseboxUserDocRef = computed(() =>
-  currentUser.value ? doc(db, "misebox-users", route.params.id) : null
-);
-const { data: miseboxUser } = useDocument(miseboxUserDocRef);
-
-// Check if the current user owns the profile
-const isViewingOwn = computed(() => currentUser.value?.uid === route.params.id);
+const miseboxUser = fetchMiseboxUser(route.params.id);
 </script>
-
-

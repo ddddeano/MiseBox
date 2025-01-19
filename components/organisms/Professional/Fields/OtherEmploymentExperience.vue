@@ -1,132 +1,224 @@
 <!-- components/organisms/Professional/Fields/OtherEmploymentExperience.vue -->
 <template>
-  <div class="experience-form">
+  <div class="other-employment-experience-item">
     <!-- Display Mode -->
-    <div v-if="mode === 'display'" class="display-mode">
-      <div class="display-selected-header">
-        <div class="place-name">{{ experience.place_name }}</div>
-        <div class="subheader">
-          <div>{{ experience.city }}</div>
-          <div class="dates">
-            {{ experience.from_month }} {{ experience.from_year }} - 
-            <span v-if="experience.ongoing">Present</span>
-            <span v-else>{{ experience.to_month }} {{ experience.to_year }}</span>
-          </div>
+    <div v-if="mode === 'display' && employmentExperience">
+      <div class="experience-details">
+        <div>
+          <strong>{{ employmentExperience.place_name }}</strong>
         </div>
-      </div>
-      <div><strong>{{ experience.role }}</strong></div>
-      <div>Responsibilities: {{ experience.responsibilities }}</div>
-      <div>
-        <DocumentMagnifyingGlassIcon class="icon" @click="openDocument(experience.document_url)" />
+        <div>{{ employmentExperience.city }}</div>
+        <div>{{ employmentExperience.role }}</div>
+        <div>
+          {{ employmentExperience.from_month }}
+          {{ employmentExperience.from_year }} -
+          <span v-if="employmentExperience.ongoing">Present</span>
+          <span v-else
+            >{{ employmentExperience.to_month }}
+            {{ employmentExperience.to_year }}</span
+          >
+        </div>
+        <div>{{ employmentExperience.responsibilities }}</div>
       </div>
     </div>
 
-    <!-- Create/Edit Mode -->
-    <div v-else>
-      <div v-if="experience.place_name" class="selected-place editable-input" @click="clearPlaceSelection">
-        <div><strong>Selected Place:</strong> {{ experience.place_name }}</div>
-        <div>{{ experience.city }}, {{ experience.region }}</div>
-      </div>
-      <div v-else>
-        <OrganismsPlacesSearch @select-place="selectPlace" />
-      </div>
-
-      <input type="text" v-model="experience.role" class="editable-input" placeholder="Enter role" />
-
-      <label>From</label>
-      <MoleculesMonthAndYearSelector
-        :month="experience.from_month"
-        :year="experience.from_year"
-        @update:month="(newMonth) => experience.from_month = newMonth"
-        @update:year="(newYear) => experience.from_year = newYear"
-      />
-
-      <!-- Ongoing Checkbox -->
-      <label>
-        <input type="checkbox" v-model="experience.ongoing" /> Ongoing
-      </label>
-
-      <!-- To Date Fields (disabled if ongoing is true) -->
-      <div :class="{ 'disabled': experience.ongoing }">
-        <label>To</label>
-        <MoleculesMonthAndYearSelector
-          :month="experience.to_month"
-          :year="experience.to_year"
-          @update:month="(newMonth) => experience.to_month = newMonth"
-          @update:year="(newYear) => experience.to_year = newYear"
-          :disabled="experience.ongoing"
+    <!-- Create Mode -->
+    <div v-else-if="mode === 'create'" class="create-mode">
+      <div class="form-group">
+        <label for="place_name" class="label">Place Name</label>
+        <input
+          type="text"
+          id="place_name"
+          v-model="localData.place_name"
+          placeholder="Enter place name"
+          class="editable-input"
         />
       </div>
 
-      <div class="document-upload">
-        <DocumentPlusIcon class="icon" @click="triggerFileInput" />
-        <input type="file" ref="fileInput" @change="handleFileUpload" style="display: none;" />
+      <div class="form-group">
+        <label for="city" class="label">City</label>
+        <input
+          type="text"
+          id="city"
+          v-model="localData.city"
+          placeholder="Enter city"
+          class="editable-input"
+        />
       </div>
 
-      <textarea v-model="experience.responsibilities" class="editable-input" placeholder="Describe your responsibilities"></textarea>
+      <div class="form-group">
+        <label for="role" class="label">Role</label>
+        <input
+          type="text"
+          id="role"
+          v-model="localData.role"
+          placeholder="Enter role"
+          class="editable-input"
+        />
+      </div>
 
-      <div v-if="isUploading">Uploading... {{ uploadProgress }}%</div>
+      <div class="form-group">
+        <label class="label">From</label>
+        <MoleculesMonthAndYearSelector
+          :month="localData.from_month"
+          :year="localData.from_year"
+          @update:month="(newMonth) => (localData.from_month = newMonth)"
+          @update:year="(newYear) => (localData.from_year = newYear)"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>
+          <input type="checkbox" v-model="localData.ongoing" /> Ongoing
+        </label>
+      </div>
+
+      <div v-if="!localData.ongoing" class="form-group">
+        <label class="label">To</label>
+        <MoleculesMonthAndYearSelector
+          :month="localData.to_month"
+          :year="localData.to_year"
+          @update:month="(newMonth) => (localData.to_month = newMonth)"
+          @update:year="(newYear) => (localData.to_year = newYear)"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="responsibilities" class="label">Responsibilities</label>
+        <textarea
+          id="responsibilities"
+          v-model="localData.responsibilities"
+          placeholder="Enter responsibilities"
+          class="editable-textarea"
+        ></textarea>
+      </div>
+
+      <div class="icon-group">
+        <CheckCircleIcon class="icon" @click="submitCreate" />
+      </div>
     </div>
+
+    <!-- Edit Mode -->
+    <div v-else-if="mode === 'edit' && employmentExperience" class="edit-mode">
+      <div class="form-group">
+        <label for="place_name" class="label">Place Name</label>
+        <input
+          type="text"
+          id="place_name"
+          v-model="localData.place_name"
+          placeholder="Enter place name"
+          class="editable-input"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="city" class="label">City</label>
+        <input
+          type="text"
+          id="city"
+          v-model="localData.city"
+          placeholder="Enter city"
+          class="editable-input"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="role" class="label">Role</label>
+        <input
+          type="text"
+          id="role"
+          v-model="localData.role"
+          placeholder="Enter role"
+          class="editable-input"
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="label">From</label>
+        <MoleculesMonthAndYearSelector
+          :month="localData.from_month"
+          :year="localData.from_year"
+          @update:month="(newMonth) => (localData.from_month = newMonth)"
+          @update:year="(newYear) => (localData.from_year = newYear)"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>
+          <input type="checkbox" v-model="localData.ongoing" /> Ongoing
+        </label>
+      </div>
+
+      <div v-if="!localData.ongoing" class="form-group">
+        <label class="label">To</label>
+        <MoleculesMonthAndYearSelector
+          :month="localData.to_month"
+          :year="localData.to_year"
+          @update:month="(newMonth) => (localData.to_month = newMonth)"
+          @update:year="(newYear) => (localData.to_year = newYear)"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="responsibilities" class="label">Responsibilities</label>
+        <textarea
+          id="responsibilities"
+          v-model="localData.responsibilities"
+          placeholder="Enter responsibilities"
+          class="editable-textarea"
+        ></textarea>
+      </div>
+
+      <div class="icon-group">
+        <CheckCircleIcon class="icon" @click="submitEdit" />
+        <TrashIcon class="icon" @click="deleteExperience" />
+      </div>
+    </div>
+
+    <p v-else class="error-message">Employment experience not available.</p>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useCurrentUser } from 'vuefire';
-
-const currentUser = useCurrentUser();
+const {
+  currentProfessional,
+  addProfessionalArrayItem,
+  updateProfessionalArrayItem,
+  removeProfessionalArrayItem,
+} = useProfessional()
 
 const props = defineProps({
-  experience: {
+  location: {
     type: Object,
     required: true,
+    default: () => ({}),
   },
   mode: {
     type: String,
     required: true,
     validator: (value) => ['display', 'edit', 'create'].includes(value),
   },
-});
+  index: {
+    type: Number,
+    required: false,
+  },
+})
 
-const fileInput = ref(null);
-const isUploading = ref(false);
-const uploadProgress = ref(0);
+const localData = ref({ ...props.language })
 
-const triggerFileInput = () => {
-  if (fileInput.value) {
-    fileInput.value.click();
-  }
-};
-
-const handleFileUpload = async (event) => {
-  const file = event.target.files[0];
-  // Implement your file upload logic here
-};
-
-const selectPlace = (place) => {
-  props.experience.place_name = place.place_name;
-  props.experience.place_id = place.place_id;
-  props.experience.formatted_address = place.formatted_address;
-  props.experience.city = place.city;
-  props.experience.region = place.region;
-};
-
-const clearPlaceSelection = () => {
-  props.experience.place_name = '';
-  props.experience.place_id = '';
-  props.experience.formatted_address = '';
-  props.experience.city = '';
-  props.experience.region = '';
-};
-
-const openDocument = (url) => {
-  window.open(url, '_blank');
-};
-</script>
-
-<style scoped>
-.experience-form .disabled {
-  opacity: 0.5;
-  pointer-events: none;
+async function submitCreate() {
+  await addProfessionalArrayItem('other_emplyment_experience', localData.value)
 }
-</style>
+
+async function submitEdit() {
+  await updateProfessionalArrayItem(
+    'other_emplyment_experience',
+    props.index,
+    localData.value
+  )
+}
+
+async function submitDelete() {
+  await removeProfessionalArrayItem('other_emplyment_experience', props.index)
+}
+</script>

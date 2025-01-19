@@ -1,32 +1,19 @@
 <!-- components/organisms/Professional/Cell.vue -->
 <template>
   <div class="cell professional-cell" v-if="miseboxUser && professional">
-    <!-- Header Section -->
     <NuxtLink :to="`/professionals/${professional.id}`" class="cell-header">
       <div class="cell-avatar">
-        <MoleculesAvatar 
-          :url="miseboxUser.avatar || '/images/default-avatar.jpg'" 
-          size="small" 
-          altText="Professional Avatar" 
-        />
+        <MoleculesAvatar :url="miseboxUser.avatar" size="small" altText="Professional Avatar" />
       </div>
       <div class="header-content">
-        <div class="display-name" v-if="miseboxUser.display_name">
-          {{ miseboxUser.display_name }}
-        </div>
-        <div class="handle" v-if="miseboxUser.handle">
-          @{{ miseboxUser.handle }}
-        </div>
-        <div class="title" v-if="professional.title">
-          {{ professional.title }}
-        </div>
+        <div class="display-name" v-if="miseboxUser.display_name">{{ miseboxUser.display_name }}</div>
+        <div class="handle" v-if="miseboxUser.handle">@{{ miseboxUser.handle }}</div>
+        <div v-if="professional.title" class="highlight">{{ professional.title }}</div>
       </div>
       <div class="icon">
         <ChevronRightIcon />
       </div>
     </NuxtLink>
-
-    <!-- Footer Section -->
     <div class="cell-footer">
       <div class="cell-interaction">
         <div v-if="miseboxUser?.id !== currentUser?.uid" class="not-self">
@@ -39,6 +26,7 @@
 
 <script setup>
 import { useCurrentUser } from "vuefire";
+const currentUser = useCurrentUser();
 
 const props = defineProps({
   professional: {
@@ -47,9 +35,7 @@ const props = defineProps({
   },
 });
 
-// Fetch Misebox User document
-const { document: miseboxUser } = useFetchDoc("misebox-users", props.professional.id);
+const { fetchMiseboxUser } = useMiseboxUser();
+const miseboxUser = fetchMiseboxUser(props.professional.id);
 
-// Get the current user
-const currentUser = useCurrentUser();
 </script>

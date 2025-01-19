@@ -2,61 +2,41 @@
 <template>
   <client-only>
     <div class="edit-page">
-      <div v-if="professional">
-        <!-- Header -->
+      <div v-if="isViewingOwn && professional">
         <MoleculesMiseboxUserHeader :miseboxUser="miseboxUser" />
 
-        <!-- Action Buttons -->
         <div class="action-buttons">
-          <NuxtLink
-            v-if="isViewingOwn"
-            :to="`/professionals/${currentUser.uid}`"
-            class="btn"
-          >
-            View
+          <NuxtLink :to="`/professionals/${currentUser.uid}`" class="icon-btn">
+            <UserCircleIcon class="icon" />
+            <span>Profile</span>
           </NuxtLink>
-          <button
-            v-if="isViewingOwn"
-            class="btn"
-            @click="deleteProfessional"
-          >
-            Delete
+          <button class="icon-btn" @click="deleteProfessional">
+            <TrashIcon class="icon" />
+            <span>Delete</span>
           </button>
         </div>
 
-        <!-- Edit Form -->
-        <OrganismsProfessionalEdit v-if="isViewingOwn" :professional="professional" />
+        <OrganismsProfessionalEdit :professional="professional" />
       </div>
       <div v-else>
-        <p class="access-denied-message">
-          Access Denied. You are not authorized to edit this profile.
-        </p>
+        <p class="access-denied-message">This is not your profile to edit.</p>
+        <NuxtLink to="/professionals" class="btn">Go to Professionals</NuxtLink>
       </div>
     </div>
   </client-only>
 </template>
 
 <script setup>
-import { computed } from "vue";
 import { useRoute } from "vue-router";
-import { useFirestore, useDocument, useCurrentUser } from "vuefire";
-import { doc } from "firebase/firestore";
+import { useCurrentUser } from "vuefire";
 
-// Firestore and Route Setup
 const route = useRoute();
-const db = useFirestore();
 const currentUser = useCurrentUser();
 
-const miseboxUserDocRef = computed(() =>
-  currentUser.value ? doc(db, "misebox-users", currentUser.value.uid) : null
-);
+const { fetchMiseboxUser } = useMiseboxUser();
+const { fetchProfessional, deleteProfessional } = useProfessional();
 
-const professionalDocRef = computed(() =>
-  currentUser.value ? doc(db, "professionals", route.params.id) : null
-);
-
-const { data: miseboxUser, deleteProfessional } = useDocument(miseboxUserDocRef);
-const { data: professional } = useDocument(professionalDocRef);
-
+const miseboxUser = fetchMiseboxUser(route.params.id);
+const professional = fetchProfessional(route.params.id);
 const isViewingOwn = computed(() => currentUser.value?.uid === route.params.id);
 </script>

@@ -1,5 +1,4 @@
 <!-- components/organisms/Kitchen/Dashboard.vue -->
-<!-- dashboard/Dashboard.vue -->
 <template>
   <div class="kitchen-dashboard">
     <!-- Tab Bar -->
@@ -13,32 +12,145 @@
       </button>
       <button
         class="btn btn-tab"
-        :class="{ active: viewMode === 'stats' }"
-        @click="viewMode = 'stats'"
+        :class="{ active: viewMode === 'miseEnPlace' }"
+        @click="viewMode = 'miseEnPlace'"
       >
-        Stats Manager
+        Mise En Place Manager
       </button>
       <button
         class="btn btn-tab"
-        :class="{ active: viewMode === 'tasks' }"
-        @click="viewMode = 'tasks'"
+        :class="{ active: viewMode === 'dishes' }"
+        @click="viewMode = 'dishes'"
       >
-        Task Manager
+        Dishes Manager
+      </button>
+      <button
+        class="btn btn-tab"
+        :class="{ active: viewMode === 'recipes' }"
+        @click="viewMode = 'recipes'"
+      >
+        Recipes Manager
+      </button>
+      <button
+        class="btn btn-tab"
+        :class="{ active: viewMode === 'suppliers' }"
+        @click="viewMode = 'suppliers'"
+      >
+        Suppliers Manager
       </button>
     </div>
 
     <!-- Content based on viewMode -->
     <div v-if="viewMode === 'ingredients'">
-      <OrganismsKitchenIngredientsManager
-        :kitchenId="kitchen.id"
-        @ingredients-fetched="updateDebugIngredients"
-      />
+      <MoleculesFormsObjectArray
+        label="Ingredients"
+        :firebaseValue="kitchen.ingredients"
+      >
+        <template #display="{ item, index }">
+          <OrganismsKitchenFieldsIngredients
+            :ingredient="item"
+            :index="index"
+            :id="kitchen.id"
+            mode="display"
+          />
+        </template>
+        <template #edit="{ item, index }">
+          <OrganismsKitchenFieldsIngredients
+            :ingredient="item"
+            :index="index"
+            :id="kitchen.id"
+            mode="edit"
+          />
+        </template>
+        <template #create>
+          <OrganismsKitchenFieldsIngredients :id="kitchen.id" mode="create" />
+        </template>
+      </MoleculesFormsObjectArray>
     </div>
-    <div v-else-if="viewMode === 'stats'">
-      <OrganismsKitchenStatsManager :kitchenId="kitchen.id" />
+
+    <div v-else-if="viewMode === 'miseEnPlace'">
+      <MoleculesFormsObjectArray
+        label="Mise En Place"
+        :firebaseValue="kitchen.miseEnPlace"
+      >
+        <template #display="{ item, index }">
+          <OrganismsKitchenFieldsMiseEnPlace
+            :miseEnPlace="item"
+            :index="index"
+            :id="kitchen.id"
+            mode="display"
+          />
+        </template>
+        <template #edit="{ item, index }">
+          <OrganismsKitchenFieldsMiseEnPlace
+            :miseEnPlace="item"
+            :index="index"
+            :id="kitchen.id"
+            mode="edit"
+          />
+        </template>
+        <template #create>
+          <OrganismsKitchenFieldsMiseEnPlace :id="kitchen.id" mode="create" />
+        </template>
+      </MoleculesFormsObjectArray>
     </div>
-    <div v-else-if="viewMode === 'tasks'">
-      <OrganismsKitchenTasksManager :kitchenId="kitchen.id" />
+
+    <div v-else-if="viewMode === 'dishes'">
+      <MoleculesFormsObjectArray
+        label="Dishes"
+        :firebaseValue="kitchen.dishes"
+      >
+        <template #display="{ item, index }">
+          <OrganismsKitchenFieldsDishes
+            :dish="item"
+            :index="index"
+            :id="kitchen.id"
+            mode="display"
+          />
+        </template>
+        <template #edit="{ item, index }">
+          <OrganismsKitchenFieldsDishes
+            :dish="item"
+            :index="index"
+            :id="kitchen.id"
+            mode="edit"
+          />
+        </template>
+        <template #create>
+          <OrganismsKitchenFieldsDishes :id="kitchen.id" mode="create" />
+        </template>
+      </MoleculesFormsObjectArray>
+    </div>
+
+    <div v-else-if="viewMode === 'recipes'">
+      <MoleculesFormsObjectArray
+        label="Recipes"
+        :firebaseValue="kitchen.recipes"
+      >
+        <template #display="{ item, index }">
+          <OrganismsKitchenFieldsRecipes
+            :recipe="item"
+            :index="index"
+            :id="kitchen.id"
+            mode="display"
+          />
+        </template>
+        <template #edit="{ item, index }">
+          <OrganismsKitchenFieldsRecipes
+            :recipe="item"
+            :index="index"
+            :id="kitchen.id"
+            mode="edit"
+          />
+        </template>
+        <template #create>
+          <OrganismsKitchenFieldsRecipes :id="kitchen.id" mode="create" />
+        </template>
+      </MoleculesFormsObjectArray>
+    </div>
+
+    <div v-else-if="viewMode === 'suppliers'">
+      <OrganismsKitchenLinkSupplierManager :kitchen="kitchen" />
     </div>
   </div>
 </template>
@@ -51,14 +163,5 @@ const props = defineProps({
   },
 });
 
-const viewMode = ref('ingredients');
-const debugIngredients = ref([]);
-
-const updateDebugIngredients = (ingredients) => {
-  debugIngredients.value = ingredients;
-};
+const viewMode = ref("ingredients");
 </script>
-
-<style scoped>
-
-</style>

@@ -1,15 +1,19 @@
 <!-- components/organisms/Chef/Edit.vue -->
 <template>
   <client-only>
-    <div class="edit-view" v-if="chef">
+    <div v-if="chef" class="edit-view">
       <h3>Edit Your Chef Profile</h3>
-
+  <!-- Manage Kitchens Link -->
+  <div class="manage-kitchens">
+        <nuxt-link :to="`/chefs/${chef.id}/kitchens`" class="btn-primary">
+          Manage Kitchens
+        </nuxt-link>
+      </div>
       <!-- Specialties (Array of Strings) -->
       <MoleculesFormsArrayOfStrings
         label="Specialties"
         collectionName="chefs"
         target="specialties"
-        :documentID="currentUser.uid"
         :firebaseValue="chef.specialties"
         placeholder="Enter your specialties"
         :itemPlaceholder="'Enter a specialty'"
@@ -22,11 +26,7 @@
         label="Availability"
         collectionName="chefs"
         target="availability"
-        :documentID="currentUser.uid"
         :firebaseValue="chef.availability"
-        :newObject="{ day: '', time_from: '', time_to: '' }"
-        :formattingFunction="formatAvailability"
-        :validationFunction="validateAvailability"
       >
         <template #display="{ item }">
           <OrganismsChefFieldsAvailability :availability="item" mode="display" />
@@ -44,11 +44,7 @@
         label="Recipes"
         collectionName="chefs"
         target="recipes"
-        :documentID="currentUser.uid"
         :firebaseValue="chef.recipes"
-        :newObject="{ id: '', name: '', ingredients: '', instructions: '' }"
-        :formattingFunction="formatRecipes"
-        :validationFunction="validateRecipes"
       >
         <template #display="{ item }">
           <OrganismsChefFieldsRecipe :recipe="item" mode="display" />
@@ -66,17 +62,7 @@
         label="Events"
         collectionName="chefs"
         target="events"
-        :documentID="currentUser.uid"
         :firebaseValue="chef.events"
-        :newObject="{
-          name: '',
-          date: '',
-          location: '',
-          description: '',
-          document_url: ''
-        }"
-        :formattingFunction="formatEvents"
-        :validationFunction="validateEvents"
       >
         <template #display="{ item }">
           <OrganismsChefFieldsEvent :event="item" mode="display" />
@@ -94,11 +80,7 @@
         label="Gallery"
         collectionName="chefs"
         target="gallery"
-        :documentID="currentUser.uid"
         :firebaseValue="chef.gallery"
-        :newObject="{ image_url: '', description: '' }"
-        :formattingFunction="formatGallery"
-        :validationFunction="validateGallery"
       >
         <template #display="{ item }">
           <OrganismsChefFieldsGallery :image="item" mode="display" />
@@ -112,37 +94,14 @@
       </MoleculesFormsObjectArray>
     </div>
     <div v-else>
-      <p class="access-denied-message">
-        You do not have permission to edit this profile.
-      </p>
+      <p>You do not have permission to edit this profile.</p>
     </div>
   </client-only>
 </template>
 
 <script setup>
 import { useCurrentUser } from "vuefire";
-import {
-  formatSpecialty,
-  validateSpecialty,
-  formatAvailability,
-  validateAvailability,
-  formatRecipes,
-  validateRecipes,
-  formatEvents,
-  validateEvents,
-  formatGallery,
-  validateGallery,
-} from "~/composables/utils/useChefFormattingAndValidation";
-
-// Props for the Chef data
-const props = defineProps({
-  chef: {
-    type: Object,
-    required: true,
-    default: () => ({}), // Default empty object
-  },
-});
 
 const currentUser = useCurrentUser();
+const { currentChef: chef } = useChef();
 </script>
-

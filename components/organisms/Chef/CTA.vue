@@ -1,31 +1,33 @@
 <!-- components/organisms/Chef/CTA.vue -->
 <template>
-  <div class="call-to-action">
-    <!-- UserCTA for shared logic -->
-    <OrganismsUserCTA />
+  <!-- Chef-specific CTA -->
+  <OrganismsMiseboxUserCTA v-if="!currentUser || !miseboxUser" />
 
-    <!-- Chef-specific content -->
-    <div v-if="miseboxUser && !chef" class="call-to-action-message">
-      <h2>Step Into Your Chef Journey</h2>
-      <p>
-        Misebox empowers chefs to manage their kitchens, organize workflows, and showcase their culinary talent. Take the next step in your career with ease.
-      </p>
-      <ul>
-        <li>👨‍🍳 Build a chef profile that highlights your expertise and skills.</li>
-        <li>🍴 Manage recipes, kitchen tasks, and team coordination seamlessly.</li>
-        <li>📊 Gain insights and tools to optimize your daily operations.</li>
-      </ul>
-      <button class="btn" @click="createChef">Join as a Chef</button>
-    </div>
+  <!-- Redirect to create page if no Chef profile exists -->
+  <div v-if="currentUser && miseboxUser && !chef" class="call-to-action-message">
+    <h2>Step Into Your Chef Journey</h2>
+    <p>
+      Misebox empowers chefs to showcase their culinary talent, organize workflows, and manage their kitchens efficiently.
+    </p>
+    <button class="btn" @click="redirectToCreate">Create Chef Profile</button>
+  </div>
 
-    <!-- Chef already exists -->
-    <div v-if="chef" class="call-to-action-existing">
-      <p>Your Chef profile is ready to use. Start managing your kitchens and recipes today!</p>
-    </div>
+  <!-- Profile card for users with a Chef profile -->
+  <div v-if="currentUser && miseboxUser && chef" class="call-to-action-existing">
+    <OrganismsChefCard />
   </div>
 </template>
 
 <script setup>
-const { currentChef: chef, createChef } = useChef();
+import { useCurrentUser } from "vuefire";
+import { useRouter } from "vue-router";
+
+const currentUser = useCurrentUser();
+const router = useRouter();
 const { currentMiseboxUser: miseboxUser } = useMiseboxUser();
+const { currentChef: chef } = useChef();
+
+const redirectToCreate = () => {
+  router.push("/chefs/create");
+};
 </script>

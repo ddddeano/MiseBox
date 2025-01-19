@@ -1,47 +1,51 @@
 <!-- pages/chefs/[id]/index.vue -->
-<!-- pages/chefs/[id].vue -->
 <template>
   <client-only>
     <div v-if="miseboxUser && chef" class="profile">
-      <!-- User Header -->
       <MoleculesMiseboxUserHeader :miseboxUser="miseboxUser" />
 
-      <!-- Chef Profile View -->
+      <div class="action-buttons">
+        <NuxtLink
+          v-if="currentUser?.uid === $route.params.id"
+          :to="`/chefs/${currentUser.uid}/edit`"
+          class="icon-btn"
+        >
+          <Cog6ToothIcon class="icon" />
+          <span>Edit</span>
+        </NuxtLink>
+        <button
+          v-if="currentUser?.uid !== $route.params.id"
+          class="icon-btn"
+        >
+          <EnvelopeIcon class="icon" />
+          <span>Message</span>
+        </button>
+      </div>
+
       <OrganismsChefView :chef="chef" />
 
-      <!-- Universal Bubble Navigation -->
-      <OrganismsUniversalBubble 
-        :id="miseboxUser.id" 
+      <OrganismsUniversalBubble
+        :id="miseboxUser.id"
         parent="chefs"
-        :userApps="miseboxUser.user_apps" 
+        :userApps="miseboxUser.user_apps"
       />
     </div>
     <div v-else>
-      <!-- Loading State -->
       <p class="loading">Loading...</p>
     </div>
   </client-only>
 </template>
 
 <script setup>
-import { useDocument, useFirestore, useCurrentUser } from "vuefire";
-import { doc } from "firebase/firestore";
 import { useRoute } from "vue-router";
+import { useCurrentUser } from "vuefire";
 
-// VueFire and Firebase setup
-const currentUser = useCurrentUser();
 const route = useRoute();
-const db = useFirestore();
+const currentUser = useCurrentUser();
 
-// Fetch Misebox User Document
-const miseboxUserDocRef = computed(() =>
-  currentUser.value ? doc(db, "misebox-users", route.params.id) : null
-);
-const { data: miseboxUser } = useDocument(miseboxUserDocRef);
+const { fetchMiseboxUser } = useMiseboxUser();
+const { fetchChef } = useChef();
 
-// Fetch Chef Profile Document
-const chefDocRef = computed(() =>
-  currentUser.value ? doc(db, "chefs", route.params.id) : null
-);
-const { data: chef } = useDocument(chefDocRef);
+const miseboxUser = fetchMiseboxUser(route.params.id);
+const chef = fetchChef(route.params.id);
 </script>

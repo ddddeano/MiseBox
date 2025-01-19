@@ -1,59 +1,70 @@
 <!-- components/organisms/Kitchen/Edit.vue -->
 <template>
   <client-only>
-    <div class="profile-forms">
-      <div v-if="isViewingOwn && kitchen">
-        <h3>Edit Kitchen Details</h3>
+    <div v-if="kitchen && isCurrentUserInTeam" class="edit-view">
+      <!-- Avatar Selection -->
+      <MoleculesFormsAvatarSelection
+        collectionName="kitchens"
+        :item="kitchen"
+      />
 
-        <!-- Avatar Selection -->
-        <MoleculesFormsAvatarSelection
-          collection-name="kitchens"
-          :item="kitchen"
-        />
+      <!-- Kitchen Name -->
+      <MoleculesFormsSingleField
+        label="Kitchen Name"
+        collectionName="kitchens"
+        target="name"
+        :documentID="kitchen.id"
+        :firebaseValue="kitchen.name"
+        placeholder="Enter your kitchen name"
+      />
 
-        <!-- Delete Button -->
-        <button class="delete-button" @click="handleDelete">
-          Delete Kitchen
-        </button>
-      </div>
+      <!-- Formatted Address -->
+      <MoleculesFormsSingleField
+        label="Formatted Address"
+        collectionName="kitchens"
+        target="formatted_address"
+        :documentID="kitchen.id"
+        :firebaseValue="kitchen.formatted_address"
+        placeholder="Enter the address"
+      />
+    </div>
+    <div v-else-if="kitchen && !isCurrentUserInTeam">
+      <p class="access-denied-message">
+        You do not have permission to edit this kitchen.
+      </p>
+    </div>
+    <div v-else>
+      <p class="loading">Loading kitchen data...</p>
     </div>
   </client-only>
 </template>
 
 <script setup>
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { computed } from "vue";
-import { useFirestore, useDocument } from "vuefire";
-import { doc, deleteDoc } from "firebase/firestore";
+import { useCurrentUser } from "vuefire";
 
-const route = useRoute();
-const router = useRouter();
-const db = useFirestore();
-
-// Kitchen ID from route
-const kitchenId = route.params.id;
+const { fetchKitchen } = useKitchen();
+const currentUser = useCurrentUser();
+const { id } = useRoute().params;
 
 // Fetch kitchen data
-const kitchenDocRef = computed(() => doc(db, "kitchens", kitchenId));
-const { data: kitchen } = useDocument(kitchenDocRef);
+const kitchen = fetchKitchen(id);
 
-// Delete functionality
-const handleDelete = async () => {
-  const confirmed = confirm(
-    "Are you sure you want to delete this kitchen? This action cannot be undone."
-  );
-  if (confirmed) {
-    try {
-      await deleteDoc(kitchenDocRef.value);
-      alert("Kitchen deleted successfully.");
-      router.push("/kitchens"); // Redirect to kitchens index after deletion
-    } catch (error) {
-      console.error("[handleDelete] Error deleting kitchen:", error);
-      alert("Failed to delete the kitchen. Please try again.");
-    }
-  }
-};
-
-// Set to true for development purposes
-const isViewingOwn = true;
+// Check if the current user is part of the kitchen team
+const isCurrentUserInTeam = computed(() => {
+  const team = kitchen.value?.current_team || [];
+  const currentUserId = currentUser.value?.uid;
+  return team.some((member) => member.id === currentUserId);
+});
 </script>
+
+<style scoped>
+.edit-view {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  max-width: 600px;
+  width: 100%;
+}
+</style>

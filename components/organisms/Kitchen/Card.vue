@@ -18,7 +18,7 @@
     <!-- Additional Info Section -->
     <div class="card-info">
       <p class="kitchen-id">
-        <strong>ID:</strong> {{ kitchen.kitchenId }}
+        <strong>ID:</strong> {{ kitchen.id }}
       </p>
       <p class="created-at">
         <strong>Created:</strong> {{ kitchen.created_at }}

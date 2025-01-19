@@ -1,56 +1,89 @@
 <!-- components/organisms/Job/Cell.vue -->
 <template>
-  <div class="cell job-cell" v-if="job">
-    <!-- Job Info Display -->
-    <NuxtLink :to="`/jobs/${job.id}`" class="cell-header">
-      <div class="cell-content">
-        <p class="display-name">{{ job.title }}</p>
-        <p class="location">{{ job.location }}</p>
+  <div
+    class="cell job-cell"
+    v-if="job"
+    :class="{ 'created-by-user': job.createdBy === currentUser?.uid }"
+  >
+    <!-- Header Section -->
+    <NuxtLink
+      :to="isDisabled ? null : `/jobs/${job.id}`"
+      class="cell-header"
+      :class="{ disabled: isDisabled }"
+    >
+      <!-- Avatar Section -->
+      <div v-if="job.company_logo" class="cell-avatar">
+        <MoleculesAvatar :url="job.company_logo" size="small" altText="Company Logo" />
+      </div>
+
+      <!-- Header Content -->
+      <div class="header-content">
+        <div class="title">{{ jobTitle }}</div>
+        <div class="company">{{ jobCompany }}</div>
+      </div>
+
+      <!-- Navigation Icon -->
+      <div v-if="!isDisabled" class="icon">
+        <ChevronRightIcon />
       </div>
     </NuxtLink>
-
-    <!-- Interaction Section -->
-    <div class="special-section">
-      <button class="apply-button" @click="applyForJob">Apply</button>
-      <button class="save-button" @click="saveJob">Save</button>
-    </div>
   </div>
 </template>
 
 <script setup>
-// Props to receive the full job object
+import { computed } from "vue";
+import { useCurrentUser } from "vuefire";
+
 const props = defineProps({
   job: {
     type: Object,
     required: true,
   },
+  isDisabled: {
+    type: Boolean,
+    default: false,
+  },
 });
 
-// Interaction handlers
-const applyForJob = () => {
-  alert(`Applied for job: ${props.job.title}`);
-};
+const currentUser = useCurrentUser();
 
-const saveJob = () => {
-  alert(`Saved job: ${props.job.title}`);
-};
+const jobTitle = computed(() => props.job.title || "Untitled Job");
+
+const jobCompany = computed(() => props.job.company || "Unknown Company");
 </script>
 
 <style scoped>
-.apply-button,
-.save-button {
-  padding: 0.5rem 1rem;
-  margin-right: 0.5rem;
-  background-color: var(--primary);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-s);
-  cursor: pointer;
-  font-size: var(--font-size-s);
+.cell-header {
+  display: flex;
+  gap: var(--spacing-m);
+  text-decoration: none;
+  color: inherit;
+  padding: var(--spacing-s) var(--spacing-m);
+  align-items: center;
 }
 
-.apply-button:hover,
-.save-button:hover {
-  background-color: var(--primary-hover);
+.header-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+}
+
+.title {
+  font-size: var(--font-size-m);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.company {
+  font-size: var(--font-size-s);
+  color: var(--text-secondary);
+  margin-top: var(--spacing-xxs);
+}
+
+.created-by-user {
+  border: 2px solid var(--primary);
+  background-color: var(--background-highlight);
 }
 </style>

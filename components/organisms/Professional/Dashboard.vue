@@ -1,138 +1,233 @@
 <!-- components/organisms/Professional/Dashboard.vue -->
+<!-- components/organisms/Professional/Edit.vue -->
 <template>
   <client-only>
-    <div class="dashboard">
-      <div v-if="professional">
-        <h3>Professional Dashboard</h3>
+    <div v-if="professional" class="edit-view">
+      <h3>Edit Your Professional Profile</h3>
 
-        <!-- Profile Management -->
-        <section class="dashboard-section">
-          <h4>Profile Management</h4>
-          <ul>
-            <li>
-              <button class="btn btn-primary btn-pill">View Profile</button>
-            </li>
-            <li>
-              <button class="btn btn-secondary btn-pill">Edit Profile</button>
-            </li>
-          </ul>
-        </section>
+      <!-- Title -->
+      <MoleculesFormsSingleField
+        label="Title"
+        collectionName="professionals"
+        target="title"
+        :documentID="currentUser.uid"
+        :firebaseValue="professional.title"
+        placeholder="Enter your title"
+      />
 
-        <!-- Networking -->
-        <section class="dashboard-section">
-          <h4>Networking</h4>
-          <ul>
-            <li>
-              <button class="btn btn-primary btn-pill">Connect with Others</button>
-            </li>
-            <li>
-              <button class="btn btn-secondary btn-pill">Manage Connections</button>
-            </li>
-          </ul>
-        </section>
+      <!-- Short Bio -->
+      <MoleculesFormsTextAreaField
+        label="Short Bio"
+        collectionName="professionals"
+        target="bio_short"
+        :documentID="currentUser.uid"
+        :firebaseValue="professional.bio_short"
+        placeholder="Write a short bio"
+        :maxLength="450"
+      />
 
-        <!-- Applications -->
-        <section class="dashboard-section">
-          <h4>Applications</h4>
-          <ul>
-            <li>
-              <button class="btn btn-primary btn-pill">Browse Job Listings</button>
-            </li>
-            <li>
-              <button class="btn btn-secondary btn-pill">Post a Job</button>
-            </li>
-          </ul>
-        </section>
+      <!-- Long Bio -->
+      <MoleculesFormsTextAreaField
+        label="Long Bio"
+        collectionName="professionals"
+        target="bio_long"
+        :documentID="currentUser.uid"
+        :firebaseValue="professional.bio_long"
+        placeholder="Write a detailed bio"
+        :maxLength="1000"
+      />
 
-        <!-- Professional Development -->
-        <section class="dashboard-section">
-          <h4>Professional Development</h4>
-          <ul>
-            <li>
-              <button class="btn btn-primary btn-pill">Manage Certifications</button>
-            </li>
-            <li>
-              <button class="btn btn-secondary btn-pill">Update Work Experience</button>
-            </li>
-            <li>
-              <button class="btn btn-primary btn-pill">Edit Portfolio</button>
-            </li>
-          </ul>
-        </section>
+      <!-- Kitchen Experience -->
+      <MoleculesFormsObjectArray
+        label="Kitchen Experience"
+        :firebaseValue="professional.kitchen_experience"
+      >
+        <template #display="{ item, index }">
+          <OrganismsProfessionalFieldsKitchenExperience
+            :kitchenExperience="item"
+            :index="index"
+            mode="display"
+          />
+        </template>
+        <template #edit="{ item, index }">
+          <OrganismsProfessionalFieldsKitchenExperience
+            :kitchenExperience="item"
+            :index="index"
+            mode="edit"
+          />
+        </template>
+        <template #create>
+          <OrganismsKitchenSearchWizard />
+        </template>
+      </MoleculesFormsObjectArray>
 
-        <!-- Notifications -->
-        <section class="dashboard-section">
-          <h4>Notifications</h4>
-          <ul>
-            <li>
-              <button class="btn btn-primary btn-pill">View Alerts</button>
-            </li>
-          </ul>
-        </section>
+      <!-- Other Employment Experience -->
+      <MoleculesFormsObjectArray
+        label="Other Employment Experience"
+        :firebaseValue="professional.other_employment_experience"
+      >
+        <template #display="{ item, index }">
+          <OrganismsProfessionalFieldsOtherEmploymentExperience
+            :employmentExperience="item"
+            :index="index"
+            mode="display"
+          />
+        </template>
+        <template #edit="{ item, index }">
+          <OrganismsProfessionalFieldsOtherEmploymentExperience
+            :employmentExperience="item"
+            :index="index"
+            mode="edit"
+          />
+        </template>
+        <template #create>
+          <OrganismsProfessionalFieldsOtherEmploymentExperience
+            mode="create"
+          />
+        </template>
+      </MoleculesFormsObjectArray>
 
-        <!-- Cross-App Navigation -->
-        <section class="dashboard-section">
-          <h4>Navigation</h4>
-          <ul>
-            <li>
-              <button class="btn btn-primary btn-pill">Navigate to Chef Profile</button>
-            </li>
-            <li>
-              <button class="btn btn-secondary btn-pill">Navigate to Misebox User Profile</button>
-            </li>
-          </ul>
-        </section>
-      </div>
-      <div v-else>
-        <p>Loading Professional Dashboard...</p>
-      </div>
+      <!-- Certifications -->
+      <MoleculesFormsObjectArray
+        label="Certifications"
+        :firebaseValue="professional.certifications"
+      >
+        <template #display="{ item, index }">
+          <OrganismsProfessionalFieldsCertification
+            :certification="item"
+            :index="index"
+            mode="display"
+          />
+        </template>
+        <template #edit="{ item, index }">
+          <OrganismsProfessionalFieldsCertification
+            :certification="item"
+            :index="index"
+            mode="edit"
+          />
+        </template>
+        <template #create>
+          <OrganismsProfessionalFieldsCertification
+            mode="create"
+          />
+        </template>
+      </MoleculesFormsObjectArray>
+
+      <!-- Education -->
+      <MoleculesFormsObjectArray
+        label="Education"
+        :firebaseValue="professional.education"
+      >
+        <template #display="{ item, index }">
+          <OrganismsProfessionalFieldsEducation
+            :education="item"
+            :index="index"
+            mode="display"
+          />
+        </template>
+        <template #edit="{ item, index }">
+          <OrganismsProfessionalFieldsEducation
+            :education="item"
+            :index="index"
+            mode="edit"
+          />
+        </template>
+        <template #create>
+          <OrganismsProfessionalFieldsEducation
+            mode="create"
+          />
+        </template>
+      </MoleculesFormsObjectArray>
+
+      <!-- Languages -->
+      <MoleculesFormsObjectArray
+        label="Languages"
+        :firebaseValue="professional.languages"
+      >
+        <template #display="{ item, index }">
+          <OrganismsProfessionalFieldsLanguage
+            :language="item"
+            :index="index"
+            mode="display"
+          />
+        </template>
+        <template #edit="{ item, index }">
+          <OrganismsProfessionalFieldsLanguage
+            :language="item"
+            :index="index"
+            mode="edit"
+          />
+        </template>
+        <template #create>
+          <OrganismsProfessionalFieldsLanguage
+            mode="create"
+          />
+        </template>
+      </MoleculesFormsObjectArray>
+
+      <!-- Volunteering -->
+      <MoleculesFormsObjectArray
+        label="Volunteering"
+        :firebaseValue="professional.volunteering"
+      >
+        <template #display="{ item, index }">
+          <OrganismsProfessionalFieldsVolunteering
+            :volunteering="item"
+            :index="index"
+            mode="display"
+          />
+        </template>
+        <template #edit="{ item, index }">
+          <OrganismsProfessionalFieldsVolunteering
+            :volunteering="item"
+            :index="index"
+            mode="edit"
+          />
+        </template>
+        <template #create>
+          <OrganismsProfessionalFieldsVolunteering
+            mode="create"
+          />
+        </template>
+      </MoleculesFormsObjectArray>
+
+      <!-- Projects -->
+      <MoleculesFormsObjectArray
+        label="Projects"
+        :firebaseValue="professional.projects"
+      >
+        <template #display="{ item, index }">
+          <OrganismsProfessionalFieldsProject
+            :project="item"
+            :index="index"
+            mode="display"
+          />
+        </template>
+        <template #edit="{ item, index }">
+          <OrganismsProfessionalFieldsProject
+            :project="item"
+            :index="index"
+            mode="edit"
+          />
+        </template>
+        <template #create>
+          <OrganismsProfessionalFieldsProject
+            mode="create"
+          />
+        </template>
+      </MoleculesFormsObjectArray>
+    </div>
+    <div v-else>
+      <p class="access-denied-message">
+        Access Denied. You are not authorized to edit this profile.
+      </p>
     </div>
   </client-only>
 </template>
 
 <script setup>
-import { computed } from "vue";
-import { useFirestore, useDocument, useCurrentUser } from "vuefire";
-import { doc } from "firebase/firestore";
+import { useCurrentUser } from "vuefire";
 
-// Firestore and Current User Setup
-const db = useFirestore();
 const currentUser = useCurrentUser();
-
-// Fetch Professional Data
-const professionalDocRef = computed(() =>
-  currentUser.value ? doc(db, "professionals", currentUser.value.uid) : null
-);
-
-const { data: professional } = useDocument(professionalDocRef);
+const { currentProfessional: professional } = useProfessional();
 </script>
-
-<style scoped>
-.dashboard {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: var(--spacing-l);
-}
-
-.dashboard-section {
-  margin-bottom: var(--spacing-l);
-  width: 100%;
-  max-width: 800px;
-  text-align: center;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-  margin: var(--spacing-m) 0;
-}
-
-ul li {
-  margin: var(--spacing-s) 0;
-}
-
-.btn {
-  margin: 0.5rem 0;
-}
-</style>

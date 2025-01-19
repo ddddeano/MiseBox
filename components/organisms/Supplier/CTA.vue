@@ -1,29 +1,33 @@
 <!-- components/organisms/Supplier/CTA.vue -->
 <template>
-  <div class="call-to-action">
-    <OrganismsUserCTA />
+  <!-- Supplier-specific CTA -->
+  <OrganismsMiseboxUserCTA v-if="!currentUser || !miseboxUser" />
 
-    <div v-if="miseboxUser && !supplier" class="call-to-action-message">
-      <h2>Streamline Your Supply Chain</h2>
-      <p>
-        Join Misebox to connect with kitchens, showcase your products, and streamline your operations.
-      </p>
-      <ul>
-        <li>📦 Highlight your offerings to potential clients.</li>
-        <li>🤝 Build strong partnerships with chefs and kitchen teams.</li>
-        <li>📈 Leverage tools to optimize your workflows and boost efficiency.</li>
-      </ul>
-      <button class="btn" @click="createSupplier">Get Started as a Supplier</button>
-    </div>
+  <!-- Redirect to create page if no Supplier profile exists -->
+  <div v-if="currentUser && miseboxUser && !supplier" class="call-to-action-message">
+    <h2>Become a Supplier</h2>
+    <p>
+      Join Misebox as a Supplier to manage your inventory, connect with chefs, and streamline your operations.
+    </p>
+    <button class="btn" @click="redirectToCreate">Create Supplier Profile</button>
+  </div>
 
-    <div v-if="supplier" class="call-to-action-existing">
-      <p>Your Supplier profile is active. Start connecting with kitchens today!</p>
-    </div>
+  <!-- Profile card for users with a Supplier profile -->
+  <div v-if="currentUser && miseboxUser && supplier" class="call-to-action-existing">
+    <OrganismsSupplierCard />
   </div>
 </template>
 
 <script setup>
+import { useCurrentUser } from "vuefire";
+import { useRouter } from "vue-router";
 
-const { currentSupplier: supplier, createSupplier } = useSupplier();
+const currentUser = useCurrentUser();
+const router = useRouter();
 const { currentMiseboxUser: miseboxUser } = useMiseboxUser();
+const { currentSupplier: supplier } = useSupplier();
+
+const redirectToCreate = () => {
+  router.push("/suppliers/create");
+};
 </script>

@@ -1,70 +1,107 @@
 <!-- components/organisms/Professional/Fields/Location.vue -->
-<!-- components/organisms/Professional/Edit/LocationForm.vue -->
 <template>
-  <div class="location-form">
+  <div class="location-item">
     <!-- Display Mode -->
-    <div v-if="mode === 'display'">
-      <p>{{ location.city }} - {{ location.distance }} km</p>
+    <div v-if="mode === 'display'" class="display-mode">
+      <div class="location-details">
+        <span class="location-city">{{ location.city }}</span>
+        <span class="location-distance">{{ location.distance }} km</span>
+      </div>
     </div>
 
     <!-- Edit Mode -->
-    <div v-else-if="mode === 'edit'">
-      <PlacesBar
-        @item-click="selectPlace"
-        placeholder="Search for city..."
-      />
-      <input
-        type="number"
-        v-model="localLocation.distance"
-        placeholder="Distance (km)"
-        class="editable-input"
-        min="0"
-      />
+    <div v-else-if="mode === 'edit'" class="edit-mode">
+      <div class="form-group">
+        <label for="city" class="label">City</label>
+        <input
+          type="text"
+          id="city"
+          v-model="localData.city"
+          placeholder="Enter city"
+          class="editable-input"
+        />
+      </div>
+      <div class="form-group">
+        <label for="distance" class="label">Distance (km)</label>
+        <input
+          type="number"
+          id="distance"
+          v-model="localData.distance"
+          placeholder="Enter distance"
+          class="editable-input"
+        />
+      </div>
+      <div class="icon-group">
+        <CheckCircleIcon class="icon" @click="submitEdit" />
+        <TrashIcon class="icon" @click="deleteLocation" />
+      </div>
     </div>
 
     <!-- Create Mode -->
-    <div v-else-if="mode === 'create'">
-      <PlacesBar
-        @item-click="selectPlace"
-        placeholder="Search for city..."
-      />
-      <input
-        type="number"
-        v-model="localLocation.distance"
-        placeholder="Distance (km)"
-        class="editable-input"
-        min="0"
-      />
+    <div v-else-if="mode === 'create'" class="create-mode">
+      <div class="form-group">
+        <label for="city" class="label">City</label>
+        <input
+          type="text"
+          id="city"
+          v-model="localData.city"
+          placeholder="Enter city"
+          class="editable-input"
+        />
+      </div>
+      <div class="form-group">
+        <label for="distance" class="label">Distance (km)</label>
+        <input
+          type="number"
+          id="distance"
+          v-model="localData.distance"
+          placeholder="Enter distance"
+          class="editable-input"
+        />
+      </div>
+      <div class="icon-group">
+        <CheckCircleIcon class="icon" @click="submitCreate" />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
+const {
+  currentProfessional,
+  addProfessionalArrayItem,
+  updateProfessionalArrayItem,
+  removeProfessionalArrayItem,
+} = useProfessional()
 
 const props = defineProps({
-  location: Object,
+  location: {
+    type: Object,
+    required: true,
+    default: () => ({}),
+  },
   mode: {
     type: String,
-    default: 'display',
+    required: true,
+    validator: (value) => ['display', 'edit', 'create'].includes(value),
   },
-});
+  index: {
+    type: Number,
+    required: false,
+  },
+})
 
-const emit = defineEmits(['update:location']);
+const localData = ref({ ...props.language })
 
-const localLocation = ref({ ...props.location });
+async function submitCreate() {
+  await addProfessionalArrayItem('location', localData.value)
+}
 
-// Watch for changes in the prop to update local state
-watch(
-  () => props.location,
-  (newVal) => {
-    localLocation.value = { ...newVal };
-  }
-);
+async function submitEdit() {
+  await updateProfessionalArrayItem('location', props.index, localData.value)
+}
 
-// Method to handle place selection from PlacesBar
-const selectPlace = (place) => {
-  localLocation.value.city = place;
-  emit('update:location', { ...localLocation.value });
-};
+async function submitDelete() {
+  await removeProfessionalArrayItem('location', props.index)
+}
 </script>
-

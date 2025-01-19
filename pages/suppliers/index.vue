@@ -3,12 +3,11 @@
   <client-only>
     <div class="index">
       <OrganismsSupplierCTA />
-      <OrganismsSupplierCard v-if="supplier" />
       <OrganismsSupplierList />
     </div>
   </client-only>
 </template>
 
 <script setup>
-const { currentSupplier: supplier } = useSupplier()
+// No additional logic needed as state handling is within the components.
 </script>

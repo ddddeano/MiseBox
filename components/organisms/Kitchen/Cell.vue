@@ -1,47 +1,64 @@
 <!-- components/organisms/Kitchen/Cell.vue -->
 <template>
-  <div class="cell kitchen-cell" v-if="kitchen">
+  <div
+    class="cell kitchen-cell"
+    :class="{ 'in-firestore': kitchen.source === 'firestore' }"
+    v-if="kitchen"
+  >
     <!-- Header Section -->
     <NuxtLink
-      :to="isDisabled ? null : `/kitchens/${kitchen.kitchenId}`"
+      v-if="!isDisabled"
+      :to="`/kitchens/${kitchen.id}`"
       class="cell-header"
-      :class="{ disabled: isDisabled }"
     >
-      <div class="cell-avatar">
-        <MoleculesAvatar :url="imageUrl" size="small" altText="Kitchen Avatar" />
+      <!-- Avatar Section -->
+      <div v-if="kitchen.photo_url || kitchen.avatar" class="cell-avatar">
+        <MoleculesAvatar :url="kitchen.photo_url || kitchen.avatar" size="small" altText="Kitchen Avatar" />
       </div>
+      <!-- Header Content -->
       <div class="header-content">
-        <div class="name">{{ kitchenName }}</div>
-        <div class="location">{{ kitchen.formatted_address }}</div>
+        <div class="title">{{ kitchenDisplayName }}</div>
+        <div class="subtitle">{{ kitchenLocation }}</div>
       </div>
+      <!-- Navigation Icon -->
       <div class="icon">
         <ChevronRightIcon />
       </div>
     </NuxtLink>
 
-    <!-- Special Section -->
-    <div class="special-section" v-if="kitchen.source === 'firestore' && kitchen.team?.length">
-      <div class="team">
-        <NuxtLink
-          v-for="(member, index) in kitchen.team.slice(0, 5)"
-          :key="member.id || index"
-          :to="`/misebox-users/${member.id}`"
-          class="team-member"
-        >
-          <MoleculesAvatar
-            :url="member.avatar_mini || ''"
-            size="mini"
-            altText="Team Member Avatar"
-          />
-        </NuxtLink>
-        <span v-if="kitchen.team.length > 5">+{{ kitchen.team.length - 5 }}</span>
+    <!-- Disabled Link (Visual Only) -->
+    <div v-else class="cell-header">
+      <div v-if="kitchen.photo_url || kitchen.avatar" class="cell-avatar">
+        <MoleculesAvatar :url="kitchen.photo_url || kitchen.avatar" size="small" altText="Kitchen Avatar" />
+      </div>
+      <div class="header-content">
+        <div class="title">{{ kitchenDisplayName }}</div>
+        <div class="subtitle">{{ kitchenLocation }}</div>
       </div>
     </div>
+
+    <!-- Team Section -->
+    <section class="team-section" v-if="miseboxUsers?.length">
+      <div class="team-list">
+        <div
+          v-for="(member, index) in miseboxUsers.slice(0, 5)"
+          :key="member.id || index"
+          class="team-member"
+        >
+          <MoleculesAvatar :url="member.avatar || ''" size="mini" :altText="member.display_name || 'Team Member'" />
+        </div>
+        <span v-if="miseboxUsers.length > 5" class="team-count">
+          +{{ miseboxUsers.length - 5 }}
+        </span>
+      </div>
+    </section>
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { useFirestore } from "vuefire";
 
 const props = defineProps({
   kitchen: {
@@ -54,53 +71,52 @@ const props = defineProps({
   },
 });
 
-// Compute the correct image URL
-const imageUrl = computed(() => {
-  if (props.kitchen.source === "google") {
-    return props.kitchen.photo_url || "/images/default-kitchen.jpg";
-  }
-  if (props.kitchen.source === "firestore") {
-    return props.kitchen.avatar || "/images/default-kitchen.jpg";
-  }
-  return "/images/default-kitchen.jpg";
+// Firebase Firestore instance
+const db = useFirestore();
+
+// Compute the display name for the kitchen
+const kitchenDisplayName = computed(() => {
+  return props.kitchen.place_name || props.kitchen.name || "Unnamed Kitchen";
 });
 
-// Compute the correct kitchen name
-const kitchenName = computed(() => {
-  if (props.kitchen.source === "google") {
-    return props.kitchen.place_name || "Unnamed Kitchen";
-  }
-  if (props.kitchen.source === "firestore") {
-    return props.kitchen.name || "Unnamed Kitchen";
-  }
-  return "Unnamed Kitchen";
+// Compute the kitchen location for display
+const kitchenLocation = computed(() => {
+  const { city, region, country, formatted_address } = props.kitchen;
+  return formatted_address || [city, region, country].filter(Boolean).join(", ") || "Location Unknown";
 });
+
+// Fetch team members from "misebox-users" collection
+const miseboxUsers = ref([]);
+if (props.kitchen.current_team?.length) {
+  const fetchTeam = async () => {
+    const teamIds = props.kitchen.current_team.map((member) => member.id);
+    const teamQuery = query(
+      collection(db, "misebox-users"),
+      where("id", "in", teamIds)
+    );
+    const teamDocs = await getDocs(teamQuery);
+    miseboxUsers.value = teamDocs.docs.map((doc) => doc.data());
+  };
+
+  fetchTeam();
+}
 </script>
 
 <style scoped>
-.team {
-  margin-top: var(--spacing-s);
+.team-section {
+  margin-top: var(--spacing-m);
   display: flex;
-  flex-direction: row;
+  justify-content: flex-end; /* Align to bottom-right */
 }
 
-.team-members {
+.team-list {
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
-  overflow-x: auto;
-  padding-bottom: var(--spacing-xxs);
+  gap: var(--spacing-s);
+  flex-wrap: wrap; /* Ensure wrapping for overflow */
 }
 
 .team-member {
-  border-radius: 50%;
-  overflow: hidden;
-  width: 24px;
-  height: 24px;
-}
-
-.team span {
-  font-size: var(--font-size-s);
-  color: var(--text-secondary);
+  display: inline-flex;
 }
 </style>

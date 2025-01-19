@@ -1,32 +1,19 @@
 <!-- components/organisms/Chef/Cell.vue -->
 <template>
   <div class="cell chef-cell" v-if="miseboxUser && chef">
-    <!-- Header Section -->
     <NuxtLink :to="`/chefs/${chef.id}`" class="cell-header">
       <div class="cell-avatar">
-        <MoleculesAvatar 
-          :url="miseboxUser.avatar || '/images/default-avatar.jpg'" 
-          size="small" 
-          altText="Chef Avatar" 
-        />
+        <MoleculesAvatar :url="miseboxUser.avatar" size="small" altText="Chef Avatar" />
       </div>
       <div class="header-content">
-        <div class="display-name" v-if="miseboxUser.display_name">
-          {{ miseboxUser.display_name }}
-        </div>
-        <div class="handle" v-if="miseboxUser.handle">
-          @{{ miseboxUser.handle }}
-        </div>
-        <div class="specialty" v-if="chef.specialty">
-          {{ chef.specialty }}
-        </div>
+        <div class="display-name" v-if="miseboxUser.display_name">{{ miseboxUser.display_name }}</div>
+        <div class="handle" v-if="miseboxUser.handle">@{{ miseboxUser.handle }}</div>
+        <div v-if="chef.specialty" class="highlight">{{ chef.specialty }}</div>
       </div>
       <div class="icon">
         <ChevronRightIcon />
       </div>
     </NuxtLink>
-
-    <!-- Footer Section -->
     <div class="cell-footer">
       <div class="cell-interaction">
         <div v-if="miseboxUser?.id !== currentUser?.uid" class="not-self">
@@ -47,9 +34,7 @@ const props = defineProps({
   },
 });
 
-// Fetch Misebox User document
-const { document: miseboxUser } = useFetchDoc("misebox-users", props.chef.id);
-
-// Get the current user
 const currentUser = useCurrentUser();
+const { fetchMiseboxUser } = useMiseboxUser();
+const miseboxUser = fetchMiseboxUser(props.chef.id);
 </script>

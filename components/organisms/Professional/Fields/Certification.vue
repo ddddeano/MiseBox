@@ -1,92 +1,179 @@
 <!-- components/organisms/Professional/Fields/Certification.vue -->
 <template>
-  <div class="certification-form">
+  <div class="certification-item">
     <!-- Display Mode -->
     <div v-if="mode === 'display'" class="display-mode">
-      <div class="certification-header">
-        <div class="certification-name"><strong>{{ certification.name }}</strong></div>
-        <div class="certification-org">{{ certification.issuing_organization }}</div>
-      </div>
       <div class="certification-details">
-        <div class="certification-year">{{ certification.month }} {{ certification.year }}</div>
-        <div v-if="certification.document_url" class="document-icon">
-          <DocumentMagnifyingGlassIcon @click="openDocument(certification.document_url)" />
-        </div>
+        <div><strong>{{ certification.name }}</strong></div>
+        <div>{{ certification.issuing_organization }}</div>
+        <div>{{ certification.year }}</div>
       </div>
     </div>
 
-    <!-- Edit/Create Mode -->
-    <div v-else>
-      <input type="text" v-model="certification.name" placeholder="Certification Name" class="editable-input" />
-      <input type="text" v-model="certification.issuing_organization" placeholder="Issuing Organization" class="editable-input" />
-
-      <label>Date Issued</label>
-      <MoleculesMonthAndYearSelector
-        :month="certification.month"
-        :year="certification.year"
-        @update:month="(newMonth) => certification.month = newMonth"
-        @update:year="(newYear) => certification.year = newYear"
-      />
-
-      <!-- Document Upload -->
-      <div class="document-upload">
-        <DocumentPlusIcon class="icon" @click="triggerFileInput" />
-        <input type="file" ref="fileInput" @change="handleFileUpload" style="display: none;" />
+    <!-- Create Mode -->
+    <div v-else-if="mode === 'create'" class="create-mode">
+      <!-- Certification Name -->
+      <div class="form-group">
+        <label for="name" class="label">Certification Name</label>
+        <input
+          type="text"
+          id="name"
+          v-model="localData.name"
+          placeholder="Enter certification name"
+          class="editable-input"
+        />
       </div>
 
-      <div v-if="isUploading">Uploading... {{ uploadProgress }}%</div>
+      <!-- Issuing Organization -->
+      <div class="form-group">
+        <label class="label">Issuing Organization</label>
+        <div v-if="selectedPlace">
+          <div><strong>Selected Place:</strong></div>
+          <div>Place Name: {{ selectedPlace.place_name }}</div>
+          <div>Place ID: {{ selectedPlace.place_id }}</div>
+          <div>Address: {{ selectedPlace.formatted_address }}</div>
+          <button class="btn" @click="clearSelectedPlace">Clear</button>
+        </div>
+        <OrganismsPlaceSearch
+          v-else
+          v-model="localData.issuing_organization"
+          @select-place="handleSelectPlace"
+        />
+      </div>
+
+      <!-- Year Selector -->
+      <div class="form-group">
+        <label for="year" class="label">Year</label>
+        <MoleculesYearSelector
+          :year="localData.year"
+          @update:year="(newYear) => (localData.year = newYear)"
+        />
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="icon-group">
+        <CheckCircleIcon class="icon" @click="submitCreate" />
+      </div>
+    </div>
+
+    <!-- Edit Mode -->
+    <div v-else-if="mode === 'edit'" class="edit-mode">
+      <!-- Certification Name -->
+      <div class="form-group">
+        <label for="name" class="label">Certification Name</label>
+        <input
+          type="text"
+          id="name"
+          v-model="localData.name"
+          placeholder="Enter certification name"
+          class="editable-input"
+        />
+      </div>
+
+      <!-- Issuing Organization -->
+      <div class="form-group">
+        <label class="label">Issuing Organization</label>
+        <div v-if="selectedPlace">
+          <div><strong>Selected Place:</strong></div>
+          <div>Place Name: {{ selectedPlace.place_name }}</div>
+          <div>Place ID: {{ selectedPlace.place_id }}</div>
+          <div>Address: {{ selectedPlace.formatted_address }}</div>
+          <button class="btn" @click="clearSelectedPlace">Clear</button>
+        </div>
+        <OrganismsPlaceSearch
+          v-else
+          v-model="localData.issuing_organization"
+          @select-place="handleSelectPlace"
+        />
+      </div>
+
+      <!-- Year Selector -->
+      <div class="form-group">
+        <label for="year" class="label">Year</label>
+        <MoleculesYearSelector
+          :year="localData.year"
+          @update:year="(newYear) => (localData.year = newYear)"
+        />
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="icon-group">
+        <CheckCircleIcon class="icon" @click="submitEdit" />
+        <TrashIcon class="icon" @click="deleteCertification" />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref } from "vue";
+
+// Explicitly destructure CRUD operations from useProfessional
+const {
+  addProfessionalArrayItem,
+  updateProfessionalArrayItem,
+  removeProfessionalArrayItem,
+} = useProfessional();
 
 const props = defineProps({
   certification: {
     type: Object,
-    required: true,
+    required: false,
+    default: () => ({}),
   },
   mode: {
     type: String,
     required: true,
-    validator: value => ['display', 'edit', 'create'].includes(value),
+    validator: (value) => ["display", "edit", "create"].includes(value),
+  },
+  index: {
+    type: Number,
+    required: false,
   },
 });
 
-const fileInput = ref(null);
-const isUploading = ref(false);
-const uploadProgress = ref(0);
+const localData = ref({ ...props.certification });
+const selectedPlace = ref(null);
 
-const triggerFileInput = () => {
-  if (fileInput.value) {
-    fileInput.value.click();
+// Handle place selection
+const handleSelectPlace = (place) => {
+  selectedPlace.value = place;
+  localData.value.issuing_organization = place.place_name || "Unknown Organization";
+};
+
+// Clear selected place
+const clearSelectedPlace = () => {
+  selectedPlace.value = null;
+  localData.value.issuing_organization = "";
+};
+
+// Create certification
+async function submitCreate() {
+  try {
+    await addProfessionalArrayItem("certifications", localData.value);
+    console.log("[submitCreate] Certification added successfully.");
+  } catch (error) {
+    console.error("[submitCreate] Error adding certification:", error);
   }
-};
+}
 
-const handleFileUpload = async (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    const storagePath = `certifications/${props.certification.name}/${file.name}`;
-    const documentURL = await uploadDocumentToStorage(file, storagePath);
-    props.certification.document_url = documentURL;
+// Edit certification
+async function submitEdit() {
+  try {
+    await updateProfessionalArrayItem("certifications", props.index, localData.value);
+    console.log("[submitEdit] Certification updated successfully.");
+  } catch (error) {
+    console.error("[submitEdit] Error updating certification:", error);
   }
-};
+}
 
-const openDocument = (url) => {
-  window.open(url, '_blank');
-};
+// Delete certification
+async function deleteCertification() {
+  try {
+    await removeProfessionalArrayItem("certifications", props.index);
+    console.log("[deleteCertification] Certification removed successfully.");
+  } catch (error) {
+    console.error("[deleteCertification] Error removing certification:", error);
+  }
+}
 </script>
-
-<style scoped>
-.certification-form {
-  width: 100%;
-}
-.display-mode {
-  width: 80%
-}
-
-.document-upload .icon {
-  cursor: pointer;
-}
-</style>

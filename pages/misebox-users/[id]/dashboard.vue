@@ -2,61 +2,32 @@
 <template>
   <client-only>
     <div class="dashboard">
-      <!-- Authorization Check -->
-      <div v-if="miseboxUser">
+      <div v-if="isViewingOwnRoute && miseboxUser">
         <h3>Misebox User Dashboard</h3>
-
-        <!-- Header Component -->
         <MoleculesMiseboxUserHeader :miseboxUser="miseboxUser" />
-
-        <!-- Dashboard Component -->
-        <OrganismsMiseboxUserDashboard v-if="isViewingOwnRoute" />
+        <OrganismsMiseboxUserDashboard />
+      </div>
+      <div v-else-if="isViewingOwnRoute">
+        <p>You do not have a valid Misebox User profile.</p>
+        <NuxtLink to="/misebox-users" class="btn">Go to Misebox Profiles</NuxtLink>
       </div>
       <div v-else>
-        <p class="access-denied-message">
-          Access Denied. You are not authorized to view this dashboard.
-        </p>
+        <p class="access-denied-message">This is not your dashboard.</p>
+        <NuxtLink to="/misebox-users" class="btn">Go to Misebox Profiles</NuxtLink>
       </div>
     </div>
   </client-only>
 </template>
 
 <script setup>
-import { computed } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import { useFirestore, useDocument, useCurrentUser } from "vuefire";
-import { doc } from "firebase/firestore";
+import { useRoute } from "vue-router";
+import { useCurrentUser } from "vuefire";
 
-// Firestore and Routing Setup
-const router = useRouter();
 const route = useRoute();
-const db = useFirestore();
 const currentUser = useCurrentUser();
 
-// Fetch Firestore documents
-const miseboxUserDocRef = computed(() =>
-  currentUser.value ? doc(db, "misebox-users", currentUser.value.uid) : null
-);
+const { fetchMiseboxUser } = useMiseboxUser();
+const miseboxUser = fetchMiseboxUser(route.params.id);
 
-const { data: miseboxUser } = useDocument(miseboxUserDocRef);
-
-// Authorization Check
-const isViewingOwnRoute = computed(() => {
-  return currentUser.value?.uid === route.params.id;
-});
+const isViewingOwnRoute = computed(() => currentUser.value?.uid === route.params.id);
 </script>
-
-<style scoped>
-.dashboard {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: var(--spacing-l);
-}
-
-.access-denied-message {
-  text-align: center;
-  color: var(--text-danger);
-  margin-top: var(--spacing-m);
-}
-</style>
